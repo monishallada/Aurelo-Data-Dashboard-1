@@ -1,699 +1,707 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Aurelo Dashboard — Working Navigation</title>
-  <style>
-    :root{
-      --bg:#071027; --panel:#0f1724; --muted:#93a8bf; --accent:#60a5fa; --glass:rgba(255,255,255,0.03);
-      --card:#0b1220;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      background:linear-gradient(180deg,var(--bg),#05111b);
-      color:#e6eef8;
-      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
-    .container{max-width:1400px;margin:18px auto;display:grid;grid-template-columns:260px 1fr;gap:18px;padding:12px}
-    /* Sidebar */
-    aside.sidebar{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:16px;height:calc(100vh - 36px);position:sticky;top:18px}
-    .logo{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-    .brand-circle{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(90deg,#7c3aed,#06b6d4);font-weight:800}
-    .brand-title{font-weight:700;font-size:16px}
-    nav#mainNav{display:flex;flex-direction:column;gap:6px;margin-top:12px}
-    button.nav-btn{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;border:0;background:transparent;color:var(--muted);cursor:pointer;text-align:left;font-size:14px}
-    button.nav-btn:hover{background:var(--glass);color:#fff}
-    button.nav-btn.active{background:linear-gradient(90deg,rgba(99,102,241,0.12),rgba(6,182,212,0.06));color:#fff}
-    .sidebar .section-title{font-size:12px;color:var(--muted);margin-top:12px}
-    .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--muted);font-weight:600}
-    .sidebar .actions{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-    /* Main */
-    main{padding:6px}
-    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .search-box{display:flex;gap:8px;align-items:center}
-    input.search{padding:9px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;min-width:260px}
-    .btn{padding:8px 12px;border-radius:10px;border:0;background:var(--accent);color:#05203b;cursor:pointer;font-weight:600}
-    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-    /* Cards / Layout */
-    .grid{display:grid;gap:12px}
-    .cols-3{grid-template-columns:repeat(3,1fr)}
-    .cols-2{grid-template-columns:repeat(2,1fr)}
-    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.03)}
-    .kpi{font-size:18px;font-weight:700}
-    .muted{color:var(--muted);font-size:13px}
-    .table-wrap{overflow:auto}
-    table{width:100%;border-collapse:collapse;font-size:13px}
-    thead th{color:var(--muted);text-align:left;padding:10px;border-bottom:1px solid rgba(255,255,255,0.03)}
-    tbody td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.02)}
-    .pill-small{padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--muted);font-weight:600}
-    footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}
-    /* Page visibility */
-    .page{display:none}
-    .page.active{display:block}
-    /* Responsive */
-    @media (max-width: 980px){ .container{grid-template-columns:1fr} aside.sidebar{height:auto;position:relative} }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Aurelo Bay — Retail Analytics (USD)</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#071027; --panel:#0f1724; --muted:#93a8bf; --accent:#60a5fa; --glass:rgba(255,255,255,0.04);
+  --card:#0b1220; --text:#e6eef8; --text-muted:#93a8bf;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,var(--bg),#05111b);color:var(--text);
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
+.container{max-width:1480px;margin:18px auto;display:grid;grid-template-columns:260px 1fr;gap:18px;padding:12px}
+aside.sidebar{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:16px;height:calc(100vh - 36px);position:sticky;top:18px}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.brand-circle{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(90deg,#7c3aed,#06b6d4);font-weight:800}
+.brand-title{font-weight:700;font-size:16px}
+nav#mainNav{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+button.nav-btn{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;text-align:left;font-size:14px}
+button.nav-btn:hover{background:var(--glass);color:#fff}
+button.nav-btn.active{background:linear-gradient(90deg,rgba(99,102,241,0.12),rgba(6,182,212,0.06));color:#fff}
+.sidebar .section-title{font-size:12px;color:var(--text-muted);margin-top:12px}
+.pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--text-muted);font-weight:600}
+.sidebar .actions{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+main{padding:6px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.search-box{display:flex;gap:8px;align-items:center}
+input.search{padding:9px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:inherit;min-width:260px}
+.btn{padding:8px 12px;border-radius:10px;border:0;background:var(--accent);color:#05203b;cursor:pointer;font-weight:600}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.12);color:var(--text-muted)}
+.grid{display:grid;gap:12px}
+.cols-2{grid-template-columns:repeat(2,1fr)}
+.cols-3{grid-template-columns:repeat(3,1fr)}
+.cols-4{grid-template-columns:repeat(4,1fr)}
+.card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.08)}
+.kpi{font-size:20px;font-weight:800}
+.kpi-sub{color:var(--text-muted);font-size:12px}
+.muted{color:var(--text-muted);font-size:13px}
+.badge{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,0.08);font-weight:700}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{color:var(--text-muted);text-align:left;padding:10px;border-bottom:1px solid rgba(255,255,255,0.12)}
+tbody td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.page{display:none}
+.page.active{display:block}
+footer{margin-top:18px;color:var(--text-muted);font-size:12px;text-align:center}
+/* Light theme */
+body.light{--bg:#fff; --panel:#f2f4f8; --text:#000; --text-muted:#444; --card:#fefefe; --glass:rgba(0,0,0,0.06)}
+@media (max-width: 980px){.container{grid-template-columns:1fr} aside.sidebar{height:auto;position:relative}}
+</style>
 </head>
 <body>
-  <div class="container">
-    <aside class="sidebar" aria-label="Main sidebar">
-      <div class="logo">
-        <div class="brand-circle">A</div>
-        <div>
-          <div class="brand-title">Aurelo</div>
-          <div class="muted" style="font-size:12px">Data & Insights</div>
-        </div>
+<div class="container">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="Sidebar">
+    <div class="logo">
+      <div class="brand-circle">AB</div>
+      <div>
+        <div class="brand-title">Aurelo Bay</div>
+        <div class="muted" style="font-size:12px">Retail & e-Com Analytics</div>
       </div>
+    </div>
+    <nav id="mainNav" aria-label="Primary">
+      <button class="nav-btn active" data-page="overview">🏠 Overview</button>
+      <button class="nav-btn" data-page="sales">🧾 Sales (Orders)</button>
+      <button class="nav-btn" data-page="products">🛒 Products</button>
+      <button class="nav-btn" data-page="analytics">📈 Analytics</button>
+      <button class="nav-btn" data-page="accounts">🏦 Accounts</button>
+      <button class="nav-btn" data-page="users">👥 Users</button>
+      <button class="nav-btn" data-page="alerts">🚨 Alerts</button>
+      <button class="nav-btn" data-page="settings">⚙️ Settings</button>
+    </nav>
 
-      <nav id="mainNav" aria-label="Primary">
-        <button class="nav-btn active" data-page="overview">🏠 Overview</button>
-        <button class="nav-btn" data-page="transactions">💳 Transactions</button>
-        <button class="nav-btn" data-page="accounts">🏦 Accounts</button>
-        <button class="nav-btn" data-page="reports">📑 Reports</button>
-        <button class="nav-btn" data-page="analytics">📈 Analytics</button>
-        <button class="nav-btn" data-page="users">👥 Users</button>
-        <button class="nav-btn" data-page="alerts">🚨 Alerts</button>
-        <button class="nav-btn" data-page="settings">⚙️ Settings</button>
-      </nav>
+    <div class="section-title">Bay Area Stores</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <div class="pill">San Francisco</div>
+      <div class="pill">San Jose</div>
+      <div class="pill">Oakland</div>
+      <div class="pill">Palo Alto</div>
+      <div class="pill">Berkeley</div>
+      <div class="pill">Online</div>
+    </div>
 
-      <div class="section-title">Quick actions</div>
-      <div class="actions">
-        <button id="createReport" class="btn">Create report</button>
-        <button id="importData" class="btn ghost">Import data</button>
+    <div class="section-title">Quick actions</div>
+    <div class="actions">
+      <button id="exportSnapshot" class="btn">Export snapshot</button>
+      <button id="toggleTheme" class="btn ghost">Toggle theme</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <div class="header">
+      <div class="search-box">
+        <input id="globalSearch" class="search" placeholder="Search orders, items, customers, accounts..." />
       </div>
+      <div class="muted">Manager: Monish • Admin</div>
+    </div>
 
-      <div class="section-title">Workspaces</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-        <div class="pill">North</div>
-        <div class="pill">South</div>
-        <div class="pill">East</div>
-        <div class="pill">West</div>
-      </div>
-    </aside>
+    <!-- OVERVIEW -->
+    <section id="overview" class="page active">
+      <h2>Overview</h2>
+      <div class="grid cols-4" id="kpiGrid"></div>
 
-    <main>
-      <div class="header">
-        <div class="search-box">
-          <input id="globalSearch" class="search" placeholder="Search companies, transactions, accounts..." aria-label="Search" />
-          <button id="toggleTheme" class="btn ghost">Toggle theme</button>
-        </div>
-        <div style="display:flex;gap:12px;align-items:center">
-          <div class="muted" id="currentUser">Monish A. • Admin</div>
-          <button id="exportSnapshot" class="btn">Export snapshot</button>
-        </div>
-      </div>
-
-      <!-- PAGES -->
-      <!-- Overview -->
-      <section id="overview" class="page active" aria-labelledby="overviewTitle">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div>
-            <h2 id="overviewTitle">Overview</h2>
-            <div class="muted">At-a-glance metrics & recent insights</div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <label class="muted">Range:
-              <select id="overviewRange" style="margin-left:8px;padding:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:inherit">
-                <option value="30">Last 30d</option>
-                <option value="60">Last 60d</option>
-                <option value="90" selected>Last 90d</option>
-              </select>
-            </label>
-            <button id="ovRefresh" class="btn ghost">Refresh</button>
-          </div>
-        </div>
-
-        <div class="grid cols-3">
-          <div class="card">
-            <div class="muted">Total revenue (MTD)</div>
-            <div class="kpi" id="kpiRevenue">$0</div>
-            <div class="muted" id="kpiRevenueDelta">+0.0% vs last period</div>
-          </div>
-          <div class="card">
-            <div class="muted">Monthly recurring revenue</div>
-            <div class="kpi" id="kpiMRR">$0</div>
-            <div class="muted" id="kpiMRRDelta">+0.0%</div>
-          </div>
-          <div class="card">
-            <div class="muted">Active users</div>
-            <div class="kpi" id="kpiUsers">0</div>
-            <div class="muted" id="kpiUsersDelta">+0</div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <div>
-              <strong>Revenue trend</strong>
-              <div class="muted">Automated time-series (simulated)</div>
-            </div>
-            <div class="muted">Auto-updates enabled</div>
-          </div>
-          <div style="height:220px;display:grid;place-items:center" id="overviewGraph">
-            <!-- simulated sparkline area (text) -->
-            <div class="muted">[Dynamic chart area — simulated in JS]</div>
-          </div>
-        </div>
-
-        <div class="grid cols-2" style="margin-top:12px">
-          <div class="card">
-            <strong>Revenue mix</strong>
-            <div class="muted" style="margin-top:6px" id="revenueMixText">Enterprise 45% · SMB 35% · Individual 20%</div>
-          </div>
-          <div class="card">
-            <strong>Top accounts</strong>
-            <div id="overviewTopAccounts" style="margin-top:10px"></div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <strong>Recent insights</strong>
-          <ul id="overviewInsights" class="muted" style="margin-top:8px"></ul>
-        </div>
-      </section>
-
-      <!-- Transactions -->
-      <section id="transactions" class="page" aria-labelledby="txTitle">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div>
-            <h2 id="txTitle">Transactions</h2>
-            <div class="muted">Explore, filter, export or delete transaction rows</div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <input id="txSearch" placeholder="Search transactions..." style="padding:7px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit" />
-            <select id="txRegion" style="padding:7px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:inherit"><option value="">All regions</option><option>North</option><option>South</option><option>East</option><option>West</option></select>
-            <select id="txStatus" style="padding:7px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:inherit"><option value="">Any status</option><option>Completed</option><option>Pending</option><option>Failed</option></select>
-            <button id="txExport" class="btn">Export CSV</button>
-          </div>
-        </div>
-
-        <div class="card table-wrap">
-          <table aria-describedby="txTitle" id="txTable">
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="txSelectAll" /></th>
-                <th>ID</th><th>Company</th><th>Region</th><th>Amount</th><th>Status</th><th>Date</th><th>Action</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
-          <div class="muted" id="txRange">Showing 0</div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <button id="txPrev" class="btn ghost">Prev</button>
-            <div class="pill-small" id="txPage">1</div>
-            <button id="txNext" class="btn ghost">Next</button>
-            <button id="txBulkDelete" class="btn ghost">Delete selected</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Accounts -->
-      <section id="accounts" class="page" aria-labelledby="accountsTitle">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div>
-            <h2 id="accountsTitle">Accounts</h2>
-            <div class="muted">Customers, LTV and statuses</div>
-          </div>
-          <div class="muted">Total accounts: <span id="accTotal">0</span></div>
-        </div>
-
-        <div class="grid cols-3">
-          <div class="card"><div class="muted">Total account value</div><div class="kpi" id="accValue">$0</div></div>
-          <div class="card"><div class="muted">Active accounts</div><div class="kpi" id="accActive">0</div></div>
-          <div class="card"><div class="muted">Avg LTV</div><div class="kpi" id="accLtv">$0</div></div>
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <strong>Accounts list</strong>
-          <div class="table-wrap" style="margin-top:8px">
-            <table id="accTable">
-              <thead><tr><th>Account</th><th>Region</th><th>Industry</th><th>Revenue</th><th>Status</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- Reports -->
-      <section id="reports" class="page" aria-labelledby="reportsTitle">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div>
-            <h2 id="reportsTitle">Reports</h2>
-            <div class="muted">Saved reports, schedules & manual exports</div>
-          </div>
-          <button id="newReport" class="btn">New report</button>
-        </div>
-
-        <div id="reportsList" class="grid cols-2"></div>
-      </section>
-
-      <!-- Analytics -->
-      <section id="analytics" class="page" aria-labelledby="analyticsTitle">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div>
-            <h2 id="analyticsTitle">Analytics</h2>
-            <div class="muted">Run models & simulate scenarios</div>
-          </div>
-          <div class="muted">Simple simulation demo</div>
-        </div>
-
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <div class="card" style="flex:1;min-width:320px">
-            <strong>Scenario simulator</strong>
-            <div class="muted" style="margin-top:8px">Adjust churn and promo uplift</div>
-            <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
-              <label class="muted">Churn %</label>
-              <input id="simChurn" type="range" min="-50" max="50" value="0" style="flex:1" />
-              <span id="simChurnVal" class="muted">0</span>
-            </div>
-            <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
-              <label class="muted">Promo %</label>
-              <input id="simPromo" type="range" min="0" max="50" value="10" style="flex:1" />
-              <span id="simPromoVal" class="muted">10</span>
-            </div>
-            <div style="margin-top:8px"><button id="runSim" class="btn">Run simulation</button></div>
-            <div id="simResult" class="muted" style="margin-top:8px">No simulation run yet.</div>
-          </div>
-
-          <div class="card" style="width:360px">
-            <strong>Model results</strong>
-            <div id="modelResult" class="muted" style="margin-top:8px">No model run yet.</div>
-            <div style="margin-top:12px"><button id="clearModel" class="btn ghost">Clear results</button></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Users -->
-      <section id="users" class="page" aria-labelledby="usersTitle">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div>
-            <h2 id="usersTitle">Users</h2>
-            <div class="muted">Team members and roles</div>
-          </div>
-          <button id="inviteUser" class="btn">Invite user</button>
-        </div>
-
-        <div class="card table-wrap">
-          <table id="usersTable">
-            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Active</th><th>Action</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Alerts -->
-      <section id="alerts" class="page" aria-labelledby="alertsTitle">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div>
-            <h2 id="alertsTitle">Alerts</h2>
-            <div class="muted">Configure thresholds and notifications</div>
-          </div>
-          <div class="muted">Deliver alerts to Slack/Email (demo)</div>
-        </div>
-
+      <div class="grid cols-2" style="margin-top:12px">
         <div class="card">
-          <div style="display:flex;gap:12px;align-items:center">
-            <label class="muted">Churn threshold (%) <input id="alertChurn" type="number" value="3" style="width:80px;margin-left:8px" /></label>
-            <label class="muted">MRR drop (%) <input id="alertMRR" type="number" value="10" style="width:80px;margin-left:8px" /></label>
-            <button id="saveAlerts" class="btn">Save</button>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Today — Hourly Sales</strong>
+            <span class="muted" id="todayRange"></span>
           </div>
+          <canvas id="hourlyChart" height="140"></canvas>
         </div>
-      </section>
-
-      <!-- Settings -->
-      <section id="settings" class="page" aria-labelledby="settingsTitle">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div>
-            <h2 id="settingsTitle">Settings</h2>
-            <div class="muted">User and system preferences</div>
-          </div>
-        </div>
-
         <div class="card">
-          <label class="muted"><input id="prefEmail" type="checkbox" checked /> Email notifications</label>
-          <div style="height:8px"></div>
-          <label class="muted"><input id="prefDaily" type="checkbox" /> Daily summary</label>
-          <div style="margin-top:10px"><button id="saveSettings" class="btn">Save preferences</button></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>This Week — Daily Revenue</strong>
+            <span class="muted" id="weekTotal"></span>
+          </div>
+          <canvas id="weeklyChart" height="140"></canvas>
         </div>
-      </section>
+      </div>
 
-      <footer>© Aurelo — <span id="year"></span></footer>
-    </main>
-  </div>
+      <div class="grid cols-3" style="margin-top:12px">
+        <div class="card">
+          <strong>Category Mix</strong>
+          <div class="muted" style="margin:6px 0">Electronics, Home, Apparel, Sports, Grocery</div>
+          <canvas id="categoryChart" height="160"></canvas>
+        </div>
+        <div class="card">
+          <strong>Payment Mix</strong>
+          <div class="muted" style="margin:6px 0">Card, Apple Pay, Google Pay, Cash</div>
+          <canvas id="paymentChart" height="160"></canvas>
+        </div>
+        <div class="card">
+          <strong>Top Products (Today)</strong>
+          <div class="muted" style="margin:6px 0">Qty sold by SKU</div>
+          <canvas id="topItemsChart" height="160"></canvas>
+        </div>
+      </div>
 
-  <script>
-    /***************************************************************
-     * Robust SPA navigation and page content wiring
-     ***************************************************************/
+      <div class="card" style="margin-top:12px">
+        <strong>Sales by City (This Month)</strong>
+        <canvas id="regionStackedChart" height="140"></canvas>
+      </div>
+    </section>
 
-    (function () {
-      // --- Utilities ---
-      const $ = (s, root = document) => root.querySelector(s);
-      const $$ = (s, root = document) => Array.from(root.querySelectorAll(s));
-      const safePushState = (state, title, url) => {
-        try { if (history && history.pushState) history.pushState(state, title, url); else location.hash = url; }
-        catch (err) { console.warn('pushState failed', err); location.hash = url; }
-      };
+    <!-- SALES / ORDERS -->
+    <section id="sales" class="page">
+      <h2>Orders</h2>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+        <input id="orderSearch" class="search" style="min-width:240px" placeholder="Search order ID / email / item / city" />
+        <select id="orderStore" class="btn ghost" style="padding:8px;border-radius:8px">
+          <option value="">All stores</option><option>San Francisco</option><option>San Jose</option>
+          <option>Oakland</option><option>Palo Alto</option><option>Berkeley</option><option>Online</option>
+        </select>
+        <select id="orderPay" class="btn ghost" style="padding:8px;border-radius:8px">
+          <option value="">All payment</option><option>Card</option><option>Apple Pay</option><option>Google Pay</option><option>Cash</option>
+        </select>
+        <button id="exportOrders" class="btn">Export CSV</button>
+      </div>
+      <div class="card table-wrap">
+        <table id="orderTable">
+          <thead>
+            <tr>
+              <th>Order</th><th>Time</th><th>Store</th><th>Channel</th><th>Items</th>
+              <th>Sub-total</th><th>Tax (8.75%)</th><th>Total</th><th>Payment</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="muted" id="orderCount" style="margin-top:8px">0 orders</div>
+    </section>
 
-      // --- DOM elements ---
-      const navContainer = $('#mainNav');
-      const navButtons = $$('[data-page]', navContainer);
-      const pages = $$('section.page');
-      const defaultPage = 'overview';
+    <!-- PRODUCTS -->
+    <section id="products" class="page">
+      <h2>Products</h2>
+      <div class="grid cols-3" id="productKPIs"></div>
+      <div class="card table-wrap" style="margin-top:12px">
+        <table id="productTable">
+          <thead>
+            <tr><th>SKU</th><th>Name</th><th>Category</th><th>Price</th><th>Units (30d)</th><th>Gross Sales</th><th>Return %</th><th>Rating</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
 
-      // show/hide
-      function showPage(id, push = true) {
-        let found = false;
-        pages.forEach(p => {
-          if (p.id === id) {
-            p.classList.add('active');
-            p.style.display = '';
-            found = true;
-          } else {
-            p.classList.remove('active');
-            p.style.display = 'none';
-          }
-        });
-        // update nav active
-        navButtons.forEach(b => {
-          if (b.getAttribute('data-page') === id) b.classList.add('active');
-          else b.classList.remove('active');
-        });
-        // update history/hash
-        if (push) safePushState({ page: id }, '', `#${id}`);
-        // UX: scroll to top of main
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+    <!-- ANALYTICS -->
+    <section id="analytics" class="page">
+      <h2>Analytics & Simulator</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <strong>Scenario: Promo vs Churn (Subscriptions)</strong>
+          <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
+            <label class="muted">Promo% <input id="simPromo" type="range" min="0" max="40" value="12" /></label>
+            <span id="simPromoVal" class="badge">12%</span>
+            <label class="muted" style="margin-left:10px">Churn% <input id="simChurn" type="range" min="0" max="15" value="3" /></label>
+            <span id="simChurnVal" class="badge">3%</span>
+            <label class="muted" style="margin-left:10px">New CAC ($) <input id="simCAC" type="number" value="14" style="width:70px" /></label>
+            <button id="runSim" class="btn">Run</button>
+          </div>
+          <div class="muted" id="simResult" style="margin-top:8px">Adjust sliders and run.</div>
+        </div>
+        <div class="card">
+          <strong>Insights</strong>
+          <ul id="insightsList" class="muted" style="margin-top:6px"></ul>
+        </div>
+      </div>
 
-      // Delegated nav clicks
-      navContainer.addEventListener('click', (ev) => {
-        const btn = ev.target.closest('[data-page]');
-        if (!btn) return;
-        ev.preventDefault();
-        const page = btn.getAttribute('data-page');
-        if (!page) return;
-        showPage(page);
-      });
+      <div class="card" style="margin-top:12px">
+        <strong>Monthly Revenue (Last 12m vs Prev 12m)</strong>
+        <canvas id="monthlyChart" height="160"></canvas>
+      </div>
+    </section>
 
-      // Handle popstate/back/forward
-      window.addEventListener('popstate', (ev) => {
-        const id = (ev.state && ev.state.page) || location.hash.replace('#', '') || defaultPage;
-        showPage(id, false);
-      });
+    <!-- ACCOUNTS -->
+    <section id="accounts" class="page">
+      <h2>B2B / Wholesale Accounts</h2>
+      <div class="grid cols-3" id="accKPIs"></div>
+      <div class="card table-wrap" style="margin-top:12px">
+        <table id="accTable">
+          <thead><tr><th>Account</th><th>City</th><th>Contact</th><th>Open Balance</th><th>Status</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
 
-      // Initial load: respect hash if present
-      const initial = location.hash.replace('#', '') || defaultPage;
-      // Wait until DOM ready content (pages already in DOM)
-      document.addEventListener('DOMContentLoaded', () => {
-        showPage(initial, false);
-      });
+    <!-- USERS -->
+    <section id="users" class="page">
+      <h2>Users</h2>
+      <div class="card table-wrap">
+        <table id="usersTable">
+          <thead><tr><th>Name</th><th>Role</th><th>Location</th><th>Active</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
 
-      // Keyboard quick nav 1..8
-      window.addEventListener('keydown', (e) => {
-        if (e.key >= '1' && e.key <= String(Math.min(9, navButtons.length))) {
-          const idx = Number(e.key) - 1;
-          const tgt = navButtons[idx];
-          if (tgt) tgt.click();
-        }
-      });
+    <!-- ALERTS -->
+    <section id="alerts" class="page">
+      <h2>Alerts</h2>
+      <div class="card">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <label class="muted">High returns > <input id="thReturn" type="number" value="6" style="width:64px"> %</label>
+          <label class="muted">Card share < input id="thCard" type="number" value="50" style="width:64px"> %</label>
+          <label class="muted">AOV > < input id="thAOV" type="number" value="85" style="width:64px"> $</label>
+          <button id="saveAlerts" class="btn">Save</button>
+        </div>
+      </div>
+      <div id="alertLog" class="muted" style="margin-top:8px"></div>
+    </section>
 
-      // Error reporting helper (dev)
-      window.addEventListener('error', (err) => console.error('JS error', err.message, err.filename, 'line', err.lineno));
+    <!-- SETTINGS -->
+    <section id="settings" class="page">
+      <h2>Settings</h2>
+      <div class="card">
+        <label class="muted"><input id="prefEmail" type="checkbox" checked> Email daily summary</label>
+        <div style="height:8px"></div>
+        <label class="muted"><input id="prefTheme" type="checkbox"> Start in Light theme</label>
+        <div style="margin-top:10px"><button id="saveSettings" class="btn">Save preferences</button></div>
+      </div>
+      <footer>© <span id="yr"></span> Aurelo Bay</footer>
+    </section>
+  </main>
+</div>
 
-      /***************************************************************
-       * Page content wiring & interactive bits for each page
-       ***************************************************************/
+<script>
+/* -------------------------- Utilities -------------------------- */
+const USD = new Intl.NumberFormat('en-US', { style:'currency', currency:'USD', maximumFractionDigits:0 });
+const fmtN = n => new Intl.NumberFormat('en-US').format(n);
+const byId = id => document.getElementById(id);
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+const todayStr = () => new Date().toLocaleDateString('en-US',{weekday:'short', month:'short', day:'2-digit'});
 
-      // Utilities for mocked data generation
-      const randBetween = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
-      const format = (n) => typeof n === 'number' ? n.toLocaleString() : n;
+/* -------------------------- Navigation + Theme -------------------------- */
+$('#mainNav').addEventListener('click', e=>{
+  const btn = e.target.closest('.nav-btn'); if(!btn) return;
+  $$('.nav-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  const id = btn.dataset.page; $$('.page').forEach(p=>p.classList.toggle('active', p.id===id));
+  history.pushState({page:id}, '', '#'+id);
+});
+window.addEventListener('popstate', (e)=>{ const id = (e.state&&e.state.page)||location.hash.replace('#','')||'overview';
+  $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===id));
+  $$('.page').forEach(p=>p.classList.toggle('active', p.id===id));
+});
+byId('toggleTheme').addEventListener('click', ()=>{ document.body.classList.toggle('light'); localStorage.setItem('ab_theme', document.body.classList.contains('light')?'light':'dark'); });
+(function(){ if(localStorage.getItem('ab_theme')==='light') document.body.classList.add('light'); })();
 
-      // Mock datasets
-      const TX = (() => {
-        const names = ['Acme Co','Bright Solutions','Crescent LLC','Delta Group','Eagle Systems','Finory','GigaTech','Helio','Innova','Juno Labs'];
-        const regions = ['North','South','East','West'];
-        const statuses = ['Completed','Pending','Failed'];
-        const rows = [];
-        for (let i = 0; i < 220; i++) {
-          rows.push({
-            id: `T-${1000 + i}`,
-            company: names[i % names.length] + (i > names.length ? ` ${i}` : ''),
-            region: regions[i % regions.length],
-            amount: randBetween(120, 120000),
-            status: statuses[i % statuses.length],
-            date: new Date(Date.now() - randBetween(0, 120) * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
-          });
-        }
-        return rows;
-      })();
+/* -------------------------- Simulated Retail Data (Bay Area, USD) -------------------------- */
+const STORES = ['San Francisco','San Jose','Oakland','Palo Alto','Berkeley','Online'];
+const PAY = ['Card','Apple Pay','Google Pay','Cash'];      // weights ~ [55,20,10,15]
+const CHANNEL = ['In-store','Online'];
+const CATEGORY = ['Electronics','Home','Apparel','Sports','Grocery'];
+const TAX_RATE = 0.0875; // blended CA rate 8.75%
 
-      const ACCOUNTS = (() => {
-        const out = [];
-        for (let i = 0; i < 120; i++) {
-          out.push({ name: `Account ${i+1}`, region: ['North','South','East','West'][i%4], industry: ['Retail','Fintech','Ed','Health'][i%4], revenue: randBetween(2000,120000), status: ['Active','Onboarding','Churned'][i%3] });
-        }
-        return out;
-      })();
+/* Product catalog (40 SKUs across categories) */
+const PRODUCTS = [
+  ['ELEC-001','Aurelo Smart Speaker','Electronics',129],
+  ['ELEC-002','Noise-Cancel Headphones','Electronics',199],
+  ['ELEC-003','4K Streaming Stick','Electronics',59],
+  ['ELEC-004','Wireless Charger','Electronics',39],
+  ['ELEC-005','USB-C Hub 8-in-1','Electronics',79],
+  ['HOME-101','LED Floor Lamp','Home',89],
+  ['HOME-102','Ergo Office Chair','Home',179],
+  ['HOME-103','Bamboo Cutting Board','Home',24],
+  ['HOME-104','Aromatherapy Diffuser','Home',49],
+  ['HOME-105','Espresso Machine','Home',349],
+  ['APRL-201','Hoodie — Unisex','Apparel',65],
+  ['APRL-202','Performance Tee','Apparel',35],
+  ['APRL-203','Running Shorts','Apparel',45],
+  ['APRL-204','Windbreaker','Apparel',98],
+  ['APRL-205','Everyday Jeans','Apparel',79],
+  ['SPRT-301','Yoga Mat Pro','Sports',59],
+  ['SPRT-302','Adjustable Dumbbells','Sports',229],
+  ['SPRT-303','Foam Roller','Sports',29],
+  ['SPRT-304','Cycling Helmet','Sports',85],
+  ['SPRT-305','Tennis Racket','Sports',119],
+  ['GROC-401','Organic Coffee Beans (1lb)','Grocery',16],
+  ['GROC-402','Almond Butter (16oz)','Grocery',12],
+  ['GROC-403','Protein Bars (12pk)','Grocery',18],
+  ['GROC-404','Sparkling Water (12pk)','Grocery',11],
+  ['GROC-405','Olive Oil (1L)','Grocery',19],
+  ['ELEC-006','Bluetooth Tracker (4-pk)','Electronics',69],
+  ['ELEC-007','Smart Bulb (2-pk)','Electronics',29],
+  ['HOME-106','Air Purifier','Home',199],
+  ['HOME-107','Cast Iron Skillet','Home',44],
+  ['APRL-206','Baseball Cap','Apparel',28],
+  ['APRL-207','Sneakers','Apparel',120],
+  ['SPRT-306','Fitness Band','Sports',99],
+  ['SPRT-307','Jump Rope','Sports',18],
+  ['GROC-406','Trail Mix (2lb)','Grocery',14],
+  ['GROC-407','Kombucha (6pk)','Grocery',16],
+  ['ELEC-008','Portable SSD 1TB','Electronics',119],
+  ['HOME-108','Smart Thermostat','Home',229],
+  ['APRL-208','Socks (6-pk)','Apparel',22],
+  ['SPRT-308','Pickleball Set','Sports',89],
+  ['GROC-408','Oat Milk (64oz)','Grocery',6]
+].map(([sku,name,cat,price])=>({sku,name,cat,price}));
 
-      const USERS = [
-        { name: 'Monish Allada', email: 'monish@example.com', role: 'Admin', active: true },
-        { name: 'Ava Smith', email: 'ava@example.com', role: 'Analyst', active: true },
-        { name: 'Ethan Lee', email: 'ethan@example.com', role: 'Viewer', active: false }
-      ];
+/* Weighted pick helper */
+function pickWeighted(weights){
+  const total = weights.reduce((a,b)=>a+b,0); let r = Math.random()*total;
+  for(let i=0;i<weights.length;i++){ if(r<weights[i]) return i; r-=weights[i]; }
+  return weights.length-1;
+}
 
-      // Overview: render KPIs & lists
-      function renderOverview() {
-        document.getElementById('kpiRevenue').textContent = '$' + format(TX.reduce((s,t)=>s+t.amount,0));
-        document.getElementById('kpiMRR').textContent = '$' + format(randBetween(12000,90000));
-        document.getElementById('kpiUsers').textContent = format(randBetween(4800, 16500));
-        // Top accounts
-        const top = ACCOUNTS.slice().sort((a,b)=>b.revenue - a.revenue).slice(0,6);
-        document.getElementById('overviewTopAccounts').innerHTML = top.map(a => `<div style="display:flex;justify-content:space-between;padding:6px 0"><div><strong>${a.name}</strong><div class="muted" style="font-size:12px">${a.industry} · ${a.region}</div></div><div>$${format(a.revenue)}</div></div>`).join('');
-        // Insights
-        const insights = [
-          {t:'Revenue up in North region', v:'+5.6%'},
-          {t:'High churn cohort', v:'Review'},
-          {t:'Avg order value rising', v:`$${randBetween(40,280)}`}
-        ];
-        document.getElementById('overviewInsights').innerHTML = insights.map(i => `<li style="margin:6px 0;display:flex;justify-content:space-between"><span>${i.t}</span><span class="muted">${i.v}</span></li>`).join('');
-        // Revenue mix
-        const mixA = randBetween(30,50), mixB = randBetween(15,40), mixC = 100 - mixA - mixB;
-        document.getElementById('revenueMixText').textContent = `Enterprise ${mixA}% · SMB ${mixB}% · Individual ${mixC}%`;
-        // Simulated mini chart: simple ascii-ish sparkline to indicate change
-        const spark = Array.from({length: 24}).map(()=>randBetween(40,120));
-        const sparkEl = document.getElementById('overviewGraph');
-        sparkEl.innerHTML = `<div style="width:100%;display:flex;gap:2px;align-items:end;height:180px"><div style="flex:1;background:linear-gradient(180deg,rgba(96,165,250,0.18),transparent);height:${spark[0]}%"></div>${spark.slice(1).map(v=>`<div style="flex:1;background:rgba(255,255,255,0.05);height:${v}%"></div>`).join('')}</div>`;
-      }
+/* Build a random order */
+function makeOrder(idx){
+  const store = STORES[pickWeighted([22,22,16,14,12,14])];
+  const channel = CHANNEL[pickWeighted([70,30])];
+  const pm = PAY[pickWeighted([55,20,10,15])];
+  const itemCount = 1 + Math.floor(Math.random()*4);
+  const items = []; let subtotal = 0; let qtyTotal = 0;
+  for(let i=0;i<itemCount;i++){
+    const p = PRODUCTS[pickWeighted([
+      8,8,7,7,7, 7,6,5,5,6, 7,7,6,6,6, 6,5,5,5,5, 5,5,5,5,5, 6,6,5,5,4, 5,5,4,4,4, 6,5,4,4
+    ])];
+    const qty = 1 + Math.floor(Math.random()*3);
+    items.push({sku:p.sku, name:p.name, cat:p.cat, price:p.price, qty});
+    subtotal += p.price * qty; qtyTotal += qty;
+  }
+  const tax = Math.round(subtotal * TAX_RATE);
+  const total = subtotal + tax;
+  const now = new Date(); const hour = Math.floor(Math.random()*(now.getHours()||10));
+  const time = new Date(); time.setHours(hour, Math.floor(Math.random()*60), 0, 0);
+  return {
+    order: 'AB'+String(100000+idx),
+    time: time.toTimeString().slice(0,5),
+    store, channel, items, qty:qtyTotal,
+    subtotal, tax, total, pay: pm
+  };
+}
 
-      // Transactions: filtering/pagination/export/delete
-      let txFiltered = TX.slice();
-      let txPage = 1;
-      const txPerPage = 12;
+/* Generate a large set of orders (today) + buffer */
+const ORDERS = Array.from({length: 720}, (_,i)=> makeOrder(i));
 
-      function renderTx() {
-        const tbody = $('#txTable tbody');
-        const total = txFiltered.length;
-        const pages = Math.max(1, Math.ceil(total / txPerPage));
-        txPage = Math.min(txPage, pages);
-        const start = (txPage - 1) * txPerPage;
-        const slice = txFiltered.slice(start, start + txPerPage);
-        tbody.innerHTML = slice.map(r => `<tr>
-          <td><input type="checkbox" class="tx-chk" data-id="${r.id}"/></td>
-          <td>${r.id}</td><td>${r.company}</td><td>${r.region}</td><td>$${format(r.amount)}</td><td><span class="pill-small">${r.status}</span></td><td>${r.date}</td>
-          <td><button class="btn ghost tx-del" data-id="${r.id}">Delete</button></td>
-        </tr>`).join('');
-        document.getElementById('txRange').textContent = `Showing ${start + 1} - ${Math.min(start + txPerPage, total)} of ${total}`;
-        document.getElementById('txPage').textContent = `${txPage} / ${pages}`;
-        document.getElementById('txCount').textContent = `${total}`;
+/* B2B accounts */
+const ACCOUNTS = Array.from({length: 220}, (_,i)=>({
+  acc: `Account ${i+1}`,
+  city: ['San Francisco','San Jose','Oakland','Palo Alto','Berkeley'][i%5],
+  contact: `+1 (415) ${200+Math.floor(Math.random()*700)}-${String(1000+Math.floor(Math.random()*9000)).slice(-4)}`,
+  bal: Math.round(2000 + Math.random()*120000),
+  st: ['Active','Overdue','Settled'][pickWeighted([70,12,18])]
+}));
 
-        // hook deletes
-        $$('.tx-del').forEach(b => b.addEventListener('click', (e) => {
-          const id = b.getAttribute('data-id');
-          const idx = TX.findIndex(t => t.id === id);
-          if (idx > -1) TX.splice(idx, 1);
-          txFiltered = TX.slice();
-          txPage = 1;
-          renderTx();
-        }));
-      }
+/* Users */
+const USERS = [
+  {n:'Riley Chen', role:'Store Manager', loc:'San Francisco', active:true},
+  {n:'Jordan Patel', role:'Ops Analyst', loc:'San Jose', active:true},
+  {n:'Avery Kim', role:'Cashier', loc:'Oakland', active:true},
+  {n:'Sam Rivera', role:'E-Com Lead', loc:'Online', active:true},
+  {n:'Taylor Brooks', role:'Sales Associate', loc:'Palo Alto', active:false},
+];
 
-      function initTxInteractivity() {
-        $('#txSearch').addEventListener('input', debounce((e) => {
-          const q = e.target.value.trim().toLowerCase();
-          txFiltered = q ? TX.filter(r => r.company.toLowerCase().includes(q) || r.id.toLowerCase().includes(q)) : TX.slice();
-          txPage = 1; renderTx();
-        }, 250));
-        $('#txRegion').addEventListener('change', (e) => {
-          const v = e.target.value;
-          txFiltered = v ? TX.filter(r => r.region === v) : TX.slice();
-          txPage = 1; renderTx();
-        });
-        $('#txStatus').addEventListener('change', (e) => {
-          const v = e.target.value;
-          txFiltered = v ? TX.filter(r => r.status === v) : TX.slice();
-          txPage = 1; renderTx();
-        });
-        $('#txPrev').addEventListener('click', () => { txPage = Math.max(1, txPage - 1); renderTx(); });
-        $('#txNext').addEventListener('click', () => { txPage++; renderTx(); });
-        $('#txSelectAll').addEventListener('change', (e) => { $$('.tx-chk').forEach(cb => cb.checked = e.target.checked); });
-        $('#txBulkDelete').addEventListener('click', () => {
-          const selected = $$('.tx-chk:checked').map(cb => cb.getAttribute('data-id'));
-          if (!selected.length) { alert('No rows selected'); return; }
-          selected.forEach(id => { const idx = TX.findIndex(t => t.id === id); if (idx > -1) TX.splice(idx, 1); });
-          txFiltered = TX.slice(); txPage = 1; renderTx();
-          alert('Deleted selected rows (demo)');
-        });
-        $('#txExport').addEventListener('click', () => exportCSV(txFiltered, 'transactions_export.csv'));
-      }
+/* -------------------------- KPI Aggregation -------------------------- */
+function aggregate(){
+  const gross = ORDERS.reduce((s,b)=>s+b.total,0);
+  const net = ORDERS.reduce((s,b)=>s+b.subtotal,0);
+  const tax = ORDERS.reduce((s,b)=>s+b.tax,0);
+  const orders = ORDERS.length;
+  const itemsSold = ORDERS.reduce((s,b)=>s+b.qty,0);
+  const aov = Math.round(net / orders);
+  const cardShare = Math.round(ORDERS.filter(b=>b.pay==='Card').length / orders * 100);
+  const appleShare = Math.round(ORDERS.filter(b=>b.pay==='Apple Pay').length / orders * 100);
+  const online = ORDERS.filter(b=>b.channel==='Online').length;
+  const instore = orders - online;
+  const returns = Math.round(orders * 0.035); // ~3.5%
+  const refundRate = Math.round(returns / orders * 1000)/10;
+  const repeatCust = Math.round(orders * 0.22); // 22%
+  const newCust = orders - repeatCust;
+  const visitors = 18000 + Math.floor(Math.random()*6000); // foot + sessions
+  const conversion = Math.round((orders/visitors)*1000)/10;
+  const rpv = Math.round((net/visitors)*100)/100;
+  const mrr = Math.round((net*0.12)/12); // 12% recurring lines → made-up ratio
+  const cac = 14 + Math.round(Math.random()*8); // $
+  const ltv = Math.round(aov * (3 + Math.random()*6)); // very rough sim
+  return {gross, net, tax, orders, aov, itemsSold, cardShare, appleShare, online, instore, returns, refundRate, repeatCust, newCust, visitors, conversion, rpv, mrr, cac, ltv};
+}
+const AGG = aggregate();
 
-      // Accounts
-      function renderAccounts() {
-        document.getElementById('accTotal').textContent = ACCOUNTS.length;
-        document.getElementById('accValue').textContent = '$' + format(ACCOUNTS.reduce((s,a)=>s+a.revenue,0));
-        const activeCount = ACCOUNTS.filter(a => a.status === 'Active').length;
-        document.getElementById('accActive').textContent = format(activeCount);
-        document.getElementById('accLtv').textContent = '$' + format(Math.round(ACCOUNTS.reduce((s,a)=>s+a.revenue,0) / ACCOUNTS.length));
-        document.querySelector('#accTable tbody').innerHTML = ACCOUNTS.slice(0,200).map(a => `<tr><td>${a.name}</td><td>${a.region}</td><td>${a.industry}</td><td>$${format(a.revenue)}</td><td><span class="pill-small">${a.status}</span></td></tr>`).join('');
-      }
+/* -------------------------- Overview KPIs -------------------------- */
+function renderKPIs(){
+  const grid = byId('kpiGrid');
+  const rows = [
+    {label:'Gross Sales (Today)', val: USD.format(AGG.gross), sub:'+9.8% vs yesterday'},
+    {label:'Net Sales (ex-tax)', val: USD.format(AGG.net), sub:'Sales tax 8.75%'},
+    {label:'Orders', val: fmtN(AGG.orders), sub:`In-store ${fmtN(AGG.instore)} · Online ${fmtN(AGG.online)}`},
+    {label:'Avg Order Value', val: USD.format(AGG.aov), sub:'AOV'},
+    {label:'Items Sold', val: fmtN(AGG.itemsSold), sub:'Units'},
+    {label:'Sales Tax Collected', val: USD.format(AGG.tax), sub:'To remit'},
+    {label:'Card Share', val: AGG.cardShare+'%', sub:'Card MDR optimization'},
+    {label:'Apple Pay Share', val: AGG.appleShare+'%', sub:'Express checkout'},
+    {label:'Returns', val: fmtN(AGG.returns), sub:`Refund rate ${AGG.refundRate}%`},
+    {label:'Customers', val: `${fmtN(AGG.newCust)} new / ${fmtN(AGG.repeatCust)} repeat`, sub:'Repeat ≈22%'},
+    {label:'Conversion', val: AGG.conversion+'%', sub:`Visitors ${fmtN(AGG.visitors)}`},
+    {label:'RPV', val: '$'+AGG.rpv, sub:'Revenue per Visitor'},
+    {label:'CAC', val: USD.format(AGG.cac), sub:'Simulated'},
+    {label:'LTV', val: USD.format(AGG.ltv), sub:'Simulated'},
+    {label:'MRR', val: USD.format(AGG.mrr), sub:'Subscriptions est.'},
+    {label:'Top City', val: 'San Francisco', sub:'by revenue'},
+  ];
+  grid.innerHTML = rows.map(r=>`<div class="card"><div class="kpi">${r.val}</div><div class="kpi-sub">${r.label}</div><div class="muted" style="margin-top:4px">${r.sub}</div></div>`).join('');
+  byId('todayRange').textContent = todayStr();
+}
 
-      // Reports
-      function initReports() {
-        const reports = [
-          {id:1, title:'Monthly Revenue', desc:'Automated monthly revenue breakdown'},
-          {id:2, title:'Churn Cohort', desc:'Cohort and churn metrics'},
-          {id:3, title:'Top Accounts', desc:'Top accounts by ARR'}
-        ];
-        document.getElementById('reportsList').innerHTML = reports.map(r => `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${r.title}</strong><div class="muted">${r.desc}</div></div><div style="display:flex;gap:8px"><button class="btn ghost" onclick="alert('Download ${r.title} (demo)')">Download</button><button class="btn" onclick="alert('Schedule ${r.title} (demo)')">Schedule</button></div></div></div>`).join('');
-      }
+/* -------------------------- Charts (Chart.js) -------------------------- */
+let hourlyChart, weeklyChart, categoryChart, paymentChart, topItemsChart, regionStackedChart, monthlyChart;
 
-      // Analytics: simple simulation
-      function initAnalytics() {
-        const simChurn = $('#simChurn'), simPromo = $('#simPromo'), simChurnVal = $('#simChurnVal'), simPromoVal = $('#simPromoVal');
-        simChurn.addEventListener('input', () => simChurnVal.textContent = simChurn.value);
-        simPromo.addEventListener('input', () => simPromoVal.textContent = simPromo.value);
-        $('#runSim').addEventListener('click', () => {
-          const churn = Number(simChurn.value), promo = Number(simPromo.value);
-          const base = TX.reduce((s,t)=>s+t.amount,0);
-          const estimated = Math.round(base * (1 - churn / 100) * (1 + promo / 100));
-          $('#simResult').textContent = `Estimated revenue: $${format(estimated)} (churn ${churn}%, promo ${promo}%)`;
-          $('#modelResult').textContent = `Sim run at ${new Date().toLocaleTimeString()} — projected uplift ${(promo - churn).toFixed(1)}%`;
-        });
-        $('#clearModel').addEventListener('click', () => {
-          $('#simResult').textContent = 'No simulation run yet.'; $('#modelResult').textContent = 'No model run yet.';
-        });
-      }
+function buildHourly(){
+  const hours = Array.from({length:14},(_,i)=>i+8); // 08→21
+  const vals = hours.map(h=>{
+    if(h>=12 && h<=14) return 35000 + Math.random()*18000;           // lunch peak
+    if(h>=18 && h<=20) return 42000 + Math.random()*20000;           // evening peak
+    return 15000 + Math.random()*12000;
+  });
+  hourlyChart = new Chart(byId('hourlyChart'),{
+    type:'line',
+    data:{labels:hours.map(h=>`${String(h).padStart(2,'0')}:00`),datasets:[{label:'Revenue',data:vals,borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,0.18)',fill:true,tension:.3}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}
+  });
+}
+function buildWeekly(){
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const vals = days.map((d,i)=> (i>=4? 280000: 210000) + Math.random()*80000);
+  weeklyChart = new Chart(byId('weeklyChart'),{
+    type:'bar',
+    data:{labels:days,datasets:[{label:'Revenue',data:vals,backgroundColor:'#60a5fa'}]},
+    options:{responsive:true,plugins:{legend:{display:false}}}
+  });
+  byId('weekTotal').textContent = 'Week Total: '+USD.format(vals.reduce((a,b)=>a+b,0));
+}
+function buildCategory(){
+  const catAgg = {Electronics:0,Home:0,Apparel:0,Sports:0,Grocery:0};
+  ORDERS.forEach(o=> o.items.forEach(i=> catAgg[i.cat]+= i.price*i.qty ));
+  categoryChart = new Chart(byId('categoryChart'),{
+    type:'doughnut',
+    data:{labels:Object.keys(catAgg),datasets:[{data:Object.values(catAgg),backgroundColor:['#60a5fa','#7c3aed','#22c55e','#f97316','#a78bfa']}]},
+    options:{plugins:{legend:{position:'bottom'}}}
+  });
+}
+function buildPayment(){
+  const pmAgg = {Card:0,'Apple Pay':0,'Google Pay':0,Cash:0};
+  ORDERS.forEach(o=> pmAgg[o.pay]+=o.total );
+  paymentChart = new Chart(byId('paymentChart'),{
+    type:'doughnut',
+    data:{labels:Object.keys(pmAgg),datasets:[{data:Object.values(pmAgg),backgroundColor:['#22c55e','#60a5fa','#a78bfa','#f59e0b']}]},
+    options:{plugins:{legend:{position:'bottom'}}}
+  });
+}
+function buildTopItems(){
+  const qtyMap = {};
+  ORDERS.forEach(o=> o.items.forEach(i=> qtyMap[i.name]=(qtyMap[i.name]||0)+i.qty ));
+  const list = Object.entries(qtyMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  topItemsChart = new Chart(byId('topItemsChart'),{
+    type:'bar',
+    data:{labels:list.map(x=>x[0]),datasets:[{label:'Units',data:list.map(x=>x[1]),backgroundColor:'#f59e0b'}]},
+    options:{plugins:{legend:{display:false}},scales:{x:{ticks:{maxRotation:60,minRotation:0}}}}
+  });
+}
+function buildRegionStacked(){
+  // Aggregate revenue by city per week day (Mon..Sun)
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const series = STORES.slice(0,5); // physical stores only
+  const agg = {}; series.forEach(s=> agg[s]=Array(7).fill(0));
+  ORDERS.forEach(o=>{
+    const d = new Date(); const di = new Date().getDay(); // simulated spread
+  });
+  // Simulate with structure resembling realistic mix
+  for(let i=0;i<7;i++){
+    series.forEach((s,si)=>{
+      agg[s][i] = 50000 + si*12000 + i*8000 + Math.random()*18000; // just a plausible stacked shape
+    });
+  }
+  regionStackedChart = new Chart(byId('regionStackedChart'),{
+    type:'bar',
+    data:{
+      labels:days,
+      datasets: series.map((s,idx)=>({
+        label:s,
+        data:agg[s],
+        backgroundColor:['#60a5fa','#7c3aed','#22c55e','#f97316','#e11d48'][idx%5],
+        stack:'cities'
+      }))
+    },
+    options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true}}}
+  });
+}
+function buildMonthly(){
+  const months = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'];
+  const thisYear = months.map((_,i)=> 800000 + i*30000 + Math.random()*80000);
+  const lastYear = months.map((_,i)=> 680000 + i*28000 + Math.random()*70000);
+  monthlyChart = new Chart(byId('monthlyChart'),{
+    type:'line',
+    data:{labels:months,datasets:[
+      {label:'This Year',data:thisYear,borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,0.18)',fill:true,tension:.35},
+      {label:'Prev Year',data:lastYear,borderColor:'#94a3b8',borderDash:[6,6],tension:.35}
+    ]},
+    options:{responsive:true}
+  });
+}
 
-      // Users
-      function initUsers() {
-        function renderUsers() {
-          document.querySelector('#usersTable tbody').innerHTML = USERS.map((u, i) => `<tr>
-            <td>${u.name}</td><td>${u.email}</td>
-            <td><select data-idx="${i}" class="roleSel"><option ${u.role==='Admin'?'selected':''}>Admin</option><option ${u.role==='Analyst'?'selected':''}>Analyst</option><option ${u.role==='Viewer'?'selected':''}>Viewer</option></select></td>
-            <td><input type="checkbox" class="user-act" data-idx="${i}" ${u.active? 'checked':''} /></td>
-            <td><button class="btn ghost" data-idx="${i}" onclick="removeUser(${i})">Remove</button></td>
-          </tr>`).join('');
-          // attach role change handlers
-          $$('.roleSel').forEach(sel => sel.addEventListener('change', (e) => {
-            const idx = Number(e.target.getAttribute('data-idx'));
-            USERS[idx].role = e.target.value;
-          }));
-          $$('.user-act').forEach(cb => cb.addEventListener('change', (e) => {
-            const idx = Number(e.target.getAttribute('data-idx'));
-            USERS[idx].active = !!e.target.checked;
-          }));
-        }
-        window.removeUser = function(i){ if(confirm('Remove user?')){ USERS.splice(i,1); renderUsers(); } };
-        $('#inviteUser').addEventListener('click', () => {
-          const name = prompt('Name'); const email = prompt('Email');
-          if (!name || !email) return alert('Name and email required');
-          USERS.push({name, email, role:'Viewer', active:true});
-          renderUsers(); alert('Invited (demo)');
-        });
-        renderUsers();
-      }
+/* -------------------------- SALES TABLE -------------------------- */
+function renderOrders(){
+  const body = byId('orderTable').querySelector('tbody');
+  const rows = ORDERS.slice(0,220).map(b=>{
+    return `<tr>
+      <td>${b.order}</td><td>${b.time}</td><td>${b.store}</td><td>${b.channel}</td>
+      <td>${b.qty}</td><td>${USD.format(b.subtotal)}</td><td>${USD.format(b.tax)}</td><td><strong>${USD.format(b.total)}</strong></td><td>${b.pay}</td>
+    </tr>`;
+  }).join('');
+  body.innerHTML = rows;
+  byId('orderCount').textContent = `${ORDERS.length} orders (sampled ${Math.min(220,ORDERS.length)})`;
+}
 
-      // Alerts & Settings
-      function bindAlertsAndSettings() {
-        $('#saveAlerts').addEventListener('click', () => {
-          addActivity('Alerts saved'); alert('Alerts saved (demo)');
-        });
-        $('#saveSettings').addEventListener('click', () => {
-          const cfg = { email: !!$('#prefEmail').checked, daily: !!$('#prefDaily').checked };
-          localStorage.setItem('aurelo_prefs', JSON.stringify(cfg));
-          addActivity('Settings saved'); alert('Settings saved (demo)');
-        });
-      }
+/* Filters */
+byId('orderSearch').addEventListener('input', e=>{
+  const q = e.target.value.toLowerCase();
+  const body = byId('orderTable').querySelector('tbody');
+  body.innerHTML = ORDERS.filter(b=>{
+    const hay = JSON.stringify(b).toLowerCase();
+    return !q || hay.includes(q);
+  }).slice(0,220).map(b=>`<tr>
+    <td>${b.order}</td><td>${b.time}</td><td>${b.store}</td><td>${b.channel}</td>
+    <td>${b.qty}</td><td>${USD.format(b.subtotal)}</td><td>${USD.format(b.tax)}</td><td><strong>${USD.format(b.total)}</strong></td><td>${b.pay}</td></tr>`).join('');
+});
+byId('orderStore').addEventListener('change', filterOrders);
+byId('orderPay').addEventListener('change', filterOrders);
+function filterOrders(){
+  const store = byId('orderStore').value, pay = byId('orderPay').value;
+  const body = byId('orderTable').querySelector('tbody');
+  body.innerHTML = ORDERS.filter(b=>{
+    return (!store || b.store===store) && (!pay || b.pay===pay);
+  }).slice(0,220).map(b=>`<tr>
+    <td>${b.order}</td><td>${b.time}</td><td>${b.store}</td><td>${b.channel}</td>
+    <td>${b.qty}</td><td>${USD.format(b.subtotal)}</td><td>${USD.format(b.tax)}</td><td><strong>${USD.format(b.total)}</strong></td><td>${b.pay}</td></tr>`).join('');
+}
+byId('exportOrders').addEventListener('click', ()=>{
+  const headers = ['Order','Time','Store','Channel','Items','Subtotal','Tax','Total','Payment'];
+  const rows = ORDERS.map(b=>[b.order,b.time,b.store,b.channel,b.qty,b.subtotal,b.tax,b.total,b.pay]);
+  const csv = [headers.join(',')].concat(rows.map(r=>r.join(','))).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='aurelo_orders.csv'; a.click(); URL.revokeObjectURL(url);
+});
 
-      // Export helpers
-      function exportCSV(arr, filename = 'export.csv') {
-        if (!arr || !arr.length) return alert('No data to export');
-        const headers = Object.keys(arr[0]);
-        const csv = [headers.join(',')].concat(arr.map(r => headers.map(h => `"${(r[h] || '').toString().replace(/"/g, '""')}"`).join(','))).join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-      }
+/* -------------------------- PRODUCTS PAGE -------------------------- */
+function renderProducts(){
+  // 30-day performance per product
+  const perf = PRODUCTS.map(p=>{
+    const catBase = {Electronics:55, Home:42, Apparel:48, Sports:40, Grocery:65}[p.cat];
+    const units30 = catBase + Math.floor(Math.random()*catBase*1.5);
+    const gross = units30 * p.price;
+    const returnPct = (p.cat==='Apparel'? (3+Math.random()*2.5) : p.cat==='Electronics'? (2+Math.random()*1.5) : (1+Math.random()*1.5)).toFixed(1);
+    const rating = (4 + Math.random()).toFixed(1);
+    return {...p, units30, gross, returnPct, rating};
+  }).sort((a,b)=>b.gross-a.gross);
 
-      // Misc helpers
-      function debounce(fn, delay = 200) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(null, args), delay); }; }
-      function addActivity(txt) {
-        const el = document.createElement('div'); el.className = 'muted'; el.style.marginTop = '6px'; el.textContent = `${new Date().toLocaleTimeString()} • ${txt}`;
-        const container = $('#overviewInsights');
-        container.prepend(el);
-      }
+  const body = byId('productTable').querySelector('tbody');
+  body.innerHTML = perf.map(p=>`<tr>
+    <td>${p.sku}</td><td>${p.name}</td><td>${p.cat}</td><td>${USD.format(p.price)}</td>
+    <td>${fmtN(p.units30)}</td><td>${USD.format(p.gross)}</td><td>${p.returnPct}%</td><td>${p.rating}★</td></tr>`).join('');
 
-      // Initializers for each page (called once on DOMContentLoaded)
-      function initAllPages() {
-        renderOverview();
-        txFiltered = TX.slice();
-        renderTx();
-        initTxInteractivity();
-        renderAccounts();
-        initReports();
-        initAnalytics();
-        initUsers();
-        bindAlertsAndSettings();
-        // Wire quick actions
-        $('#createReport').addEventListener('click', () => { addActivity('Quick report created'); alert('Report created (demo)'); });
-        $('#importData').addEventListener('click', () => { addActivity('Import started'); alert('Import started (demo)'); });
-        $('#exportSnapshot').addEventListener('click', () => {
-          const snap = { ts: new Date().toISOString(), counts: { tx: TX.length, accounts: ACCOUNTS.length, users: USERS.length } };
-          const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a'); a.href = url; a.download = 'aurelo-snapshot.json'; a.click(); URL.revokeObjectURL(url);
-          addActivity('Snapshot exported');
-        });
-        // wire overview refresh
-        $('#ovRefresh').addEventListener('click', () => { renderOverview(); addActivity('Overview refreshed'); });
-        // set year in footer
-        document.getElementById('year').textContent = new Date().getFullYear();
-      }
+  // KPIs
+  const totalGross = perf.reduce((s,p)=>s+p.gross,0);
+  const top = perf[0]; const elecShare = Math.round(perf.filter(p=>p.cat==='Electronics').reduce((s,p)=>s+p.gross,0)/totalGross*100);
+  const skuCount = PRODUCTS.length;
+  byId('productKPIs').innerHTML = `
+    <div class="card"><div class="kpi">${USD.format(totalGross)}</div><div class="kpi-sub">30-Day Product Revenue</div></div>
+    <div class="card"><div class="kpi">${top.name}</div><div class="kpi-sub">Top Grossing SKU</div></div>
+    <div class="card"><div class="kpi">${elecShare}%</div><div class="kpi-sub">Electronics Revenue Share</div></div>`;
+}
 
-      // DOM ready: initialize everything
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initAllPages);
-      } else {
-        initAllPages();
-      }
+/* -------------------------- ACCOUNTS PAGE -------------------------- */
+function renderAccounts(){
+  const body = byId('accTable').querySelector('tbody');
+  const rows = ACCOUNTS.slice(0,200).map(a=>`<tr><td>${a.acc}</td><td>${a.city}</td><td>${a.contact}</td><td>${USD.format(a.bal)}</td><td><span class="badge">${a.st}</span></td></tr>`).join('');
+  body.innerHTML = rows;
+  const k = [
+    {h:'Accounts', v:ACCOUNTS.length},
+    {h:'Open Balance', v:USD.format(ACCOUNTS.reduce((s,a)=>s+a.bal,0))},
+    {h:'Overdue', v:USD.format(ACCOUNTS.filter(a=>a.st==='Overdue').reduce((s,a)=>s+a.bal,0))}
+  ];
+  byId('accKPIs').innerHTML = k.map(x=>`<div class="card"><div class="kpi">${x.v}</div><div class="kpi-sub">${x.h}</div></div>`).join('');
+}
 
-      // small periodic live update so the UI feels alive
-      setInterval(() => {
-        // simulate a small change
-        TX.unshift({ id: `T-${1000 + Math.floor(Math.random()*9999)}`, company: 'Live Inc', region: ['North','South','East','West'][Math.floor(Math.random()*4)], amount: randBetween(100, 5000), status: 'Completed', date: new Date().toISOString().slice(0,10) });
-        TX.pop(); // keep size stable
-        // if user is on transactions page, refresh listing
-        if (location.hash.replace('#','') === 'transactions' || document.querySelector('#transactions').classList.contains('active')) { txFiltered = TX.slice(); renderTx(); }
-      }, 15000);
+/* -------------------------- USERS PAGE -------------------------- */
+function renderUsers(){
+  const body = byId('usersTable').querySelector('tbody');
+  body.innerHTML = USERS.map(u=>`<tr><td>${u.n}</td><td>${u.role}</td><td>${u.loc}</td><td>${u.active?'Yes':'No'}</td></tr>`).join('');
+}
 
-    })();
-  </script>
+/* -------------------------- ANALYTICS -------------------------- */
+byId('simPromo').addEventListener('input', e=> byId('simPromoVal').textContent = e.target.value+'%');
+byId('simChurn').addEventListener('input', e=> byId('simChurnVal').textContent = e.target.value+'%');
+byId('runSim').addEventListener('click', ()=>{
+  const baseMRR = AGG.mrr;
+  const promo = Number(byId('simPromo').value)/100;
+  const churn = Number(byId('simChurn').value)/100;
+  const cac = Number(byId('simCAC').value);
+  const proj = Math.round(baseMRR*(1+promo)*(1-churn));
+  const payback = (AGG.ltv && cac)? Math.max(1, Math.round(AGG.ltv / cac)) : '–';
+  byId('simResult').textContent = `Projected MRR: ${USD.format(proj)} (Promo +${promo*100}%, Churn −${churn*100}%) · Est. LTV: ${USD.format(AGG.ltv)} · CAC: ${USD.format(cac)} · Payback (orders): ${payback}`;
+});
+function renderInsights(){
+  const list = byId('insightsList');
+  const card = AGG.cardShare, apple = AGG.appleShare, conv = AGG.conversion, aov = AGG.aov;
+  list.innerHTML = `
+    <li>Card share <strong>${card}%</strong>, Apple Pay <strong>${apple}%</strong> — streamline tap-to-pay lanes.</li>
+    <li>Conversion <strong>${conv}%</strong> with AOV <strong>${USD.format(aov)}</strong> — consider bundles to lift +5–10%.</li>
+    <li>Online ~<strong>${Math.round(AGG.online/AGG.orders*100)}%</strong> of orders — optimize PDP speed & mobile UX.</li>
+    <li>Returns <strong>${AGG.refundRate}%</strong> — audit sizing/description for Apparel and fragile items.</li>
+  `;
+}
+
+/* -------------------------- ALERTS & SETTINGS -------------------------- */
+byId('saveAlerts').addEventListener('click', ()=>{
+  const msg = `Saved thresholds: returns>${byId('thReturn').value}%, card>${byId('thCard').value}%, AOV>${byId('thAOV').value}`;
+  const el = document.createElement('div'); el.textContent = new Date().toLocaleTimeString()+' • '+msg;
+  byId('alertLog').prepend(el);
+});
+byId('saveSettings').addEventListener('click', ()=>{
+  localStorage.setItem('ab_pref_email', byId('prefEmail').checked?'1':'0');
+  localStorage.setItem('ab_pref_light', byId('prefTheme').checked?'1':'0');
+  if(byId('prefTheme').checked) document.body.classList.add('light'); else document.body.classList.remove('light');
+  alert('Preferences saved');
+});
+byId('exportSnapshot').addEventListener('click', ()=>{
+  const snap = { ts:new Date().toISOString(), agg:AGG, stores:STORES };
+  const blob = new Blob([JSON.stringify(snap,null,2)],{type:'application/json'}); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='aurelo_bay_snapshot.json'; a.click(); URL.revokeObjectURL(url);
+});
+
+/* -------------------------- Live tick (demo) -------------------------- */
+setInterval(()=>{
+  // Add a small order every ~20s to feel alive
+  const nb = makeOrder(100000 + Math.floor(Math.random()*900000));
+  ORDERS.unshift(nb); if(ORDERS.length>900) ORDERS.pop();
+  // Update KPIs and hourly chart point for current hour
+  const upd = aggregate(); Object.assign(AGG, upd);
+  renderKPIs();
+  if(hourlyChart){
+    const nowH = new Date().getHours(); const label = `${String(nowH).padStart(2,'0')}:00`;
+    const idx = hourlyChart.data.labels.indexOf(label);
+    if(idx>=0){ hourlyChart.data.datasets[0].data[idx] += nb.total; hourlyChart.update('none'); }
+  }
+}, 20000);
+
+/* -------------------------- Boot -------------------------- */
+function boot(){
+  renderKPIs();
+  renderOrders();
+  renderProducts();
+  renderAccounts();
+  renderUsers();
+  buildHourly(); buildWeekly(); buildCategory(); buildPayment(); buildTopItems(); buildRegionStacked(); buildMonthly();
+  renderInsights();
+  byId('weekTotal').title = 'Includes in-store and online revenue';
+  byId('yr').textContent = new Date().getFullYear();
+}
+boot();
+</script>
 </body>
 </html>
 
