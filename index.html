@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aurelo Data Dashboard — HTML</title>
+  <meta name="description" content="Aurelo Data Dashboard - single-file HTML demo (Tailwind + Chart.js)" />
+  <!-- Tailwind Play CDN for quick styling (good for demos) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* Small helpers to mimic the React look & feel */
+    :root{--glass: rgba(255,255,255,0.06); --glass-2: rgba(255,255,255,0.04);} 
+    body{background:linear-gradient(180deg,#0f172a,#0b1220);color:#e6eef8;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(6px);border-radius:16px}
+    .muted{color:rgba(230,238,248,0.6);font-size:13px}
+    .kpi-num{font-weight:700;font-size:1.4rem}
+    .tiny{font-size:12px;color:rgba(230,238,248,0.65)}
+    .pill{background:rgba(255,255,255,0.03);padding:4px 8px;border-radius:999px;font-size:12px}
+    table th, table td{padding:10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.02)}
+    .sidebar{width:260px}
+    @media (max-width: 1024px){.sidebar{display:none}}
+  </style>
+</head>
+<body>
+  <div class="min-h-screen p-6">
+    <div class="max-w-[1400px] mx-auto grid grid-cols-[260px,1fr] gap-6">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar sticky top-6">
+        <div class="card p-4 mb-4">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-12 h-12 rounded-full bg-white/5 grid place-items-center">A</div>
+            <div>
+              <div class="font-semibold">Aurelo</div>
+              <div class="tiny">Data Platform</div>
+            </div>
+          </div>
+
+          <nav class="flex flex-col gap-2">
+            <button class="w-full flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-white/3" data-nav="overview">Overview</button>
+            <button class="w-full flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-white/3" data-nav="transactions">Transactions</button>
+            <button class="w-full flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-white/3" data-nav="accounts">Accounts</button>
+            <button class="w-full flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-white/3" data-nav="reports">Reports</button>
+            <button class="w-full flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-white/3" data-nav="settings">Settings</button>
+          </nav>
+
+          <div class="mt-6">
+            <div class="tiny mb-2">Quick actions</div>
+            <div class="flex flex-col gap-2">
+              <button id="createReport" class="py-2 px-3 rounded-xl bg-gradient-to-r from-green-400 to-blue-400 text-black font-semibold">Create Report</button>
+              <button id="importData" class="py-2 px-3 rounded-xl border">Import Data</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card p-4">
+          <div class="font-semibold mb-2">Workspaces</div>
+          <div class="tiny mb-2">Finance · Ops · Sales</div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="pill">North</div>
+            <div class="pill">South</div>
+            <div class="pill">East</div>
+            <div class="pill">West</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main>
+        <div class="card p-4 mb-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="font-semibold text-lg">Aurelo Dashboard</div>
+              <div class="tiny">Modern, sleek, feature-heavy demo</div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <input id="searchBox" placeholder="Search companies, ids, metrics..." class="px-3 py-2 rounded-full bg-white/3 outline-none" />
+              <button id="toggleTheme" class="py-2 px-3 rounded-xl border">Toggle</button>
+              <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5">
+                <div class="w-8 h-8 rounded-full bg-white/6 grid place-items-center">M</div>
+                <div class="text-sm">Monish A.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRID -->
+        <div class="grid grid-cols-12 gap-6">
+
+          <section class="col-span-8">
+            <!-- KPI Row -->
+            <div class="grid grid-cols-3 gap-4 mb-4">
+              <div class="card p-4">
+                <div class="tiny">Revenue</div>
+                <div class="kpi-num" id="kpiRevenue">$0</div>
+                <div class="tiny">+4.6% vs last period</div>
+                <canvas id="miniArea1" height="60"></canvas>
+              </div>
+
+              <div class="card p-4">
+                <div class="tiny">MRR</div>
+                <div class="kpi-num" id="kpiMrr">$0</div>
+                <div class="tiny">+1.2% vs last period</div>
+                <canvas id="miniArea2" height="60"></canvas>
+              </div>
+
+              <div class="card p-4">
+                <div class="tiny">Churn</div>
+                <div class="kpi-num" id="kpiChurn">0%</div>
+                <div class="tiny">-0.2% vs last period</div>
+                <canvas id="miniArea3" height="60"></canvas>
+              </div>
+            </div>
+
+            <!-- Large Chart -->
+            <div class="card p-4 mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <div class="font-semibold">Revenue Trend</div>
+                  <div class="tiny">Performance over last 60 days</div>
+                </div>
+                <div class="tiny">Last 60 days</div>
+              </div>
+              <canvas id="lineChart" height="240"></canvas>
+            </div>
+
+            <!-- Two column row: Breakdown + Top Accounts -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="card p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <div>
+                    <div class="font-semibold">Revenue Mix</div>
+                    <div class="tiny">By customer segment</div>
+                  </div>
+                  <div class="pill">Projected</div>
+                </div>
+                <canvas id="pieChart" height="160"></canvas>
+                <div id="pieLegend" class="mt-3 tiny"></div>
+              </div>
+
+              <div class="grid grid-rows-2 gap-4">
+                <div class="card p-4">
+                  <div class="flex items-center justify-between mb-2">
+                    <div>
+                      <div class="font-semibold">Top Accounts</div>
+                      <div class="tiny">Largest by revenue</div>
+                    </div>
+                    <div class="pill">Top 10</div>
+                  </div>
+                  <ol id="topAccounts" class="list-decimal list-inside tiny"></ol>
+                </div>
+
+                <div class="card p-4">
+                  <div class="flex items-center justify-between mb-2">
+                    <div>
+                      <div class="font-semibold">Support Tickets</div>
+                      <div class="tiny">Active and recently closed</div>
+                    </div>
+                    <div class="pill" id="openTickets">0 open</div>
+                  </div>
+                  <div class="tiny">Payment failures: <strong id="pFailures">0</strong></div>
+                  <div class="tiny">Feature requests: <strong id="fRequests">0</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="mt-6 card p-4">
+              <div class="flex items-center justify-between mb-4">
+                <div class="font-semibold">Transactions</div>
+                <div class="flex items-center gap-2">
+                  <button id="exportCSV" class="py-2 px-3 rounded-xl border tiny">Export CSV</button>
+                  <div class="pill" id="totalRecords">0 Records</div>
+                </div>
+              </div>
+
+              <div class="overflow-auto">
+                <table id="transactionsTable" class="w-full text-sm">
+                  <thead>
+                    <tr class="tiny text-left text-muted">
+                      <th>ID</th>
+                      <th>Company</th>
+                      <th>Region</th>
+                      <th>Industry</th>
+                      <th>Revenue</th>
+                      <th>Status</th>
+                      <th>Updated</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <div class="mt-4 flex items-center justify-between tiny">
+                <div id="rangeInfo">Showing 1 - 10</div>
+                <div class="flex items-center gap-2">
+                  <button id="prevPage" class="py-1 px-3 rounded-xl border">Prev</button>
+                  <div class="pill" id="pageInfo">1 / 1</div>
+                  <button id="nextPage" class="py-1 px-3 rounded-xl border">Next</button>
+                </div>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- RIGHT COLUMN -->
+          <aside class="col-span-4">
+            <div class="card p-4 mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="font-semibold">Activity</div>
+                <div class="tiny">Live feed</div>
+              </div>
+              <ul id="activityFeed" class="tiny"></ul>
+            </div>
+
+            <div class="card p-4 mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="font-semibold">Advanced Analytics</div>
+                <div class="tiny">Run models & scenarios</div>
+              </div>
+              <div class="flex gap-2">
+                <button id="runModel" class="py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 text-black">Run Model</button>
+                <button id="clearModel" class="py-2 px-3 rounded-xl border">Clear</button>
+              </div>
+              <div class="tiny mt-3" id="modelOutput">No model run yet.</div>
+            </div>
+
+            <div class="card p-4 mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="font-semibold">Settings</div>
+                <div class="tiny">User preferences</div>
+              </div>
+              <label class="flex items-center gap-3 tiny"><input type="checkbox" id="notifyEmail" checked/> Email notifications</label>
+              <label class="flex items-center gap-3 tiny mt-2"><input type="checkbox" id="dailySummary" /> Daily summary</label>
+              <div class="flex gap-2 mt-3">
+                <button id="downloadConfig" class="py-2 px-3 rounded-xl border">Download Config</button>
+                <button id="resetSettings" class="py-2 px-3 rounded-xl border">Reset</button>
+              </div>
+            </div>
+
+            <div class="card p-4">
+              <div class="font-semibold mb-2">Export & Actions</div>
+              <div class="tiny mb-3">Share snapshot or trigger automation</div>
+              <div class="flex flex-col gap-2">
+                <button id="exportSnapshot" class="py-2 px-3 rounded-xl border">Export Snapshot</button>
+                <button id="sendSlack" class="py-2 px-3 rounded-xl border">Send to Slack</button>
+                <button id="scheduleReport" class="py-2 px-3 rounded-xl border">Schedule Report</button>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+
+        <footer class="mt-8 tiny">© " + new Date().getFullYear() + " Aurelo — Data Platform • Built with ❤️</footer>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // ----------------------
+    // Mock data generators (kept client-side for demo)
+    // ----------------------
+    function randomBetween(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateTimeseries(days = 60) {
+      const data = [];
+      const start = Date.now() - days * 24 * 60 * 60 * 1000;
+      let base = randomBetween(3000, 8000);
+      for (let i = 0; i < days; i++) {
+        base += Math.round(Math.sin(i / 7) * randomBetween(-200, 400));
+        base += randomBetween(-120, 120);
+        data.push({ date: new Date(start + i * 24 * 60 * 60 * 1000).toISOString().slice(0,10), value: Math.max(200, base) });
+      }
+      return data;
+    }
+
+    function generateBreakdown() {
+      return [
+        { name: 'Enterprise', value: randomBetween(30,45) },
+        { name: 'SMB', value: randomBetween(20,35) },
+        { name: 'Individual', value: randomBetween(5,25) }
+      ];
+    }
+
+    function generateKpis() {
+      return {
+        revenue: randomBetween(200000,750000),
+        mrr: randomBetween(12000,65000),
+        churn: +(Math.random()*4).toFixed(2),
+        activeUsers: randomBetween(4800,16500),
+        avgOrder: randomBetween(23,250),
+        tickets: randomBetween(40,220)
+      }
+    }
+
+    function generateTableData(rows = 80) {
+      const rowsArr = [];
+      const names = ["Acme Co","Bright Solutions","Crescent LLC","Delta Group","Eagle Systems","Finory","GigaTech","Helio","Innova","Juno Labs"];
+      for (let i=0;i<rows;i++){
+        rowsArr.push({
+          id:`A-${1000+i}`,
+          company: names[i % names.length] + (i>names.length?` ${i}`:''),
+          region: ['North','South','East','West'][i%4],
+          industry: ['Retail','Fintech','Education','Healthcare'][i%4],
+          revenue: randomBetween(2000,120000),
+          status: ['Active','Onboarding','Churned'][i%3],
+          updated: new Date(Date.now()-randomBetween(0,120)*24*60*60*1000).toISOString().slice(0,10)
+        })
+      }
+      return rowsArr;
+    }
+
+    // ----------------------
+    // App state
+    // ----------------------
+    const timeseries = generateTimeseries(60);
+    const breakdown = generateBreakdown();
+    const kpis = generateKpis();
+    let tableData = generateTableData(140);
+
+    // Pagination
+    let page = 1; const perPage = 10;
+
+    // ----------------------
+    // DOM helpers
+    // ----------------------
+    function $(s){return document.querySelector(s)}
+    function $all(s){return Array.from(document.querySelectorAll(s))}
+
+    // ----------------------
+    // Render KPIs
+    // ----------------------
+    $('#kpiRevenue').textContent = `$${kpis.revenue.toLocaleString()}`;
+    $('#kpiMrr').textContent = `$${kpis.mrr.toLocaleString()}`;
+    $('#kpiChurn').textContent = `${kpis.churn}%`;
+    $('#openTickets').textContent = `${kpis.tickets} open`;
+    $('#pFailures').textContent = randomBetween(12,64);
+    $('#fRequests').textContent = randomBetween(2,18);
+
+    // ----------------------
+    // Charts
+    // ----------------------
+    const lineCtx = document.getElementById('lineChart').getContext('2d');
+    const labels = timeseries.map(t=>t.date);
+    const values = timeseries.map(t=>t.value);
+
+    const lineChart = new Chart(lineCtx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{ label:'Revenue', data: values, fill:true, tension:0.25 }]
+      },
+      options: { responsive:true, plugins:{legend:{display:false},tooltip:{mode:'index'}}, scales:{x:{display:false},y:{beginAtZero:false}}}
+    });
+
+    // Mini areas
+    function createMini(selector, data){
+      const ctx = document.getElementById(selector).getContext('2d');
+      return new Chart(ctx, {type:'line',data:{labels:data.map(d=>d.date),datasets:[{data:data.map(d=>d.value),fill:true,tension:0.25}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}},elements:{point:{radius:0}}}});
+    }
+    createMini('miniArea1', timeseries.slice(-20));
+    createMini('miniArea2', timeseries.slice(-20));
+    createMini('miniArea3', timeseries.slice(-20));
+
+    // Pie
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    const pieChart = new Chart(pieCtx, {
+      type:'pie',
+      data:{labels:breakdown.map(b=>b.name),datasets:[{data:breakdown.map(b=>b.value)}]},
+      options:{responsive:true,plugins:{legend:{display:false}}}
+    });
+    $('#pieLegend').innerHTML = breakdown.map((b,i)=>`<div class="flex items-center gap-2"><div style="width:12px;height:12px;background:var(--c${i});border-radius:999px"></div><div class="tiny">${b.name} — ${b.value}%</div></div>`).join('');
+
+    // Top accounts
+    function renderTopAccounts(){
+      const top = tableData.slice().sort((a,b)=>b.revenue - a.revenue).slice(0,6);
+      $('#topAccounts').innerHTML = top.map(t=>`<li class="py-1 flex items-center justify-between"><div><div class="font-medium">${t.company}</div><div class="tiny">${t.industry} · ${t.region}</div></div><div class="font-semibold">$${t.revenue.toLocaleString()}</div></li>`).join('');
+    }
+    renderTopAccounts();
+
+    // ----------------------
+    // Transactions Table render & pagination
+    // ----------------------
+    function renderTable(){
+      const total = tableData.length; $('#totalRecords').textContent = `${total} Records`;
+      const pages = Math.max(1, Math.ceil(total / perPage));
+      page = Math.min(page, pages);
+      const start = (page-1)*perPage; const slice = tableData.slice(start, start+perPage);
+      const tbody = $('#transactionsTable tbody');
+      tbody.innerHTML = slice.map(r=>`<tr><td>${r.id}</td><td>${r.company}</td><td>${r.region}</td><td>${r.industry}</td><td>$${r.revenue.toLocaleString()}</td><td><span class="pill">${r.status}</span></td><td>${r.updated}</td><td><button data-id="${r.id}" class="deleteRow tiny">Delete</button></td></tr>`).join('');
+      $('#rangeInfo').textContent = `Showing ${start+1} - ${Math.min(start+perPage,total)} of ${total}`;
+      $('#pageInfo').textContent = `${page} / ${pages}`;
+
+      $all('.deleteRow').forEach(btn=>btn.addEventListener('click',e=>{ const id=e.target.getAttribute('data-id'); tableData=tableData.filter(t=>t.id!==id); renderTable(); addActivity(`Deleted ${id}`); renderTopAccounts(); }));
+    }
+    renderTable();
+
+    $('#prevPage').addEventListener('click',()=>{ page = Math.max(1,page-1); renderTable(); });
+    $('#nextPage').addEventListener('click',()=>{ page = page+1; renderTable(); });
+
+    // Export CSV
+    function exportCSV(){
+      const headers = ['id','company','region','industry','revenue','status','updated'];
+      const csv = [headers.join(',')].concat(tableData.map(r=>headers.map(h=>`"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))).join('
+');
+      const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='aurelo-transactions.csv'; a.click(); URL.revokeObjectURL(url);
+    }
+    $('#exportCSV').addEventListener('click',exportCSV);
+
+    // ----------------------
+    // Activity feed
+    // ----------------------
+    const activity = [
+      {title:'Import completed',desc:'Imported 2,400 rows into Transactions.',time:'2h ago'},
+      {title:'Churn alert',desc:'Churn rate increased in South region.',time:'4h ago'},
+      {title:'Billing issue',desc:'Invoice #A-1129 failed to charge.',time:'1d ago'}
+    ];
+    function renderActivity(){
+      $('#activityFeed').innerHTML = activity.map(a=>`<li class="py-2"><div class="font-medium">${a.title}</div><div class="tiny">${a.desc} · ${a.time}</div></li>`).join('');
+    }
+    renderActivity();
+    function addActivity(text){ activity.unshift({title:text,desc:'',time:'now'}); if(activity.length>20)activity.pop(); renderActivity(); }
+
+    // ----------------------
+    // Advanced analytics (simulated)
+    // ----------------------
+    $('#runModel').addEventListener('click',()=>{
+      $('#modelOutput').textContent = 'Running model...'; setTimeout(()=>{ const uplift = (Math.random()*6).toFixed(2); $('#modelOutput').innerHTML = `Estimated uplift: <strong>${uplift}%</strong><div class="tiny">Top features: region, industry, revenue</div>`; },1400);
+    });
+    $('#clearModel').addEventListener('click',()=>{ $('#modelOutput').textContent = 'No model run yet.'; });
+
+    // ----------------------
+    // Export snapshot (JSON)
+    // ----------------------
+    $('#exportSnapshot').addEventListener('click',()=>{
+      const snapshot = { timestamp:new Date().toISOString(), kpis, timeseries:timeseries.slice(-30), breakdown };
+      const blob = new Blob([JSON.stringify(snapshot,null,2)],{type:'application/json'});
+      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=`aurelo-snapshot-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
+    });
+
+    // ----------------------
+    // Small utilities
+    // ----------------------
+    $('#createReport').addEventListener('click',()=>{ addActivity('Report created'); alert('Report created (demo)'); });
+    $('#importData').addEventListener('click',()=>{ addActivity('Data import started'); alert('Import started (demo)'); });
+
+    $('#downloadConfig').addEventListener('click',()=>{
+      const cfg = {notifyEmail:!!$('#notifyEmail').checked,dailySummary:!!$('#dailySummary').checked};
+      const blob = new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='aurelo-config.json'; a.click(); URL.revokeObjectURL(url);
+    });
+
+    $('#resetSettings').addEventListener('click',()=>{ $('#notifyEmail').checked=true; $('#dailySummary').checked=false; addActivity('Settings reset'); });
+
+    // Search box filter (simple)
+    $('#searchBox').addEventListener('input',(e)=>{ const q=e.target.value.toLowerCase(); tableData = tableData.map(t=>t); if(q){ tableData = tableData.filter(r=>r.company.toLowerCase().includes(q) || r.id.toLowerCase().includes(q)); } else { tableData = generateTableData(140); } page=1; renderTable(); renderTopAccounts(); });
+
+    // Theme toggle simple
+    let dark = true; $('#toggleTheme').addEventListener('click',()=>{ dark=!dark; document.body.style.background = dark? 'linear-gradient(180deg,#0f172a,#0b1220)' : 'linear-gradient(180deg,#f8fafc,#eef2ff)'; document.body.style.color = dark? '#e6eef8':'#0b1220'; });
+
+    // Wire up nav buttons (visual only)
+    $all('[data-nav]').forEach(btn=>btn.addEventListener('click',e=>{ $all('[data-nav]').forEach(b=>b.classList.remove('bg-white/3')); e.currentTarget.classList.add('bg-white/3'); }));
+
+    // Add a small periodic update to mimic live data
+    setInterval(()=>{
+      // shift timeseries and add a new point
+      const last = timeseries[timeseries.length-1]; const newVal = Math.max(200, Math.round(last.value + (Math.random()-0.5)*200));
+      timeseries.push({date:new Date().toISOString().slice(0,10), value:newVal}); timeseries.shift();
+      lineChart.data.datasets[0].data = timeseries.map(t=>t.value); lineChart.data.labels = timeseries.map(t=>t.date); lineChart.update();
+      addActivity('Live update');
+    },8000);
+
+    // Make some colors exist for legend (small hack)
+    const style = document.createElement('style'); style.innerHTML = `:root{--c0:#6366f1;--c1:#06b6d4;--c2:#f97316}`; document.head.appendChild(style);
+
+  </script>
+</body>
+</html>
