@@ -3,421 +3,697 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Aurelo Data Dashboard — Extended</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <title>Aurelo Dashboard — Working Navigation</title>
   <style>
-    /* -------------------------
-       Layout & base styles
-       ------------------------- */
     :root{
-      --bg:#0b1220; --panel:#0f1724; --muted:#9fb0c8; --accent:#60a5fa; --glass:rgba(255,255,255,0.03);
+      --bg:#071027; --panel:#0f1724; --muted:#93a8bf; --accent:#60a5fa; --glass:rgba(255,255,255,0.03);
+      --card:#0b1220;
     }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),#06101a);color:#e6eef8}
-    a{color:inherit}
-    .app{display:grid;grid-template-columns:280px 1fr;gap:20px;max-width:1400px;margin:18px auto;padding:18px}
-
+    body{
+      margin:0;
+      background:linear-gradient(180deg,var(--bg),#05111b);
+      color:#e6eef8;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    .container{max-width:1400px;margin:18px auto;display:grid;grid-template-columns:260px 1fr;gap:18px;padding:12px}
     /* Sidebar */
-    .sidebar{background:linear-gradient(180deg,var(--panel),rgba(15,23,36,0.8));border-radius:14px;padding:18px;height:calc(100vh - 72px);position:sticky;top:18px}
-    .brand{display:flex;gap:12px;align-items:center;margin-bottom:8px}
-    .brand .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(90deg,#7c3aed,#06b6d4);display:grid;place-items:center;font-weight:700}
-    .brand .title{font-size:16px;font-weight:700}
-    .nav{margin-top:14px;display:flex;flex-direction:column;gap:6px}
-    .nav button{display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;border:none;background:transparent;color:var(--muted);cursor:pointer;text-align:left}
-    .nav button:hover{background:var(--glass);color:#fff}
-    .nav button.active{background:linear-gradient(90deg,rgba(99,102,241,0.12),rgba(6,182,212,0.06));color:#fff}
-    .sidebar .section-title{font-size:12px;color:var(--muted);margin-top:14px}
-
-    /* Main area */
+    aside.sidebar{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:16px;height:calc(100vh - 36px);position:sticky;top:18px}
+    .logo{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+    .brand-circle{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(90deg,#7c3aed,#06b6d4);font-weight:800}
+    .brand-title{font-weight:700;font-size:16px}
+    nav#mainNav{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+    button.nav-btn{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;border:0;background:transparent;color:var(--muted);cursor:pointer;text-align:left;font-size:14px}
+    button.nav-btn:hover{background:var(--glass);color:#fff}
+    button.nav-btn.active{background:linear-gradient(90deg,rgba(99,102,241,0.12),rgba(6,182,212,0.06));color:#fff}
+    .sidebar .section-title{font-size:12px;color:var(--muted);margin-top:12px}
+    .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--muted);font-weight:600}
+    .sidebar .actions{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    /* Main */
     main{padding:6px}
     .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .search{display:flex;gap:8px;align-items:center}
-    .search input{padding:10px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;min-width:300px}
-    .btn{padding:8px 12px;border-radius:10px;border:none;background:var(--accent);color:#05203b;cursor:pointer;font-weight:600}
+    .search-box{display:flex;gap:8px;align-items:center}
+    input.search{padding:9px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;min-width:260px}
+    .btn{padding:8px 12px;border-radius:10px;border:0;background:var(--accent);color:#05203b;cursor:pointer;font-weight:600}
     .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-
-    /* Cards and grids */
+    /* Cards / Layout */
     .grid{display:grid;gap:12px}
     .cols-3{grid-template-columns:repeat(3,1fr)}
     .cols-2{grid-template-columns:repeat(2,1fr)}
-    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);padding:14px;border-radius:12px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.03)}
     .kpi{font-size:18px;font-weight:700}
-    .kpi-sub{font-size:12px;color:var(--muted)}
-
-    /* tables */
+    .muted{color:var(--muted);font-size:13px}
     .table-wrap{overflow:auto}
     table{width:100%;border-collapse:collapse;font-size:13px}
     thead th{color:var(--muted);text-align:left;padding:10px;border-bottom:1px solid rgba(255,255,255,0.03)}
     tbody td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.02)}
-    .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--muted);font-weight:600}
-
-    /* small utilities */
-    .muted{color:var(--muted)}
-    footer{margin-top:16px;color:var(--muted);font-size:12px;text-align:center}
-
-    /* responsive tweaks */
-    @media (max-width:1100px){.app{grid-template-columns:1fr;gap:10px}.sidebar{position:relative;height:auto}}
+    .pill-small{padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--muted);font-weight:600}
+    footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}
+    /* Page visibility */
+    .page{display:none}
+    .page.active{display:block}
+    /* Responsive */
+    @media (max-width: 980px){ .container{grid-template-columns:1fr} aside.sidebar{height:auto;position:relative} }
   </style>
 </head>
 <body>
-  <div class="app">
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div class="brand"><div class="logo">A</div><div><div class="title">Aurelo</div><div class="muted" style="font-size:12px">Data & Insights</div></div></div>
-      <div class="nav" id="mainNav">
-        <button class="active" data-page="overview">🏠 Overview</button>
-        <button data-page="transactions">💳 Transactions</button>
-        <button data-page="accounts">🏦 Accounts</button>
-        <button data-page="reports">📑 Reports</button>
-        <button data-page="analytics">📈 Analytics</button>
-        <button data-page="users">👥 Users</button>
-        <button data-page="alerts">🚨 Alerts</button>
-        <button data-page="settings">⚙️ Settings</button>
+  <div class="container">
+    <aside class="sidebar" aria-label="Main sidebar">
+      <div class="logo">
+        <div class="brand-circle">A</div>
+        <div>
+          <div class="brand-title">Aurelo</div>
+          <div class="muted" style="font-size:12px">Data & Insights</div>
+        </div>
       </div>
 
+      <nav id="mainNav" aria-label="Primary">
+        <button class="nav-btn active" data-page="overview">🏠 Overview</button>
+        <button class="nav-btn" data-page="transactions">💳 Transactions</button>
+        <button class="nav-btn" data-page="accounts">🏦 Accounts</button>
+        <button class="nav-btn" data-page="reports">📑 Reports</button>
+        <button class="nav-btn" data-page="analytics">📈 Analytics</button>
+        <button class="nav-btn" data-page="users">👥 Users</button>
+        <button class="nav-btn" data-page="alerts">🚨 Alerts</button>
+        <button class="nav-btn" data-page="settings">⚙️ Settings</button>
+      </nav>
+
       <div class="section-title">Quick actions</div>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
-        <button class="btn" id="createReport">Create Report</button>
-        <button class="btn ghost" id="importData">Import Data</button>
+      <div class="actions">
+        <button id="createReport" class="btn">Create report</button>
+        <button id="importData" class="btn ghost">Import data</button>
       </div>
 
       <div class="section-title">Workspaces</div>
-      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
-        <div class="pill">North</div><div class="pill">South</div><div class="pill">East</div><div class="pill">West</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <div class="pill">North</div>
+        <div class="pill">South</div>
+        <div class="pill">East</div>
+        <div class="pill">West</div>
       </div>
     </aside>
 
-    <!-- MAIN -->
     <main>
       <div class="header">
-        <div class="search">
-          <input id="globalSearch" placeholder="Search companies, transactions, accounts..." />
-          <button class="btn ghost" id="toggleTheme">Theme</button>
+        <div class="search-box">
+          <input id="globalSearch" class="search" placeholder="Search companies, transactions, accounts..." aria-label="Search" />
+          <button id="toggleTheme" class="btn ghost">Toggle theme</button>
         </div>
-        <div style="display:flex;gap:10px;align-items:center">
+        <div style="display:flex;gap:12px;align-items:center">
           <div class="muted" id="currentUser">Monish A. • Admin</div>
-          <button class="btn" id="exportSnapshot">Export Snapshot</button>
+          <button id="exportSnapshot" class="btn">Export snapshot</button>
         </div>
       </div>
 
       <!-- PAGES -->
+      <!-- Overview -->
+      <section id="overview" class="page active" aria-labelledby="overviewTitle">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <h2 id="overviewTitle">Overview</h2>
+            <div class="muted">At-a-glance metrics & recent insights</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <label class="muted">Range:
+              <select id="overviewRange" style="margin-left:8px;padding:6px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:inherit">
+                <option value="30">Last 30d</option>
+                <option value="60">Last 60d</option>
+                <option value="90" selected>Last 90d</option>
+              </select>
+            </label>
+            <button id="ovRefresh" class="btn ghost">Refresh</button>
+          </div>
+        </div>
 
-      <!-- OVERVIEW -->
-      <section id="overview" class="page">
         <div class="grid cols-3">
-          <div class="card"><div class="kpi">$<span id="kpiTotal">0</span></div><div class="kpi-sub">Total revenue (MTD)</div></div>
-          <div class="card"><div class="kpi" id="kpiActiveUsers">0</div><div class="kpi-sub">Active users</div></div>
-          <div class="card"><div class="kpi" id="kpiNTrans">0</div><div class="kpi-sub">Transactions today</div></div>
+          <div class="card">
+            <div class="muted">Total revenue (MTD)</div>
+            <div class="kpi" id="kpiRevenue">$0</div>
+            <div class="muted" id="kpiRevenueDelta">+0.0% vs last period</div>
+          </div>
+          <div class="card">
+            <div class="muted">Monthly recurring revenue</div>
+            <div class="kpi" id="kpiMRR">$0</div>
+            <div class="muted" id="kpiMRRDelta">+0.0%</div>
+          </div>
+          <div class="card">
+            <div class="muted">Active users</div>
+            <div class="kpi" id="kpiUsers">0</div>
+            <div class="muted" id="kpiUsersDelta">+0</div>
+          </div>
         </div>
 
         <div class="card" style="margin-top:12px">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><strong>Revenue Trend</strong><div class="muted">Last 90 days</div></div><div><select id="overviewRange"><option value="30">Last 30d</option><option value="60">Last 60d</option><option value="90" selected>Last 90d</option></select></div></div>
-          <canvas id="overviewChart" height="160"></canvas>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div>
+              <strong>Revenue trend</strong>
+              <div class="muted">Automated time-series (simulated)</div>
+            </div>
+            <div class="muted">Auto-updates enabled</div>
+          </div>
+          <div style="height:220px;display:grid;place-items:center" id="overviewGraph">
+            <!-- simulated sparkline area (text) -->
+            <div class="muted">[Dynamic chart area — simulated in JS]</div>
+          </div>
         </div>
 
         <div class="grid cols-2" style="margin-top:12px">
           <div class="card">
-            <strong>Revenue Mix</strong>
-            <canvas id="overviewPie" height="160"></canvas>
-            <div id="overviewPieLegend" class="muted" style="margin-top:8px"></div>
+            <strong>Revenue mix</strong>
+            <div class="muted" style="margin-top:6px" id="revenueMixText">Enterprise 45% · SMB 35% · Individual 20%</div>
           </div>
           <div class="card">
             <strong>Top accounts</strong>
-            <div id="topAccounts" style="margin-top:8px"></div>
+            <div id="overviewTopAccounts" style="margin-top:10px"></div>
           </div>
         </div>
 
         <div class="card" style="margin-top:12px">
           <strong>Recent insights</strong>
-          <ul id="insightsList" class="muted" style="margin-top:8px"></ul>
+          <ul id="overviewInsights" class="muted" style="margin-top:8px"></ul>
         </div>
       </section>
 
-      <!-- TRANSACTIONS -->
-      <section id="transactions" class="page" style="display:none">
+      <!-- Transactions -->
+      <section id="transactions" class="page" aria-labelledby="txTitle">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div style="display:flex;gap:8px;align-items:center">
-            <input id="txSearch" placeholder="Search transactions..." style="padding:8px 10px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04)" />
-            <select id="txRegion"><option value="">All regions</option><option>North</option><option>South</option><option>East</option><option>West</option></select>
-            <select id="txStatus"><option value="">Any status</option><option>Completed</option><option>Pending</option><option>Failed</option></select>
-            <button class="btn ghost" id="bulkDelete">Bulk delete</button>
+          <div>
+            <h2 id="txTitle">Transactions</h2>
+            <div class="muted">Explore, filter, export or delete transaction rows</div>
           </div>
-          <div style="display:flex;gap:8px"><button class="btn" id="txExport">Export CSV</button><div class="muted">Showing <span id="txCount">0</span> records</div></div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="txSearch" placeholder="Search transactions..." style="padding:7px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit" />
+            <select id="txRegion" style="padding:7px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:inherit"><option value="">All regions</option><option>North</option><option>South</option><option>East</option><option>West</option></select>
+            <select id="txStatus" style="padding:7px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:inherit"><option value="">Any status</option><option>Completed</option><option>Pending</option><option>Failed</option></select>
+            <button id="txExport" class="btn">Export CSV</button>
+          </div>
         </div>
 
         <div class="card table-wrap">
-          <table id="txTable"><thead><tr><th><input type="checkbox" id="txSelectAll" /></th><th>ID</th><th>Company</th><th>Region</th><th>Amount</th><th>Status</th><th>Date</th><th></th></tr></thead><tbody></tbody></table>
+          <table aria-describedby="txTitle" id="txTable">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="txSelectAll" /></th>
+                <th>ID</th><th>Company</th><th>Region</th><th>Amount</th><th>Status</th><th>Date</th><th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
-          <div class="muted" id="txRange">Showing 1 - 10</div>
-          <div style="display:flex;gap:8px;align-items:center"><button class="btn ghost" id="txPrev">Prev</button><div class="pill" id="txPage">1</div><button class="btn ghost" id="txNext">Next</button></div>
+          <div class="muted" id="txRange">Showing 0</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="txPrev" class="btn ghost">Prev</button>
+            <div class="pill-small" id="txPage">1</div>
+            <button id="txNext" class="btn ghost">Next</button>
+            <button id="txBulkDelete" class="btn ghost">Delete selected</button>
+          </div>
         </div>
       </section>
 
-      <!-- ACCOUNTS -->
-      <section id="accounts" class="page" style="display:none">
+      <!-- Accounts -->
+      <section id="accounts" class="page" aria-labelledby="accountsTitle">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <h2 id="accountsTitle">Accounts</h2>
+            <div class="muted">Customers, LTV and statuses</div>
+          </div>
+          <div class="muted">Total accounts: <span id="accTotal">0</span></div>
+        </div>
+
         <div class="grid cols-3">
-          <div class="card"><div class="kpi">$<span id="accTotalRev">0</span></div><div class="kpi-sub">Total account value</div></div>
-          <div class="card"><div class="kpi" id="accCount">0</div><div class="kpi-sub">Total accounts</div></div>
-          <div class="card"><div class="kpi" id="accActivePct">0%</div><div class="kpi-sub">Active accounts</div></div>
+          <div class="card"><div class="muted">Total account value</div><div class="kpi" id="accValue">$0</div></div>
+          <div class="card"><div class="muted">Active accounts</div><div class="kpi" id="accActive">0</div></div>
+          <div class="card"><div class="muted">Avg LTV</div><div class="kpi" id="accLtv">$0</div></div>
         </div>
 
         <div class="card" style="margin-top:12px">
-          <strong>Account table</strong>
-          <div class="table-wrap" style="margin-top:8px"><table id="accTable"><thead><tr><th>Account</th><th>Region</th><th>Industry</th><th>Revenue</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+          <strong>Accounts list</strong>
+          <div class="table-wrap" style="margin-top:8px">
+            <table id="accTable">
+              <thead><tr><th>Account</th><th>Region</th><th>Industry</th><th>Revenue</th><th>Status</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
-      <!-- REPORTS -->
-      <section id="reports" class="page" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div><strong>Saved reports</strong><div class="muted">Manage schedules & exports</div></div><button class="btn" id="newReport">New report</button></div>
+      <!-- Reports -->
+      <section id="reports" class="page" aria-labelledby="reportsTitle">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <h2 id="reportsTitle">Reports</h2>
+            <div class="muted">Saved reports, schedules & manual exports</div>
+          </div>
+          <button id="newReport" class="btn">New report</button>
+        </div>
+
         <div id="reportsList" class="grid cols-2"></div>
       </section>
 
-      <!-- ANALYTICS -->
-      <section id="analytics" class="page" style="display:none">
-        <div style="display:flex;gap:12px;margin-bottom:12px">
-          <div class="card" style="flex:1">
-            <strong>Cohort simulator</strong>
-            <div class="muted" style="margin-top:6px">Adjust churn & promo to see impact</div>
-            <div style="margin-top:8px;display:flex;gap:8px;align-items:center"><label class="muted">Churn %</label><input id="simChurn" type="range" min="-50" max="50" value="0" style="flex:1" /></div>
-            <div style="margin-top:8px;display:flex;gap:8px;align-items:center"><label class="muted">Promo %</label><input id="simPromo" type="range" min="0" max="50" value="10" style="flex:1" /></div>
-            <div style="margin-top:10px"><button class="btn" id="runSim">Run Predictive Sim</button></div>
-            <div id="simOutput" class="muted" style="margin-top:10px"></div>
+      <!-- Analytics -->
+      <section id="analytics" class="page" aria-labelledby="analyticsTitle">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <h2 id="analyticsTitle">Analytics</h2>
+            <div class="muted">Run models & simulate scenarios</div>
           </div>
-          <div class="card" style="width:420px">
+          <div class="muted">Simple simulation demo</div>
+        </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div class="card" style="flex:1;min-width:320px">
+            <strong>Scenario simulator</strong>
+            <div class="muted" style="margin-top:8px">Adjust churn and promo uplift</div>
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+              <label class="muted">Churn %</label>
+              <input id="simChurn" type="range" min="-50" max="50" value="0" style="flex:1" />
+              <span id="simChurnVal" class="muted">0</span>
+            </div>
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+              <label class="muted">Promo %</label>
+              <input id="simPromo" type="range" min="0" max="50" value="10" style="flex:1" />
+              <span id="simPromoVal" class="muted">10</span>
+            </div>
+            <div style="margin-top:8px"><button id="runSim" class="btn">Run simulation</button></div>
+            <div id="simResult" class="muted" style="margin-top:8px">No simulation run yet.</div>
+          </div>
+
+          <div class="card" style="width:360px">
             <strong>Model results</strong>
-            <div id="modelResult" class="muted" style="margin-top:8px">No run yet</div>
+            <div id="modelResult" class="muted" style="margin-top:8px">No model run yet.</div>
+            <div style="margin-top:12px"><button id="clearModel" class="btn ghost">Clear results</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Users -->
+      <section id="users" class="page" aria-labelledby="usersTitle">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <h2 id="usersTitle">Users</h2>
+            <div class="muted">Team members and roles</div>
+          </div>
+          <button id="inviteUser" class="btn">Invite user</button>
+        </div>
+
+        <div class="card table-wrap">
+          <table id="usersTable">
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Active</th><th>Action</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Alerts -->
+      <section id="alerts" class="page" aria-labelledby="alertsTitle">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <h2 id="alertsTitle">Alerts</h2>
+            <div class="muted">Configure thresholds and notifications</div>
+          </div>
+          <div class="muted">Deliver alerts to Slack/Email (demo)</div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;gap:12px;align-items:center">
+            <label class="muted">Churn threshold (%) <input id="alertChurn" type="number" value="3" style="width:80px;margin-left:8px" /></label>
+            <label class="muted">MRR drop (%) <input id="alertMRR" type="number" value="10" style="width:80px;margin-left:8px" /></label>
+            <button id="saveAlerts" class="btn">Save</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section id="settings" class="page" aria-labelledby="settingsTitle">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <h2 id="settingsTitle">Settings</h2>
+            <div class="muted">User and system preferences</div>
           </div>
         </div>
 
-        <div class="card"><strong>Analytics charts</strong><canvas id="analyticsChart" height="120" style="margin-top:8px"></canvas></div>
-      </section>
-
-      <!-- USERS -->
-      <section id="users" class="page" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div><strong>Team</strong><div class="muted">Invite, manage roles & access</div></div><button class="btn" id="inviteUser">Invite</button></div>
-        <div class="card table-wrap"><table id="usersTable"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Active</th><th></th></tr></thead><tbody></tbody></table></div>
-      </section>
-
-      <!-- ALERTS -->
-      <section id="alerts" class="page" style="display:none">
-        <div class="card"><strong>Alert rules</strong>
-          <div style="margin-top:8px"><label class="muted">Churn threshold (%) <input id="alertChurn" type="number" value="3" style="width:80px;margin-left:8px"/></label></div>
-          <div style="margin-top:8px"><label class="muted">MRR drop (%) <input id="alertMrr" type="number" value="10" style="width:80px;margin-left:8px"/></label></div>
-          <div style="margin-top:10px"><button class="btn" id="saveAlerts">Save alerts</button></div>
+        <div class="card">
+          <label class="muted"><input id="prefEmail" type="checkbox" checked /> Email notifications</label>
+          <div style="height:8px"></div>
+          <label class="muted"><input id="prefDaily" type="checkbox" /> Daily summary</label>
+          <div style="margin-top:10px"><button id="saveSettings" class="btn">Save preferences</button></div>
         </div>
       </section>
 
-      <!-- SETTINGS -->
-      <section id="settings" class="page" style="display:none">
-        <div class="card"><strong>Preferences</strong>
-          <div style="margin-top:8px"><label class="muted"><input type="checkbox" id="prefEmail" checked/> Email notifications</label></div>
-          <div style="margin-top:8px"><label class="muted"><input type="checkbox" id="prefDaily"/> Daily summary</label></div>
-          <div style="margin-top:10px"><button class="btn" id="saveSettings">Save</button></div>
-        </div>
-      </section>
-
-      <footer>© Aurelo • <span id="yr"></span></footer>
+      <footer>© Aurelo — <span id="year"></span></footer>
     </main>
   </div>
 
   <script>
-    // ----------------------
-    // Utilities & mock data
-    // ----------------------
-    const fmt = n => typeof n === 'number' ? n.toLocaleString() : n;
-    const randBetween = (a,b)=> Math.floor(Math.random()*(b-a+1))+a;
+    /***************************************************************
+     * Robust SPA navigation and page content wiring
+     ***************************************************************/
 
-    function generateTimeseries(days=90){
-      const out=[]; let base=randBetween(3000,9000);
-      for(let i=0;i<days;i++){ base+=Math.round(Math.sin(i/7)*randBetween(-400,600)); base+=randBetween(-200,200); out.push({date:new Date(Date.now()-(days-i)*24*60*60*1000).toISOString().slice(0,10),value:Math.max(200,base)});}
-      return out;
-    }
+    (function () {
+      // --- Utilities ---
+      const $ = (s, root = document) => root.querySelector(s);
+      const $$ = (s, root = document) => Array.from(root.querySelectorAll(s));
+      const safePushState = (state, title, url) => {
+        try { if (history && history.pushState) history.pushState(state, title, url); else location.hash = url; }
+        catch (err) { console.warn('pushState failed', err); location.hash = url; }
+      };
 
-    function generateTable(rows=220){
-      const names=['Acme Co','Bright Solutions','Crescent LLC','Delta Group','Eagle Systems','Finory','GigaTech','Helio','Innova','Juno Labs'];
-      const regions=['North','South','East','West']; const industries=['Retail','Fintech','Ed','Health'];
-      const out=[]; for(let i=0;i<rows;i++){ out.push({id:`T-${1000+i}`,company:names[i%names.length]+(i>names.length?` ${i}`:''),region:regions[i%regions.length],industry:industries[i%industries.length],amount:randBetween(120,120000),status: ['Completed','Pending','Failed'][i%3],date:new Date(Date.now()-randBetween(0,120)*24*60*60*1000).toISOString().slice(0,10)});} return out;
-    }
+      // --- DOM elements ---
+      const navContainer = $('#mainNav');
+      const navButtons = $$('[data-page]', navContainer);
+      const pages = $$('section.page');
+      const defaultPage = 'overview';
 
-    const TIMESERIES = generateTimeseries(90);
-    const TX_DATA = generateTable(220);
-    const ACCOUNTS = Array.from({length:120}).map((_,i)=>({name:`Acct ${i+1}`,region:['North','South','East','West'][i%4],industry:['Retail','Fintech','Ed','Health'][i%4],revenue:randBetween(2000,120000),status: ['Active','Onboarding','Churned'][i%3]}));
-    const USERS = [{name:'Monish Allada',email:'monish@example.com',role:'Admin',active:true},{name:'Ava Smith',email:'ava@example.com',role:'Analyst',active:true},{name:'Ethan Lee',email:'ethan@example.com',role:'Viewer',active:false}];
-
-    // ----------------------
-    // Page navigation (robust) 
-    // ----------------------
-    document.addEventListener('DOMContentLoaded', ()=>{
-      const nav = document.getElementById('mainNav');
-      const pages = Array.from(document.querySelectorAll('.page'));
-      const navButtons = Array.from(nav.querySelectorAll('button[data-page]'));
-
-      function showPage(id, push=true){
-        pages.forEach(p=>{ p.id===id ? p.style.display='' : p.style.display='none'; });
-        navButtons.forEach(b=>{ b.getAttribute('data-page')===id ? b.classList.add('active') : b.classList.remove('active'); });
-        if(push && history && history.pushState) history.pushState({page:id},'',`#${id}`);
-        window.scrollTo({top:0,behavior:'smooth'});
+      // show/hide
+      function showPage(id, push = true) {
+        let found = false;
+        pages.forEach(p => {
+          if (p.id === id) {
+            p.classList.add('active');
+            p.style.display = '';
+            found = true;
+          } else {
+            p.classList.remove('active');
+            p.style.display = 'none';
+          }
+        });
+        // update nav active
+        navButtons.forEach(b => {
+          if (b.getAttribute('data-page') === id) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+        // update history/hash
+        if (push) safePushState({ page: id }, '', `#${id}`);
+        // UX: scroll to top of main
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
-      nav.addEventListener('click',(ev)=>{
-        const btn = ev.target.closest('button[data-page]'); if(!btn) return; ev.preventDefault(); showPage(btn.getAttribute('data-page'));
+      // Delegated nav clicks
+      navContainer.addEventListener('click', (ev) => {
+        const btn = ev.target.closest('[data-page]');
+        if (!btn) return;
+        ev.preventDefault();
+        const page = btn.getAttribute('data-page');
+        if (!page) return;
+        showPage(page);
       });
 
-      window.addEventListener('popstate',(e)=>{ const id=(e.state && e.state.page) || location.hash.replace('#','') || 'overview'; showPage(id,false); });
-
-      // initial
-      const initial = location.hash.replace('#','') || 'overview'; showPage(initial,false);
-
-      // keyboard quick nav 1..8
-      window.addEventListener('keydown',e=>{ if(e.key>='1' && e.key<='8'){ const idx = Number(e.key)-1; if(navButtons[idx]) navButtons[idx].click(); } });
-
-      // populate initial content
-      initOverview(); initTransactions(); initAccounts(); initReports(); initAnalytics(); initUsers(); bindSettings();
-
-    }); // DOMContentLoaded end
-
-    // ----------------------
-    // Overview
-    // ----------------------
-    let overviewChart=null, overviewPie=null;
-    function initOverview(){
-      document.getElementById('yr').textContent = new Date().getFullYear();
-      // KPIs
-      const total = TX_DATA.reduce((s,t)=>s+t.amount,0); document.getElementById('kpiTotal').textContent = fmt(total);
-      document.getElementById('kpiActiveUsers').textContent = fmt(randBetween(4800,16500));
-      document.getElementById('kpiNTrans').textContent = fmt(randBetween(120,540));
-
-      // Line chart
-      const ctx = document.getElementById('overviewChart');
-      if(ctx){ overviewChart = new Chart(ctx,{type:'line',data:{labels:TIMESERIES.map(d=>d.date),datasets:[{label:'Revenue',data:TIMESERIES.map(d=>d.value),borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,0.08)',fill:true,tension:0.2}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{display:false}}}}); }
-
-      // Pie for revenue mix (mock)
-      const pieCtx = document.getElementById('overviewPie');
-      const mix=[randBetween(30,50),randBetween(20,40),randBetween(5,25)];
-      if(pieCtx){ overviewPie = new Chart(pieCtx,{type:'doughnut',data:{labels:['Enterprise','SMB','Individual'],datasets:[{data:mix,backgroundColor:['#6366f1','#06b6d4','#f97316']}]},options:{plugins:{legend:{position:'bottom'}}}}); }
-      document.getElementById('overviewPieLegend').innerHTML = `Enterprise ${mix[0]}% · SMB ${mix[1]}% · Individual ${mix[2]}%`;
-
-      // Top accounts
-      const top = ACCOUNTS.slice().sort((a,b)=>b.revenue-a.revenue).slice(0,6);
-      document.getElementById('topAccounts').innerHTML = top.map(t=>`<div style="display:flex;justify-content:space-between;padding:6px 0"><div><strong>${t.name}</strong><div class='muted' style='font-size:12px'>${t.industry} · ${t.region}</div></div><div>$${fmt(t.revenue)}</div></div>`).join('');
-
-      // Insights
-      const insights = [{t:'Revenue up in North region',v:'+5.6%'},{t:'High churn cohort',v:'Review'},{t:'Avg order value rising',v:`$${randBetween(40,280)}`}];
-      document.getElementById('insightsList').innerHTML = insights.map(i=>`<li style='margin:8px 0;display:flex;justify-content:space-between'><div>${i.t}</div><div class='muted'>${i.v}</div></li>`).join('');
-    }
-
-    // ----------------------
-    // Transactions: sorting, filtering, pagination, export
-    // ----------------------
-    let txFiltered = []; let txPage = 1; const txPerPage = 12;
-    function initTransactions(){
-      txFiltered = TX_DATA.slice(); document.getElementById('txCount').textContent = txFiltered.length;
-      renderTxTable();
-
-      document.getElementById('txSearch').addEventListener('input', debounce((e)=>{ const q=e.target.value.toLowerCase(); txFiltered = TX_DATA.filter(r=>r.company.toLowerCase().includes(q) || r.id.toLowerCase().includes(q)); txPage=1; renderTxTable(); },300));
-      document.getElementById('txRegion').addEventListener('change', (e)=>{ const v=e.target.value; txFiltered = v ? TX_DATA.filter(r=>r.region===v) : TX_DATA.slice(); txPage=1; renderTxTable(); });
-      document.getElementById('txStatus').addEventListener('change', (e)=>{ const v=e.target.value; txFiltered = v ? TX_DATA.filter(r=>r.status===v) : TX_DATA.slice(); txPage=1; renderTxTable(); });
-      document.getElementById('txExport').addEventListener('click', ()=>exportCSV(txFiltered,'transactions.csv'));
-      document.getElementById('txPrev').addEventListener('click', ()=>{ txPage=Math.max(1,txPage-1); renderTxTable(); });
-      document.getElementById('txNext').addEventListener('click', ()=>{ txPage++; renderTxTable(); });
-      document.getElementById('txSelectAll').addEventListener('change',(e)=>{ document.querySelectorAll('.tx-chk').forEach(cb=>cb.checked=e.target.checked); });
-      document.getElementById('bulkDelete').addEventListener('click', ()=>{ const toDel = Array.from(document.querySelectorAll('.tx-chk:checked')).map(cb=>cb.getAttribute('data-id')); if(!toDel.length) return alert('Select rows first'); toDel.forEach(id=>{ const idx = TX_DATA.findIndex(t=>t.id===id); if(idx>-1) TX_DATA.splice(idx,1); }); txFiltered = TX_DATA.slice(); txPage=1; renderTxTable(); alert('Deleted selected (demo)'); });
-    }
-
-    function renderTxTable(){
-      const total = txFiltered.length; const pages = Math.max(1,Math.ceil(total/txPerPage)); txPage = Math.min(txPage,pages);
-      const start=(txPage-1)*txPerPage; const slice = txFiltered.slice(start,start+txPerPage);
-      const tbody = document.querySelector('#txTable tbody'); tbody.innerHTML = slice.map(r=>`<tr><td><input class='tx-chk' data-id='${r.id}' type='checkbox' /></td><td>${r.id}</td><td>${r.company}</td><td>${r.region}</td><td>$${fmt(r.amount)}</td><td><span class='pill'>${r.status}</span></td><td>${r.date}</td><td><button class='btn ghost tx-del' data-id='${r.id}'>Delete</button></td></tr>`).join('');
-      document.getElementById('txRange').textContent = `Showing ${start+1} - ${Math.min(start+txPerPage,total)} of ${total}`; document.getElementById('txPage').textContent = `${txPage} / ${pages}`; document.getElementById('txCount').textContent = total;
-      // attach per-row delete
-      document.querySelectorAll('.tx-del').forEach(btn=>btn.addEventListener('click', (e)=>{ const id=e.target.getAttribute('data-id'); const idx = TX_DATA.findIndex(t=>t.id===id); if(idx>-1) TX_DATA.splice(idx,1); txFiltered = TX_DATA.slice(); renderTxTable(); }));
-    }
-
-    // ----------------------
-    // Accounts
-    // ----------------------
-    function initAccounts(){
-      document.getElementById('accTotalRev').textContent = fmt(ACCOUNTS.reduce((s,a)=>s+a.revenue,0));
-      document.getElementById('accCount').textContent = ACCOUNTS.length;
-      document.getElementById('accActivePct').textContent = `${Math.round(ACCOUNTS.filter(a=>a.status==='Active').length/ACCOUNTS.length*100)}%`;
-      document.querySelector('#accTable tbody').innerHTML = ACCOUNTS.slice(0,200).map(a=>`<tr><td>${a.name}</td><td>${a.region}</td><td>${a.industry}</td><td>$${fmt(a.revenue)}</td><td><span class='pill'>${a.status}</span></td></tr>`).join('');
-    }
-
-    // ----------------------
-    // Reports
-    // ----------------------
-    function initReports(){
-      const reports = [{id:1,title:'Monthly Revenue',desc:'Auto-run monthly revenue report'},{id:2,title:'Churn Analysis',desc:'Cohort churn by acquisition month'},{id:3,title:'Top Accounts',desc:'Largest accounts and run-rate'}];
-      document.getElementById('reportsList').innerHTML = reports.map(r=>`<div class='card'><div style='display:flex;justify-content:space-between;align-items:center'><div><strong>${r.title}</strong><div class='muted'>${r.desc}</div></div><div style='display:flex;gap:8px'><button class='btn ghost' data-id='${r.id}' onclick='downloadReport(${r.id})'>Download</button><button class='btn' onclick='scheduleReport(${r.id})'>Schedule</button></div></div></div>`).join('');
-    }
-    function downloadReport(id){ alert('Downloading report id '+id+' (demo)'); }
-    function scheduleReport(id){ alert('Scheduling report id '+id+' (demo)'); }
-
-    // ----------------------
-    // Analytics
-    // ----------------------
-    function initAnalytics(){
-      const ctx = document.getElementById('analyticsChart'); if(ctx){ new Chart(ctx,{type:'bar',data:{labels:['Scenario A','Scenario B','Scenario C'],datasets:[{label:'Projected MRR',data:[randBetween(10000,90000),randBetween(10000,90000),randBetween(10000,90000)],backgroundColor:['#60a5fa','#34d399','#f97316']}]},options:{plugins:{legend:{display:false}}}}); }
-      document.getElementById('runSim').addEventListener('click', ()=>{
-        const churn = Number(document.getElementById('simChurn').value); const promo = Number(document.getElementById('simPromo').value);
-        const base = TX_DATA.reduce((s,t)=>s+t.amount,0);
-        const est = Math.round(base*(1 - churn/100)*(1 + promo/100));
-        document.getElementById('simOutput').textContent = `Estimated revenue with churn ${churn}% and promo ${promo}%: $${fmt(est)}`;
-        document.getElementById('modelResult').textContent = `Model run: uplift ${(promo - churn).toFixed(1)}% — top features: region, industry, revenue`;
+      // Handle popstate/back/forward
+      window.addEventListener('popstate', (ev) => {
+        const id = (ev.state && ev.state.page) || location.hash.replace('#', '') || defaultPage;
+        showPage(id, false);
       });
-    }
 
-    // ----------------------
-    // Users
-    // ----------------------
-    function initUsers(){
-      function render(){ document.querySelector('#usersTable tbody').innerHTML = USERS.map((u,i)=>`<tr><td>${u.name}</td><td>${u.email}</td><td><select data-idx='${i}' class='roleSel'><option ${u.role==='Admin'?'selected':''}>Admin</option><option ${u.role==='Analyst'?'selected':''}>Analyst</option><option ${u.role==='Viewer'?'selected':''}>Viewer</option></select></td><td><input type='checkbox' data-idx='${i}' class='user-act' ${u.active?'checked':''} /></td><td><button class='btn ghost' data-idx='${i}' onclick='removeUser(${i})'>Remove</button></td></tr>`).join(''); }
-      render();
-      document.getElementById('inviteUser').addEventListener('click', ()=>{ const name=prompt('Name'); const email=prompt('Email'); if(!name||!email) return; USERS.push({name,email,role:'Viewer',active:true}); render(); alert('Invited (demo)'); });
-      window.removeUser = (i)=>{ if(confirm('Remove user?')){ USERS.splice(i,1); render(); } };
-    }
+      // Initial load: respect hash if present
+      const initial = location.hash.replace('#', '') || defaultPage;
+      // Wait until DOM ready content (pages already in DOM)
+      document.addEventListener('DOMContentLoaded', () => {
+        showPage(initial, false);
+      });
 
-    // ----------------------
-    // Settings & Alerts
-    // ----------------------
-    function bindSettings(){
-      document.getElementById('saveAlerts').addEventListener('click', ()=>{ addActivity('Alerts updated'); alert('Alerts saved (demo)'); });
-      document.getElementById('saveSettings').addEventListener('click', ()=>{ const cfg = {email:document.getElementById('prefEmail').checked,daily:document.getElementById('prefDaily').checked}; localStorage.setItem('aurelo_prefs',JSON.stringify(cfg)); addActivity('Settings saved'); alert('Settings saved (demo)'); });
-    }
+      // Keyboard quick nav 1..8
+      window.addEventListener('keydown', (e) => {
+        if (e.key >= '1' && e.key <= String(Math.min(9, navButtons.length))) {
+          const idx = Number(e.key) - 1;
+          const tgt = navButtons[idx];
+          if (tgt) tgt.click();
+        }
+      });
 
-    // ----------------------
-    // Exports, utils
-    // ----------------------
-    function exportCSV(arr, name='export.csv'){
-      if(!arr.length){ alert('No rows to export'); return; }
-      const headers = Object.keys(arr[0]); const csv = [headers.join(',')].concat(arr.map(r=>headers.map(h=>`"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))).join('
-');
-      const blob = new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=name; a.click(); URL.revokeObjectURL(url);
-    }
+      // Error reporting helper (dev)
+      window.addEventListener('error', (err) => console.error('JS error', err.message, err.filename, 'line', err.lineno));
 
-    document.getElementById('txExport')?.addEventListener('click', ()=> exportCSV(txFiltered,'transactions.csv'));
+      /***************************************************************
+       * Page content wiring & interactive bits for each page
+       ***************************************************************/
 
-    document.getElementById('exportSnapshot')?.addEventListener('click', ()=>{
-      const snap = {ts:new Date().toISOString(),kpis:{total:document.getElementById('kpiTotal').textContent},counts:{tx:TX_DATA.length,acc:ACCOUNTS.length},users:USERS.length};
-      const blob = new Blob([JSON.stringify(snap,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='aurelo-snapshot.json'; a.click(); URL.revokeObjectURL(url); addActivity('Snapshot exported');
-    });
+      // Utilities for mocked data generation
+      const randBetween = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+      const format = (n) => typeof n === 'number' ? n.toLocaleString() : n;
 
-    // small helpers
-    function debounce(fn,delay=250){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn.apply(this,args),delay); }; }
-    function addActivity(txt){ const el = document.createElement('div'); el.className='muted'; el.style.marginTop='6px'; el.textContent = `${new Date().toLocaleTimeString()} • ${txt}`; const container = document.getElementById('insightsList'); container.prepend(el); }
+      // Mock datasets
+      const TX = (() => {
+        const names = ['Acme Co','Bright Solutions','Crescent LLC','Delta Group','Eagle Systems','Finory','GigaTech','Helio','Innova','Juno Labs'];
+        const regions = ['North','South','East','West'];
+        const statuses = ['Completed','Pending','Failed'];
+        const rows = [];
+        for (let i = 0; i < 220; i++) {
+          rows.push({
+            id: `T-${1000 + i}`,
+            company: names[i % names.length] + (i > names.length ? ` ${i}` : ''),
+            region: regions[i % regions.length],
+            amount: randBetween(120, 120000),
+            status: statuses[i % statuses.length],
+            date: new Date(Date.now() - randBetween(0, 120) * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+          });
+        }
+        return rows;
+      })();
 
-    // theme
-    document.getElementById('toggleTheme').addEventListener('click', ()=>{ const root=document.documentElement; if(root.style.getPropertyValue('--bg')==='#0b1220'){ root.style.setProperty('--bg','#f6f8fb'); root.style.setProperty('--panel','#ffffff'); root.style.setProperty('--muted','#334155'); document.body.style.color='#08122b'; } else { root.style.setProperty('--bg','#0b1220'); root.style.setProperty('--panel','#0f1724'); root.style.setProperty('--muted','#9fb0c8'); document.body.style.color='#e6eef8'; } });
+      const ACCOUNTS = (() => {
+        const out = [];
+        for (let i = 0; i < 120; i++) {
+          out.push({ name: `Account ${i+1}`, region: ['North','South','East','West'][i%4], industry: ['Retail','Fintech','Ed','Health'][i%4], revenue: randBetween(2000,120000), status: ['Active','Onboarding','Churned'][i%3] });
+        }
+        return out;
+      })();
 
-    // set year
-    document.getElementById('yr').textContent = new Date().getFullYear();
+      const USERS = [
+        { name: 'Monish Allada', email: 'monish@example.com', role: 'Admin', active: true },
+        { name: 'Ava Smith', email: 'ava@example.com', role: 'Analyst', active: true },
+        { name: 'Ethan Lee', email: 'ethan@example.com', role: 'Viewer', active: false }
+      ];
 
-    // periodic live tick
-    setInterval(()=>{ if(typeof overviewChart!=='undefined' && overviewChart){ const newVal = Math.max(200, overviewChart.data.datasets[0].data[overviewChart.data.datasets[0].data.length-1] + (Math.random()-0.5)*400); overviewChart.data.datasets[0].data.push(newVal); overviewChart.data.labels.push(new Date().toISOString().slice(0,10)); overviewChart.data.datasets[0].data.shift(); overviewChart.data.labels.shift(); overviewChart.update(); addActivity('Live update'); } },12000);
+      // Overview: render KPIs & lists
+      function renderOverview() {
+        document.getElementById('kpiRevenue').textContent = '$' + format(TX.reduce((s,t)=>s+t.amount,0));
+        document.getElementById('kpiMRR').textContent = '$' + format(randBetween(12000,90000));
+        document.getElementById('kpiUsers').textContent = format(randBetween(4800, 16500));
+        // Top accounts
+        const top = ACCOUNTS.slice().sort((a,b)=>b.revenue - a.revenue).slice(0,6);
+        document.getElementById('overviewTopAccounts').innerHTML = top.map(a => `<div style="display:flex;justify-content:space-between;padding:6px 0"><div><strong>${a.name}</strong><div class="muted" style="font-size:12px">${a.industry} · ${a.region}</div></div><div>$${format(a.revenue)}</div></div>`).join('');
+        // Insights
+        const insights = [
+          {t:'Revenue up in North region', v:'+5.6%'},
+          {t:'High churn cohort', v:'Review'},
+          {t:'Avg order value rising', v:`$${randBetween(40,280)}`}
+        ];
+        document.getElementById('overviewInsights').innerHTML = insights.map(i => `<li style="margin:6px 0;display:flex;justify-content:space-between"><span>${i.t}</span><span class="muted">${i.v}</span></li>`).join('');
+        // Revenue mix
+        const mixA = randBetween(30,50), mixB = randBetween(15,40), mixC = 100 - mixA - mixB;
+        document.getElementById('revenueMixText').textContent = `Enterprise ${mixA}% · SMB ${mixB}% · Individual ${mixC}%`;
+        // Simulated mini chart: simple ascii-ish sparkline to indicate change
+        const spark = Array.from({length: 24}).map(()=>randBetween(40,120));
+        const sparkEl = document.getElementById('overviewGraph');
+        sparkEl.innerHTML = `<div style="width:100%;display:flex;gap:2px;align-items:end;height:180px"><div style="flex:1;background:linear-gradient(180deg,rgba(96,165,250,0.18),transparent);height:${spark[0]}%"></div>${spark.slice(1).map(v=>`<div style="flex:1;background:rgba(255,255,255,0.05);height:${v}%"></div>`).join('')}</div>`;
+      }
 
+      // Transactions: filtering/pagination/export/delete
+      let txFiltered = TX.slice();
+      let txPage = 1;
+      const txPerPage = 12;
+
+      function renderTx() {
+        const tbody = $('#txTable tbody');
+        const total = txFiltered.length;
+        const pages = Math.max(1, Math.ceil(total / txPerPage));
+        txPage = Math.min(txPage, pages);
+        const start = (txPage - 1) * txPerPage;
+        const slice = txFiltered.slice(start, start + txPerPage);
+        tbody.innerHTML = slice.map(r => `<tr>
+          <td><input type="checkbox" class="tx-chk" data-id="${r.id}"/></td>
+          <td>${r.id}</td><td>${r.company}</td><td>${r.region}</td><td>$${format(r.amount)}</td><td><span class="pill-small">${r.status}</span></td><td>${r.date}</td>
+          <td><button class="btn ghost tx-del" data-id="${r.id}">Delete</button></td>
+        </tr>`).join('');
+        document.getElementById('txRange').textContent = `Showing ${start + 1} - ${Math.min(start + txPerPage, total)} of ${total}`;
+        document.getElementById('txPage').textContent = `${txPage} / ${pages}`;
+        document.getElementById('txCount').textContent = `${total}`;
+
+        // hook deletes
+        $$('.tx-del').forEach(b => b.addEventListener('click', (e) => {
+          const id = b.getAttribute('data-id');
+          const idx = TX.findIndex(t => t.id === id);
+          if (idx > -1) TX.splice(idx, 1);
+          txFiltered = TX.slice();
+          txPage = 1;
+          renderTx();
+        }));
+      }
+
+      function initTxInteractivity() {
+        $('#txSearch').addEventListener('input', debounce((e) => {
+          const q = e.target.value.trim().toLowerCase();
+          txFiltered = q ? TX.filter(r => r.company.toLowerCase().includes(q) || r.id.toLowerCase().includes(q)) : TX.slice();
+          txPage = 1; renderTx();
+        }, 250));
+        $('#txRegion').addEventListener('change', (e) => {
+          const v = e.target.value;
+          txFiltered = v ? TX.filter(r => r.region === v) : TX.slice();
+          txPage = 1; renderTx();
+        });
+        $('#txStatus').addEventListener('change', (e) => {
+          const v = e.target.value;
+          txFiltered = v ? TX.filter(r => r.status === v) : TX.slice();
+          txPage = 1; renderTx();
+        });
+        $('#txPrev').addEventListener('click', () => { txPage = Math.max(1, txPage - 1); renderTx(); });
+        $('#txNext').addEventListener('click', () => { txPage++; renderTx(); });
+        $('#txSelectAll').addEventListener('change', (e) => { $$('.tx-chk').forEach(cb => cb.checked = e.target.checked); });
+        $('#txBulkDelete').addEventListener('click', () => {
+          const selected = $$('.tx-chk:checked').map(cb => cb.getAttribute('data-id'));
+          if (!selected.length) { alert('No rows selected'); return; }
+          selected.forEach(id => { const idx = TX.findIndex(t => t.id === id); if (idx > -1) TX.splice(idx, 1); });
+          txFiltered = TX.slice(); txPage = 1; renderTx();
+          alert('Deleted selected rows (demo)');
+        });
+        $('#txExport').addEventListener('click', () => exportCSV(txFiltered, 'transactions_export.csv'));
+      }
+
+      // Accounts
+      function renderAccounts() {
+        document.getElementById('accTotal').textContent = ACCOUNTS.length;
+        document.getElementById('accValue').textContent = '$' + format(ACCOUNTS.reduce((s,a)=>s+a.revenue,0));
+        const activeCount = ACCOUNTS.filter(a => a.status === 'Active').length;
+        document.getElementById('accActive').textContent = format(activeCount);
+        document.getElementById('accLtv').textContent = '$' + format(Math.round(ACCOUNTS.reduce((s,a)=>s+a.revenue,0) / ACCOUNTS.length));
+        document.querySelector('#accTable tbody').innerHTML = ACCOUNTS.slice(0,200).map(a => `<tr><td>${a.name}</td><td>${a.region}</td><td>${a.industry}</td><td>$${format(a.revenue)}</td><td><span class="pill-small">${a.status}</span></td></tr>`).join('');
+      }
+
+      // Reports
+      function initReports() {
+        const reports = [
+          {id:1, title:'Monthly Revenue', desc:'Automated monthly revenue breakdown'},
+          {id:2, title:'Churn Cohort', desc:'Cohort and churn metrics'},
+          {id:3, title:'Top Accounts', desc:'Top accounts by ARR'}
+        ];
+        document.getElementById('reportsList').innerHTML = reports.map(r => `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${r.title}</strong><div class="muted">${r.desc}</div></div><div style="display:flex;gap:8px"><button class="btn ghost" onclick="alert('Download ${r.title} (demo)')">Download</button><button class="btn" onclick="alert('Schedule ${r.title} (demo)')">Schedule</button></div></div></div>`).join('');
+      }
+
+      // Analytics: simple simulation
+      function initAnalytics() {
+        const simChurn = $('#simChurn'), simPromo = $('#simPromo'), simChurnVal = $('#simChurnVal'), simPromoVal = $('#simPromoVal');
+        simChurn.addEventListener('input', () => simChurnVal.textContent = simChurn.value);
+        simPromo.addEventListener('input', () => simPromoVal.textContent = simPromo.value);
+        $('#runSim').addEventListener('click', () => {
+          const churn = Number(simChurn.value), promo = Number(simPromo.value);
+          const base = TX.reduce((s,t)=>s+t.amount,0);
+          const estimated = Math.round(base * (1 - churn / 100) * (1 + promo / 100));
+          $('#simResult').textContent = `Estimated revenue: $${format(estimated)} (churn ${churn}%, promo ${promo}%)`;
+          $('#modelResult').textContent = `Sim run at ${new Date().toLocaleTimeString()} — projected uplift ${(promo - churn).toFixed(1)}%`;
+        });
+        $('#clearModel').addEventListener('click', () => {
+          $('#simResult').textContent = 'No simulation run yet.'; $('#modelResult').textContent = 'No model run yet.';
+        });
+      }
+
+      // Users
+      function initUsers() {
+        function renderUsers() {
+          document.querySelector('#usersTable tbody').innerHTML = USERS.map((u, i) => `<tr>
+            <td>${u.name}</td><td>${u.email}</td>
+            <td><select data-idx="${i}" class="roleSel"><option ${u.role==='Admin'?'selected':''}>Admin</option><option ${u.role==='Analyst'?'selected':''}>Analyst</option><option ${u.role==='Viewer'?'selected':''}>Viewer</option></select></td>
+            <td><input type="checkbox" class="user-act" data-idx="${i}" ${u.active? 'checked':''} /></td>
+            <td><button class="btn ghost" data-idx="${i}" onclick="removeUser(${i})">Remove</button></td>
+          </tr>`).join('');
+          // attach role change handlers
+          $$('.roleSel').forEach(sel => sel.addEventListener('change', (e) => {
+            const idx = Number(e.target.getAttribute('data-idx'));
+            USERS[idx].role = e.target.value;
+          }));
+          $$('.user-act').forEach(cb => cb.addEventListener('change', (e) => {
+            const idx = Number(e.target.getAttribute('data-idx'));
+            USERS[idx].active = !!e.target.checked;
+          }));
+        }
+        window.removeUser = function(i){ if(confirm('Remove user?')){ USERS.splice(i,1); renderUsers(); } };
+        $('#inviteUser').addEventListener('click', () => {
+          const name = prompt('Name'); const email = prompt('Email');
+          if (!name || !email) return alert('Name and email required');
+          USERS.push({name, email, role:'Viewer', active:true});
+          renderUsers(); alert('Invited (demo)');
+        });
+        renderUsers();
+      }
+
+      // Alerts & Settings
+      function bindAlertsAndSettings() {
+        $('#saveAlerts').addEventListener('click', () => {
+          addActivity('Alerts saved'); alert('Alerts saved (demo)');
+        });
+        $('#saveSettings').addEventListener('click', () => {
+          const cfg = { email: !!$('#prefEmail').checked, daily: !!$('#prefDaily').checked };
+          localStorage.setItem('aurelo_prefs', JSON.stringify(cfg));
+          addActivity('Settings saved'); alert('Settings saved (demo)');
+        });
+      }
+
+      // Export helpers
+      function exportCSV(arr, filename = 'export.csv') {
+        if (!arr || !arr.length) return alert('No data to export');
+        const headers = Object.keys(arr[0]);
+        const csv = [headers.join(',')].concat(arr.map(r => headers.map(h => `"${(r[h] || '').toString().replace(/"/g, '""')}"`).join(','))).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      }
+
+      // Misc helpers
+      function debounce(fn, delay = 200) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(null, args), delay); }; }
+      function addActivity(txt) {
+        const el = document.createElement('div'); el.className = 'muted'; el.style.marginTop = '6px'; el.textContent = `${new Date().toLocaleTimeString()} • ${txt}`;
+        const container = $('#overviewInsights');
+        container.prepend(el);
+      }
+
+      // Initializers for each page (called once on DOMContentLoaded)
+      function initAllPages() {
+        renderOverview();
+        txFiltered = TX.slice();
+        renderTx();
+        initTxInteractivity();
+        renderAccounts();
+        initReports();
+        initAnalytics();
+        initUsers();
+        bindAlertsAndSettings();
+        // Wire quick actions
+        $('#createReport').addEventListener('click', () => { addActivity('Quick report created'); alert('Report created (demo)'); });
+        $('#importData').addEventListener('click', () => { addActivity('Import started'); alert('Import started (demo)'); });
+        $('#exportSnapshot').addEventListener('click', () => {
+          const snap = { ts: new Date().toISOString(), counts: { tx: TX.length, accounts: ACCOUNTS.length, users: USERS.length } };
+          const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href = url; a.download = 'aurelo-snapshot.json'; a.click(); URL.revokeObjectURL(url);
+          addActivity('Snapshot exported');
+        });
+        // wire overview refresh
+        $('#ovRefresh').addEventListener('click', () => { renderOverview(); addActivity('Overview refreshed'); });
+        // set year in footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+      }
+
+      // DOM ready: initialize everything
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAllPages);
+      } else {
+        initAllPages();
+      }
+
+      // small periodic live update so the UI feels alive
+      setInterval(() => {
+        // simulate a small change
+        TX.unshift({ id: `T-${1000 + Math.floor(Math.random()*9999)}`, company: 'Live Inc', region: ['North','South','East','West'][Math.floor(Math.random()*4)], amount: randBetween(100, 5000), status: 'Completed', date: new Date().toISOString().slice(0,10) });
+        TX.pop(); // keep size stable
+        // if user is on transactions page, refresh listing
+        if (location.hash.replace('#','') === 'transactions' || document.querySelector('#transactions').classList.contains('active')) { txFiltered = TX.slice(); renderTx(); }
+      }, 15000);
+
+    })();
   </script>
 </body>
 </html>
+
