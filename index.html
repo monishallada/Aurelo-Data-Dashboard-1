@@ -3,14 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Aurelo Data Dashboard — HTML</title>
+  <title>Aurelo Data Dashboard — HTML (Multi-Page SPA)</title>
   <meta name="description" content="Aurelo Data Dashboard - single-file HTML demo (Tailwind + Chart.js)" />
-  <!-- Tailwind Play CDN for quick styling (good for demos) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js for charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    /* Small helpers to mimic the React look & feel */
     :root{--glass: rgba(255,255,255,0.06); --glass-2: rgba(255,255,255,0.04);} 
     body{background:linear-gradient(180deg,#0f172a,#0b1220);color:#e6eef8;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
     .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(6px);border-radius:16px}
@@ -19,13 +16,16 @@
     .tiny{font-size:12px;color:rgba(230,238,248,0.65)}
     .pill{background:rgba(255,255,255,0.03);padding:4px 8px;border-radius:999px;font-size:12px}
     table th, table td{padding:10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.02)}
-    .sidebar{width:260px}
+    .sidebar{width:280px}
+    .hidden-page{display:none}
+    .active-nav{background:rgba(255,255,255,0.06);}
+    .badge{background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;font-weight:600}
     @media (max-width: 1024px){.sidebar{display:none}}
   </style>
 </head>
 <body>
   <div class="min-h-screen p-6">
-    <div class="max-w-[1400px] mx-auto grid grid-cols-[260px,1fr] gap-6">
+    <div class="max-w-[1400px] mx-auto grid grid-cols-[280px,1fr] gap-6">
 
       <!-- SIDEBAR -->
       <aside class="sidebar sticky top-6">
@@ -38,19 +38,23 @@
             </div>
           </div>
 
-          <nav class="flex flex-col gap-2">
-            <button class="w-full flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-white/3" data-nav="overview">Overview</button>
-            <button class="w-full flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-white/3" data-nav="transactions">Transactions</button>
-            <button class="w-full flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-white/3" data-nav="accounts">Accounts</button>
-            <button class="w-full flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-white/3" data-nav="reports">Reports</button>
-            <button class="w-full flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-white/3" data-nav="settings">Settings</button>
+          <nav id="mainNav" class="flex flex-col gap-2">
+            <!-- more items added -->
+            <button class="nav-btn w-full flex items-center gap-3 py-2 px-3 rounded-xl" data-page="overview"><span class="badge">🏠</span> <span class="ml-2">Overview</span></button>
+            <button class="nav-btn w-full flex items-center gap-3 py-2 px-3 rounded-xl" data-page="transactions"><span class="badge">📄</span> <span class="ml-2">Transactions</span></button>
+            <button class="nav-btn w-full flex items-center gap-3 py-2 px-3 rounded-xl" data-page="accounts"><span class="badge">💳</span> <span class="ml-2">Accounts</span></button>
+            <button class="nav-btn w-full flex items-center gap-3 py-2 px-3 rounded-xl" data-page="reports"><span class="badge">📊</span> <span class="ml-2">Reports</span></button>
+            <button class="nav-btn w-full flex items-center gap-3 py-2 px-3 rounded-xl" data-page="analytics"><span class="badge">🤖</span> <span class="ml-2">Analytics</span></button>
+            <button class="nav-btn w-full flex items-center gap-3 py-2 px-3 rounded-xl" data-page="users"><span class="badge">👥</span> <span class="ml-2">Users</span></button>
+            <button class="nav-btn w-full flex items-center gap-3 py-2 px-3 rounded-xl" data-page="alerts"><span class="badge">🚨</span> <span class="ml-2">Alerts</span></button>
+            <button class="nav-btn w-full flex items-center gap-3 py-2 px-3 rounded-xl" data-page="settings"><span class="badge">⚙️</span> <span class="ml-2">Settings</span></button>
           </nav>
 
           <div class="mt-6">
             <div class="tiny mb-2">Quick actions</div>
             <div class="flex flex-col gap-2">
-              <button id="createReport" class="py-2 px-3 rounded-xl bg-gradient-to-r from-green-400 to-blue-400 text-black font-semibold">Create Report</button>
-              <button id="importData" class="py-2 px-3 rounded-xl border">Import Data</button>
+              <button id="quickReport" class="py-2 px-3 rounded-xl bg-gradient-to-r from-green-400 to-blue-400 text-black font-semibold">Create Report</button>
+              <button id="quickImport" class="py-2 px-3 rounded-xl border">Import Data</button>
             </div>
           </div>
         </div>
@@ -73,7 +77,7 @@
           <div class="flex items-center justify-between">
             <div>
               <div class="font-semibold text-lg">Aurelo Dashboard</div>
-              <div class="tiny">Modern, sleek, feature-heavy demo</div>
+              <div class="tiny">Modern, sleek, feature-heavy demo — multi-page SPA behavior</div>
             </div>
 
             <div class="flex items-center gap-3">
@@ -87,397 +91,407 @@
           </div>
         </div>
 
-        <!-- GRID -->
-        <div class="grid grid-cols-12 gap-6">
-
-          <section class="col-span-8">
-            <!-- KPI Row -->
-            <div class="grid grid-cols-3 gap-4 mb-4">
-              <div class="card p-4">
-                <div class="tiny">Revenue</div>
-                <div class="kpi-num" id="kpiRevenue">$0</div>
-                <div class="tiny">+4.6% vs last period</div>
-                <canvas id="miniArea1" height="60"></canvas>
-              </div>
-
-              <div class="card p-4">
-                <div class="tiny">MRR</div>
-                <div class="kpi-num" id="kpiMrr">$0</div>
-                <div class="tiny">+1.2% vs last period</div>
-                <canvas id="miniArea2" height="60"></canvas>
-              </div>
-
-              <div class="card p-4">
-                <div class="tiny">Churn</div>
-                <div class="kpi-num" id="kpiChurn">0%</div>
-                <div class="tiny">-0.2% vs last period</div>
-                <canvas id="miniArea3" height="60"></canvas>
-              </div>
-            </div>
-
-            <!-- Large Chart -->
-            <div class="card p-4 mb-4">
-              <div class="flex items-center justify-between mb-2">
-                <div>
-                  <div class="font-semibold">Revenue Trend</div>
-                  <div class="tiny">Performance over last 60 days</div>
+        <!-- PAGES -->
+        <!-- Overview Page -->
+        <section id="overview" class="page card p-4 mb-6">
+          <div class="grid grid-cols-12 gap-6">
+            <div class="col-span-8">
+              <div class="grid grid-cols-3 gap-4 mb-4">
+                <div class="p-4 card">
+                  <div class="tiny">Revenue</div>
+                  <div class="kpi-num" id="ovRevenue">$0</div>
+                  <div class="tiny">Monthly revenue • <span id="ovRevenueDelta">+4.6%</span></div>
                 </div>
-                <div class="tiny">Last 60 days</div>
-              </div>
-              <canvas id="lineChart" height="240"></canvas>
-            </div>
 
-            <!-- Two column row: Breakdown + Top Accounts -->
-            <div class="grid grid-cols-2 gap-4">
-              <div class="card p-4">
+                <div class="p-4 card">
+                  <div class="tiny">MRR</div>
+                  <div class="kpi-num" id="ovMrr">$0</div>
+                  <div class="tiny">Recurring revenue • <span id="ovMrrDelta">+1.2%</span></div>
+                </div>
+
+                <div class="p-4 card">
+                  <div class="tiny">Churn</div>
+                  <div class="kpi-num" id="ovChurn">0%</div>
+                  <div class="tiny">Monthly churn • <span id="ovChurnDelta">-0.2%</span></div>
+                </div>
+              </div>
+
+              <div class="card p-4 mb-4">
                 <div class="flex items-center justify-between mb-2">
                   <div>
-                    <div class="font-semibold">Revenue Mix</div>
-                    <div class="tiny">By customer segment</div>
+                    <div class="font-semibold">Revenue Trend</div>
+                    <div class="tiny">Performance over last 90 days</div>
                   </div>
-                  <div class="pill">Projected</div>
+                  <div class="tiny">Auto-updates</div>
                 </div>
-                <canvas id="pieChart" height="160"></canvas>
-                <div id="pieLegend" class="mt-3 tiny"></div>
+                <canvas id="overviewLine" height="240"></canvas>
               </div>
 
-              <div class="grid grid-rows-2 gap-4">
+              <div class="grid grid-cols-2 gap-4">
                 <div class="card p-4">
-                  <div class="flex items-center justify-between mb-2">
-                    <div>
-                      <div class="font-semibold">Top Accounts</div>
-                      <div class="tiny">Largest by revenue</div>
-                    </div>
-                    <div class="pill">Top 10</div>
-                  </div>
-                  <ol id="topAccounts" class="list-decimal list-inside tiny"></ol>
+                  <div class="font-semibold mb-2">Revenue Mix</div>
+                  <canvas id="overviewPie" height="140"></canvas>
                 </div>
 
                 <div class="card p-4">
-                  <div class="flex items-center justify-between mb-2">
-                    <div>
-                      <div class="font-semibold">Support Tickets</div>
-                      <div class="tiny">Active and recently closed</div>
-                    </div>
-                    <div class="pill" id="openTickets">0 open</div>
-                  </div>
-                  <div class="tiny">Payment failures: <strong id="pFailures">0</strong></div>
-                  <div class="tiny">Feature requests: <strong id="fRequests">0</strong></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Transactions Table -->
-            <div class="mt-6 card p-4">
-              <div class="flex items-center justify-between mb-4">
-                <div class="font-semibold">Transactions</div>
-                <div class="flex items-center gap-2">
-                  <button id="exportCSV" class="py-2 px-3 rounded-xl border tiny">Export CSV</button>
-                  <div class="pill" id="totalRecords">0 Records</div>
+                  <div class="font-semibold mb-2">Top Accounts & Metrics</div>
+                  <div id="overviewTopAccounts" class="tiny"></div>
                 </div>
               </div>
 
-              <div class="overflow-auto">
-                <table id="transactionsTable" class="w-full text-sm">
-                  <thead>
-                    <tr class="tiny text-left text-muted">
-                      <th>ID</th>
-                      <th>Company</th>
-                      <th>Region</th>
-                      <th>Industry</th>
-                      <th>Revenue</th>
-                      <th>Status</th>
-                      <th>Updated</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
+              <div class="mt-6 card p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="font-semibold">Recent Insights</div>
+                  <div class="tiny">Automated highlights</div>
+                </div>
+                <ul id="insightsList" class="tiny"></ul>
+              </div>
+            </div>
+
+            <div class="col-span-4">
+              <div class="card p-4 mb-4">
+                <div class="font-semibold mb-2">Activity</div>
+                <div id="ovActivity" class="tiny"></div>
               </div>
 
-              <div class="mt-4 flex items-center justify-between tiny">
-                <div id="rangeInfo">Showing 1 - 10</div>
-                <div class="flex items-center gap-2">
-                  <button id="prevPage" class="py-1 px-3 rounded-xl border">Prev</button>
-                  <div class="pill" id="pageInfo">1 / 1</div>
-                  <button id="nextPage" class="py-1 px-3 rounded-xl border">Next</button>
+              <div class="card p-4 mb-4">
+                <div class="font-semibold mb-2">Quick Controls</div>
+                <div class="flex flex-col gap-2">
+                  <button id="ovExportSnapshot" class="py-2 px-3 rounded-xl border">Export Snapshot</button>
+                  <button id="ovRunAlerts" class="py-2 px-3 rounded-xl border">Run Alerts</button>
+                  <button id="ovSendSlack" class="py-2 px-3 rounded-xl border">Send to Slack</button>
                 </div>
               </div>
+
+              <div class="card p-4">
+                <div class="font-semibold mb-2">Health</div>
+                <div class="tiny">Uptime: <strong id="healthUptime">99.98%</strong></div>
+                <div class="tiny">Avg response: <strong id="healthResp">120ms</strong></div>
+                <div class="tiny">DB size: <strong id="healthDb">72GB</strong></div>
+              </div>
             </div>
+          </div>
+        </section>
 
-          </section>
-
-          <!-- RIGHT COLUMN -->
-          <aside class="col-span-4">
-            <div class="card p-4 mb-4">
-              <div class="flex items-center justify-between mb-2">
-                <div class="font-semibold">Activity</div>
-                <div class="tiny">Live feed</div>
-              </div>
-              <ul id="activityFeed" class="tiny"></ul>
+        <!-- Transactions Page -->
+        <section id="transactions" class="page hidden-page card p-4 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <div class="font-semibold">Transactions</div>
+              <div class="tiny">Full transaction explorer with filters and bulk actions</div>
             </div>
-
-            <div class="card p-4 mb-4">
-              <div class="flex items-center justify-between mb-2">
-                <div class="font-semibold">Advanced Analytics</div>
-                <div class="tiny">Run models & scenarios</div>
-              </div>
-              <div class="flex gap-2">
-                <button id="runModel" class="py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 text-black">Run Model</button>
-                <button id="clearModel" class="py-2 px-3 rounded-xl border">Clear</button>
-              </div>
-              <div class="tiny mt-3" id="modelOutput">No model run yet.</div>
+            <div class="flex items-center gap-2">
+              <input id="txSearch" placeholder="Search transactions..." class="px-3 py-2 rounded-full bg-white/3 outline-none tiny" />
+              <select id="txRegion" class="px-3 py-2 rounded-xl bg-white/3 tiny"><option value="">All regions</option><option>North</option><option>South</option><option>East</option><option>West</option></select>
+              <button id="txExport" class="py-2 px-3 rounded-xl border tiny">Export CSV</button>
             </div>
+          </div>
 
-            <div class="card p-4 mb-4">
-              <div class="flex items-center justify-between mb-2">
-                <div class="font-semibold">Settings</div>
-                <div class="tiny">User preferences</div>
-              </div>
-              <label class="flex items-center gap-3 tiny"><input type="checkbox" id="notifyEmail" checked/> Email notifications</label>
-              <label class="flex items-center gap-3 tiny mt-2"><input type="checkbox" id="dailySummary" /> Daily summary</label>
-              <div class="flex gap-2 mt-3">
-                <button id="downloadConfig" class="py-2 px-3 rounded-xl border">Download Config</button>
-                <button id="resetSettings" class="py-2 px-3 rounded-xl border">Reset</button>
-              </div>
+          <div class="overflow-auto card p-2">
+            <table id="txTable" class="w-full text-sm">
+              <thead>
+                <tr class="tiny text-left muted"><th>ID</th><th>Company</th><th>Region</th><th>Industry</th><th>Revenue</th><th>Status</th><th>Updated</th><th>Actions</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between tiny">
+            <div id="txRange">Showing 1 - 10</div>
+            <div class="flex items-center gap-2">
+              <button id="txPrev" class="py-1 px-3 rounded-xl border">Prev</button>
+              <div class="pill" id="txPage">1 / 1</div>
+              <button id="txNext" class="py-1 px-3 rounded-xl border">Next</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Accounts Page -->
+        <section id="accounts" class="page hidden-page card p-4 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <div class="font-semibold">Accounts</div>
+              <div class="tiny">Overview of customer accounts, segments, and LTV</div>
+            </div>
+            <div class="tiny">Total accounts: <strong id="accTotal">0</strong></div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4">
+            <div class="card p-4">
+              <div class="tiny">Active</div>
+              <div class="kpi-num" id="accActive">0</div>
+              <div class="tiny">Growth vs last month</div>
+            </div>
+            <div class="card p-4">
+              <div class="tiny">New</div>
+              <div class="kpi-num" id="accNew">0</div>
+              <div class="tiny">In the last 30 days</div>
+            </div>
+            <div class="card p-4">
+              <div class="tiny">Avg LTV</div>
+              <div class="kpi-num" id="accLtv">$0</div>
+              <div class="tiny">Estimated customer lifetime value</div>
+            </div>
+          </div>
+
+          <div class="mt-6 card p-4">
+            <div class="font-semibold mb-2">Account list</div>
+            <div class="overflow-auto"><table id="accTable" class="w-full text-sm"><thead><tr class="tiny muted"><th>Account</th><th>Region</th><th>Industry</th><th>Revenue</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+          </div>
+        </section>
+
+        <!-- Reports Page -->
+        <section id="reports" class="page hidden-page card p-4 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <div class="font-semibold">Reports</div>
+              <div class="tiny">Saved reports, schedules, and exports</div>
+            </div>
+            <div>
+              <button id="newReport" class="py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 text-black">New Report</button>
+            </div>
+          </div>
+
+          <div id="reportsList" class="grid grid-cols-2 gap-4 tiny"></div>
+        </section>
+
+        <!-- Analytics Page -->
+        <section id="analytics" class="page hidden-page card p-4 mb-6">
+          <div class="font-semibold mb-2">Analytics & Models</div>
+          <div class="tiny mb-4">Run predictive models, cohort analysis, and scenario simulations</div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="card p-4">
+              <div class="font-semibold mb-2">Cohort Analysis (simulated)</div>
+              <div class="tiny">Cohort retention heatmap (mock)</div>
+              <canvas id="cohortChart" height="160"></canvas>
             </div>
 
             <div class="card p-4">
-              <div class="font-semibold mb-2">Export & Actions</div>
-              <div class="tiny mb-3">Share snapshot or trigger automation</div>
-              <div class="flex flex-col gap-2">
-                <button id="exportSnapshot" class="py-2 px-3 rounded-xl border">Export Snapshot</button>
-                <button id="sendSlack" class="py-2 px-3 rounded-xl border">Send to Slack</button>
-                <button id="scheduleReport" class="py-2 px-3 rounded-xl border">Schedule Report</button>
-              </div>
+              <div class="font-semibold mb-2">Scenario Simulator</div>
+              <label class="tiny">Churn change (%)<input id="simChurn" type="range" min="-50" max="50" value="0" class="w-full" /></label>
+              <label class="tiny mt-2">Promo uplift (%)<input id="simPromo" type="range" min="0" max="50" value="10" class="w-full" /></label>
+              <div class="mt-3 tiny" id="simOutput">No simulation run.</div>
+              <div class="mt-3"><button id="runSim" class="py-2 px-3 rounded-xl border">Run Simulation</button></div>
             </div>
-          </aside>
+          </div>
+        </section>
 
-        </div>
+        <!-- Users Page -->
+        <section id="users" class="page hidden-page card p-4 mb-6">
+          <div class="font-semibold mb-2">Users</div>
+          <div class="tiny mb-4">Manage team members and roles</div>
 
-        <footer class="mt-8 tiny">© " + new Date().getFullYear() + " Aurelo — Data Platform • Built with ❤️</footer>
+          <div class="card p-4 overflow-auto">
+            <table id="usersTable" class="w-full tiny"><thead><tr class="muted tiny"><th>Name</th><th>Role</th><th>Email</th><th>Active</th><th>Actions</th></tr></thead><tbody></tbody></table>
+          </div>
+        </section>
+
+        <!-- Alerts Page -->
+        <section id="alerts" class="page hidden-page card p-4 mb-6">
+          <div class="font-semibold mb-2">Alerts</div>
+          <div class="tiny mb-4">Configure thresholds and notification channels</div>
+
+          <div class="card p-4">
+            <div class="tiny mb-2">Churn threshold (%) <input id="alertChurn" type="number" value="3" class="px-2 py-1 rounded-xl bg-white/3" /></div>
+            <div class="tiny mb-2">MRR drop (%) <input id="alertMrr" type="number" value="10" class="px-2 py-1 rounded-xl bg-white/3" /></div>
+            <div><button id="saveAlerts" class="py-2 px-3 rounded-xl border">Save Alerts</button></div>
+          </div>
+        </section>
+
+        <!-- Settings Page -->
+        <section id="settings" class="page hidden-page card p-4 mb-6">
+          <div class="font-semibold mb-2">Settings</div>
+          <div class="tiny mb-4">User preferences and system configuration</div>
+          <label class="flex items-center gap-3 tiny"><input type="checkbox" id="emailAlerts" checked/> Email alerts</label>
+          <label class="flex items-center gap-3 tiny mt-2"><input type="checkbox" id="dailySummary" /> Daily summary</label>
+          <div class="mt-3"><button id="saveSettings" class="py-2 px-3 rounded-xl border">Save</button></div>
+        </section>
+
+        <footer class="mt-8 tiny">© <span id="yr"></span> Aurelo — Data Platform • Built with ❤️</footer>
       </main>
     </div>
   </div>
 
   <script>
     // ----------------------
-    // Mock data generators (kept client-side for demo)
+    // App bootstrapping and data
     // ----------------------
-    function randomBetween(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+    document.getElementById('yr').textContent = new Date().getFullYear();
 
-    function generateTimeseries(days = 60) {
-      const data = [];
-      const start = Date.now() - days * 24 * 60 * 60 * 1000;
-      let base = randomBetween(3000, 8000);
-      for (let i = 0; i < days; i++) {
-        base += Math.round(Math.sin(i / 7) * randomBetween(-200, 400));
-        base += randomBetween(-120, 120);
-        data.push({ date: new Date(start + i * 24 * 60 * 60 * 1000).toISOString().slice(0,10), value: Math.max(200, base) });
-      }
-      return data;
-    }
+    function randomBetween(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+    function generateTimeseries(days=90){const data=[];let base=randomBetween(3000,8000);for(let i=0;i<days;i++){base+=Math.round(Math.sin(i/7)*randomBetween(-200,400));base+=randomBetween(-120,120);data.push({date:new Date(Date.now()- (days-i)*24*60*60*1000).toISOString().slice(0,10),value:Math.max(200,base)})}return data}
+    function generateBreakdown(){return [{name:'Enterprise',value:randomBetween(30,45)},{name:'SMB',value:randomBetween(20,35)},{name:'Individual',value:randomBetween(5,25)}]}
+    function generateTableData(n=200){const rows=[];const names=['Acme Co','Bright Solutions','Crescent LLC','Delta Group','Eagle Systems','Finory','GigaTech','Helio','Innova','Juno Labs'];for(let i=0;i<n;i++){rows.push({id:`A-${1000+i}`,company:names[i%names.length]+(i>names.length?` ${i}`:''),region:['North','South','East','West'][i%4],industry:['Retail','Fintech','Education','Healthcare'][i%4],revenue:randomBetween(2000,120000),status:['Active','Onboarding','Churned'][i%3],updated:new Date(Date.now()-randomBetween(0,120)*24*60*60*1000).toISOString().slice(0,10)})}return rows}
 
-    function generateBreakdown() {
-      return [
-        { name: 'Enterprise', value: randomBetween(30,45) },
-        { name: 'SMB', value: randomBetween(20,35) },
-        { name: 'Individual', value: randomBetween(5,25) }
-      ];
-    }
-
-    function generateKpis() {
-      return {
-        revenue: randomBetween(200000,750000),
-        mrr: randomBetween(12000,65000),
-        churn: +(Math.random()*4).toFixed(2),
-        activeUsers: randomBetween(4800,16500),
-        avgOrder: randomBetween(23,250),
-        tickets: randomBetween(40,220)
-      }
-    }
-
-    function generateTableData(rows = 80) {
-      const rowsArr = [];
-      const names = ["Acme Co","Bright Solutions","Crescent LLC","Delta Group","Eagle Systems","Finory","GigaTech","Helio","Innova","Juno Labs"];
-      for (let i=0;i<rows;i++){
-        rowsArr.push({
-          id:`A-${1000+i}`,
-          company: names[i % names.length] + (i>names.length?` ${i}`:''),
-          region: ['North','South','East','West'][i%4],
-          industry: ['Retail','Fintech','Education','Healthcare'][i%4],
-          revenue: randomBetween(2000,120000),
-          status: ['Active','Onboarding','Churned'][i%3],
-          updated: new Date(Date.now()-randomBetween(0,120)*24*60*60*1000).toISOString().slice(0,10)
-        })
-      }
-      return rowsArr;
-    }
-
-    // ----------------------
-    // App state
-    // ----------------------
-    const timeseries = generateTimeseries(60);
+    // Core data
+    const timeseries = generateTimeseries(90);
     const breakdown = generateBreakdown();
-    const kpis = generateKpis();
-    let tableData = generateTableData(140);
+    const tableData = generateTableData(220);
 
-    // Pagination
-    let page = 1; const perPage = 10;
+    // Global small state for pages
+    const pages = Array.from(document.querySelectorAll('.page'));
+    const navBtns = Array.from(document.querySelectorAll('.nav-btn'));
 
-    // ----------------------
-    // DOM helpers
-    // ----------------------
-    function $(s){return document.querySelector(s)}
-    function $all(s){return Array.from(document.querySelectorAll(s))}
-
-    // ----------------------
-    // Render KPIs
-    // ----------------------
-    $('#kpiRevenue').textContent = `$${kpis.revenue.toLocaleString()}`;
-    $('#kpiMrr').textContent = `$${kpis.mrr.toLocaleString()}`;
-    $('#kpiChurn').textContent = `${kpis.churn}%`;
-    $('#openTickets').textContent = `${kpis.tickets} open`;
-    $('#pFailures').textContent = randomBetween(12,64);
-    $('#fRequests').textContent = randomBetween(2,18);
-
-    // ----------------------
-    // Charts
-    // ----------------------
-    const lineCtx = document.getElementById('lineChart').getContext('2d');
-    const labels = timeseries.map(t=>t.date);
-    const values = timeseries.map(t=>t.value);
-
-    const lineChart = new Chart(lineCtx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{ label:'Revenue', data: values, fill:true, tension:0.25 }]
-      },
-      options: { responsive:true, plugins:{legend:{display:false},tooltip:{mode:'index'}}, scales:{x:{display:false},y:{beginAtZero:false}}}
-    });
-
-    // Mini areas
-    function createMini(selector, data){
-      const ctx = document.getElementById(selector).getContext('2d');
-      return new Chart(ctx, {type:'line',data:{labels:data.map(d=>d.date),datasets:[{data:data.map(d=>d.value),fill:true,tension:0.25}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}},elements:{point:{radius:0}}}});
+    function showPage(id){
+      pages.forEach(p=>{p.id===id? p.classList.remove('hidden-page') : p.classList.add('hidden-page')});
+      navBtns.forEach(b=>{ b.getAttribute('data-page')===id ? b.classList.add('active-nav') : b.classList.remove('active-nav') });
+      // update history
+      if(history && history.pushState){ history.pushState({page:id}, '', `#${id}`); }
     }
-    createMini('miniArea1', timeseries.slice(-20));
-    createMini('miniArea2', timeseries.slice(-20));
-    createMini('miniArea3', timeseries.slice(-20));
 
-    // Pie
-    const pieCtx = document.getElementById('pieChart').getContext('2d');
-    const pieChart = new Chart(pieCtx, {
-      type:'pie',
-      data:{labels:breakdown.map(b=>b.name),datasets:[{data:breakdown.map(b=>b.value)}]},
-      options:{responsive:true,plugins:{legend:{display:false}}}
-    });
-    $('#pieLegend').innerHTML = breakdown.map((b,i)=>`<div class="flex items-center gap-2"><div style="width:12px;height:12px;background:var(--c${i});border-radius:999px"></div><div class="tiny">${b.name} — ${b.value}%</div></div>`).join('');
+    // Setup initial page from hash or default
+    const initial = location.hash.replace('#','') || 'overview'; showPage(initial);
 
-    // Top accounts
-    function renderTopAccounts(){
-      const top = tableData.slice().sort((a,b)=>b.revenue - a.revenue).slice(0,6);
-      $('#topAccounts').innerHTML = top.map(t=>`<li class="py-1 flex items-center justify-between"><div><div class="font-medium">${t.company}</div><div class="tiny">${t.industry} · ${t.region}</div></div><div class="font-semibold">$${t.revenue.toLocaleString()}</div></li>`).join('');
-    }
-    renderTopAccounts();
+    // Wire nav clicks
+    navBtns.forEach(btn=>btn.addEventListener('click',()=>{ const page = btn.getAttribute('data-page'); showPage(page); }));
+
+    // Handle back/forward
+    window.addEventListener('popstate',(e)=>{ const page = (e.state && e.state.page) || location.hash.replace('#','') || 'overview'; showPage(page); });
 
     // ----------------------
-    // Transactions Table render & pagination
+    // Overview charts and stats
     // ----------------------
-    function renderTable(){
-      const total = tableData.length; $('#totalRecords').textContent = `${total} Records`;
-      const pages = Math.max(1, Math.ceil(total / perPage));
-      page = Math.min(page, pages);
-      const start = (page-1)*perPage; const slice = tableData.slice(start, start+perPage);
-      const tbody = $('#transactionsTable tbody');
-      tbody.innerHTML = slice.map(r=>`<tr><td>${r.id}</td><td>${r.company}</td><td>${r.region}</td><td>${r.industry}</td><td>$${r.revenue.toLocaleString()}</td><td><span class="pill">${r.status}</span></td><td>${r.updated}</td><td><button data-id="${r.id}" class="deleteRow tiny">Delete</button></td></tr>`).join('');
-      $('#rangeInfo').textContent = `Showing ${start+1} - ${Math.min(start+perPage,total)} of ${total}`;
-      $('#pageInfo').textContent = `${page} / ${pages}`;
+    function formatCurrency(n){return '$'+n.toLocaleString()}
+    const ovRevenue = randomBetween(200000,900000);
+    const ovMrr = randomBetween(12000,90000);
+    const ovChurn = +(Math.random()*5).toFixed(2);
+    document.getElementById('ovRevenue').textContent = formatCurrency(ovRevenue);
+    document.getElementById('ovMrr').textContent = formatCurrency(ovMrr);
+    document.getElementById('ovChurn').textContent = `${ovChurn}%`;
 
-      $all('.deleteRow').forEach(btn=>btn.addEventListener('click',e=>{ const id=e.target.getAttribute('data-id'); tableData=tableData.filter(t=>t.id!==id); renderTable(); addActivity(`Deleted ${id}`); renderTopAccounts(); }));
-    }
-    renderTable();
+    const overviewLineCtx = document.getElementById('overviewLine').getContext('2d');
+    const overviewLine = new Chart(overviewLineCtx,{type:'line',data:{labels:timeseries.map(t=>t.date),datasets:[{label:'Revenue',data:timeseries.map(t=>t.value),fill:true,tension:0.25}]},options:{plugins:{legend:{display:false}},scales:{x:{display:false}}}});
 
-    $('#prevPage').addEventListener('click',()=>{ page = Math.max(1,page-1); renderTable(); });
-    $('#nextPage').addEventListener('click',()=>{ page = page+1; renderTable(); });
+    const ovPieCtx = document.getElementById('overviewPie').getContext('2d');
+    const ovPie = new Chart(ovPieCtx,{type:'doughnut',data:{labels:breakdown.map(b=>b.name),datasets:[{data:breakdown.map(b=>b.value)}]},options:{plugins:{legend:{position:'bottom'}}}});
 
-    // Export CSV
-    function exportCSV(){
-      const headers = ['id','company','region','industry','revenue','status','updated'];
-      const csv = [headers.join(',')].concat(tableData.map(r=>headers.map(h=>`"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))).join('
-');
-      const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
-      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='aurelo-transactions.csv'; a.click(); URL.revokeObjectURL(url);
-    }
-    $('#exportCSV').addEventListener('click',exportCSV);
+    // Top accounts preview
+    const topAccounts = tableData.slice().sort((a,b)=>b.revenue-a.revenue).slice(0,6);
+    document.getElementById('overviewTopAccounts').innerHTML = topAccounts.map(t=>`<div class="py-1 flex items-center justify-between"><div><div class="font-medium">${t.company}</div><div class="tiny">${t.industry} · ${t.region}</div></div><div class="font-semibold">${formatCurrency(t.revenue)}</div></div>`).join('');
 
-    // ----------------------
-    // Activity feed
-    // ----------------------
+    // Insights
+    const insights = [
+      {title:'Revenue up in North region',value:'+5.6%'},
+      {title:'High churn cohort detected',value:'Review'},
+      {title:'Avg order value rising',value:formatCurrency(randomBetween(40,280))}
+    ];
+    document.getElementById('insightsList').innerHTML = insights.map(i=>`<li class="py-2 flex items-center justify-between"><div><div class="font-medium">${i.title}</div><div class="tiny">Automated</div></div><div class="font-semibold">${i.value}</div></li>`).join('');
+
+    // Activity
     const activity = [
       {title:'Import completed',desc:'Imported 2,400 rows into Transactions.',time:'2h ago'},
       {title:'Churn alert',desc:'Churn rate increased in South region.',time:'4h ago'},
       {title:'Billing issue',desc:'Invoice #A-1129 failed to charge.',time:'1d ago'}
     ];
-    function renderActivity(){
-      $('#activityFeed').innerHTML = activity.map(a=>`<li class="py-2"><div class="font-medium">${a.title}</div><div class="tiny">${a.desc} · ${a.time}</div></li>`).join('');
+    document.getElementById('ovActivity').innerHTML = activity.map(a=>`<div class="py-2"><div class="font-medium">${a.title}</div><div class="tiny">${a.desc} · ${a.time}</div></div>`).join('');
+
+    // Health
+    document.getElementById('healthUptime').textContent = (99 + Math.random()).toFixed(2) + '%';
+    document.getElementById('healthResp').textContent = randomBetween(80,250)+'ms';
+    document.getElementById('healthDb').textContent = randomBetween(50,120)+'GB';
+
+    // ----------------------
+    // Transactions page rendering & features
+    // ----------------------
+    let txData = tableData.slice();
+    const perPage = 12; let txPage = 1;
+    function renderTxTable(){
+      const total = txData.length; const pages = Math.max(1, Math.ceil(total/perPage)); txPage = Math.min(txPage,pages);
+      const start = (txPage-1)*perPage; const slice = txData.slice(start,start+perPage);
+      const tbody = document.querySelector('#txTable tbody');
+      tbody.innerHTML = slice.map(r=>`<tr><td>${r.id}</td><td>${r.company}</td><td>${r.region}</td><td>${r.industry}</td><td>${formatCurrency(r.revenue)}</td><td><span class="pill">${r.status}</span></td><td>${r.updated}</td><td><button data-id="${r.id}" class="tx-delete tiny">Delete</button></td></tr>`).join('');
+      document.getElementById('txRange').textContent = `Showing ${start+1} - ${Math.min(start+perPage,total)} of ${total}`;
+      document.getElementById('txPage').textContent = `${txPage} / ${pages}`;
+      document.querySelectorAll('.tx-delete').forEach(btn=>btn.addEventListener('click',e=>{ const id=e.target.getAttribute('data-id'); txData = txData.filter(t=>t.id!==id); renderTxTable(); addActivity(`Deleted ${id}`) }));
     }
-    renderActivity();
-    function addActivity(text){ activity.unshift({title:text,desc:'',time:'now'}); if(activity.length>20)activity.pop(); renderActivity(); }
+    renderTxTable();
+
+    document.getElementById('txPrev').addEventListener('click',()=>{ txPage = Math.max(1, txPage-1); renderTxTable(); });
+    document.getElementById('txNext').addEventListener('click',()=>{ txPage++; renderTxTable(); });
+
+    document.getElementById('txSearch').addEventListener('input', (e)=>{ const q=e.target.value.toLowerCase(); txData = tableData.filter(t=>t.company.toLowerCase().includes(q) || t.id.toLowerCase().includes(q)); txPage=1; renderTxTable(); });
+    document.getElementById('txRegion').addEventListener('change', (e)=>{ const val=e.target.value; txData = val ? tableData.filter(t=>t.region===val) : tableData.slice(); txPage=1; renderTxTable(); });
+    document.getElementById('txExport').addEventListener('click', ()=>{ exportCSV(txData,'transactions-export.csv'); });
 
     // ----------------------
-    // Advanced analytics (simulated)
+    // Accounts page
     // ----------------------
-    $('#runModel').addEventListener('click',()=>{
-      $('#modelOutput').textContent = 'Running model...'; setTimeout(()=>{ const uplift = (Math.random()*6).toFixed(2); $('#modelOutput').innerHTML = `Estimated uplift: <strong>${uplift}%</strong><div class="tiny">Top features: region, industry, revenue</div>`; },1400);
+    const accs = tableData.slice();
+    document.getElementById('accTotal').textContent = accs.length;
+    document.getElementById('accActive').textContent = accs.filter(a=>a.status==='Active').length;
+    document.getElementById('accNew').textContent = randomBetween(20,120);
+    const avgLtv = Math.round(accs.reduce((s,a)=>s+a.revenue,0)/accs.length);
+    document.getElementById('accLtv').textContent = formatCurrency(avgLtv);
+    document.querySelector('#accTable tbody').innerHTML = accs.slice(0,50).map(a=>`<tr><td>${a.company}</td><td>${a.region}</td><td>${a.industry}</td><td>${formatCurrency(a.revenue)}</td><td><span class="pill">${a.status}</span></td></tr>`).join('');
+
+    // ----------------------
+    // Reports list (demo)
+    // ----------------------
+    const reports = [
+      {id:1,title:'Monthly Revenue',desc:'Auto-run monthly revenue report'},
+      {id:2,title:'Churn Analysis',desc:'Cohort churn by acquisition month'},
+      {id:3,title:'Top Accounts',desc:'Largest accounts and run-rate'}
+    ];
+    document.getElementById('reportsList').innerHTML = reports.map(r=>`<div class="card p-3"><div class="font-medium">${r.title}</div><div class="tiny">${r.desc}</div><div class="mt-3 flex gap-2"><button class="py-1 px-3 rounded-xl border" onclick="alert('Download ${r.title} (demo)')">Download</button><button class="py-1 px-3 rounded-xl border" onclick="alert('Schedule ${r.title} (demo)')">Schedule</button></div></div>`).join('');
+
+    // ----------------------
+    // Analytics page: cohort chart (simulated heatmap using bar stacks)
+    // ----------------------
+    const cohortCtx = document.getElementById('cohortChart').getContext('2d');
+    const cohorts = Array.from({length:6}).map((_,i)=>({label:`Cohort ${i+1}`,data:Array.from({length:6}).map(()=>randomBetween(30,100))}));
+    const cohortChart = new Chart(cohortCtx,{type:'bar',data:{labels:['W0','W1','W2','W4','W8','W12'],datasets:cohorts.map((c,idx)=>({label:c.label,data:c.data,stack:'a'}))},options:{plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true}}}});
+
+    document.getElementById('runSim').addEventListener('click',()=>{
+      const churn = Number(document.getElementById('simChurn').value);
+      const promo = Number(document.getElementById('simPromo').value);
+      const est = (ovRevenue * (1 - churn/100)) * (1 + promo/100);
+      document.getElementById('simOutput').innerHTML = `If churn changes by <strong>${churn}%</strong> and promo uplift is <strong>${promo}%</strong>, estimated revenue: <strong>${formatCurrency(Math.round(est))}</strong>`;
     });
-    $('#clearModel').addEventListener('click',()=>{ $('#modelOutput').textContent = 'No model run yet.'; });
 
     // ----------------------
-    // Export snapshot (JSON)
+    // Users page (demo data & simple role changes)
     // ----------------------
-    $('#exportSnapshot').addEventListener('click',()=>{
-      const snapshot = { timestamp:new Date().toISOString(), kpis, timeseries:timeseries.slice(-30), breakdown };
-      const blob = new Blob([JSON.stringify(snapshot,null,2)],{type:'application/json'});
-      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=`aurelo-snapshot-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
-    });
+    const users = [
+      {name:'Monish Allada',role:'Admin',email:'monish@example.com',active:true},
+      {name:'Ava Smith',role:'Analyst',email:'ava@example.com',active:true},
+      {name:'Ethan Lee',role:'Viewer',email:'ethan@example.com',active:false}
+    ];
+    document.querySelector('#usersTable tbody').innerHTML = users.map((u,i)=>`<tr><td>${u.name}</td><td><select data-idx="${i}" class="user-role"><option ${u.role==='Admin'?'selected':''}>Admin</option><option ${u.role==='Analyst'?'selected':''}>Analyst</option><option ${u.role==='Viewer'?'selected':''}>Viewer</option></select></td><td>${u.email}</td><td><input type="checkbox" data-idx="${i}" class="user-active" ${u.active?'checked':''}></td><td><button data-idx="${i}" class="user-remove py-1 px-2 rounded-xl border tiny">Remove</button></td></tr>`).join('');
+    document.querySelectorAll('.user-remove').forEach(btn=>btn.addEventListener('click',e=>{ const i=Number(e.target.getAttribute('data-idx')); users.splice(i,1); e.target.closest('tr').remove(); }));
 
     // ----------------------
-    // Small utilities
+    // Alerts / Settings handlers
     // ----------------------
-    $('#createReport').addEventListener('click',()=>{ addActivity('Report created'); alert('Report created (demo)'); });
-    $('#importData').addEventListener('click',()=>{ addActivity('Data import started'); alert('Import started (demo)'); });
+    document.getElementById('saveAlerts').addEventListener('click',()=>{ addActivity('Alerts updated'); alert('Alerts saved (demo)'); });
+    document.getElementById('saveSettings').addEventListener('click',()=>{ addActivity('Settings saved'); alert('Settings saved (demo)'); });
 
-    $('#downloadConfig').addEventListener('click',()=>{
-      const cfg = {notifyEmail:!!$('#notifyEmail').checked,dailySummary:!!$('#dailySummary').checked};
-      const blob = new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='aurelo-config.json'; a.click(); URL.revokeObjectURL(url);
-    });
+    // ----------------------
+    // Common utilities: export CSV, snapshot, activity
+    // ----------------------
+    function exportCSV(arr, filename='export.csv'){ const headers = Object.keys(arr[0]||{}); const csv = [headers.join(',')].concat(arr.map(r=>headers.map(h=>`"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))).join('
+'); const blob = new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url); }
 
-    $('#resetSettings').addEventListener('click',()=>{ $('#notifyEmail').checked=true; $('#dailySummary').checked=false; addActivity('Settings reset'); });
+    function addActivity(text){ const el = document.createElement('div'); el.className='py-2'; el.innerHTML=`<div class="font-medium">${text}</div><div class="tiny">just now</div>`; const container = document.getElementById('ovActivity'); container.prepend(el); }
 
-    // Search box filter (simple)
-    $('#searchBox').addEventListener('input',(e)=>{ const q=e.target.value.toLowerCase(); tableData = tableData.map(t=>t); if(q){ tableData = tableData.filter(r=>r.company.toLowerCase().includes(q) || r.id.toLowerCase().includes(q)); } else { tableData = generateTableData(140); } page=1; renderTable(); renderTopAccounts(); });
+    document.getElementById('ovExportSnapshot').addEventListener('click',()=>{ const snap = {ts:new Date().toISOString(),ovRevenue,ovMrr,ovChurn}; const blob=new Blob([JSON.stringify(snap,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='aurelo-snapshot.json'; a.click(); URL.revokeObjectURL(url); addActivity('Snapshot exported'); });
 
-    // Theme toggle simple
-    let dark = true; $('#toggleTheme').addEventListener('click',()=>{ dark=!dark; document.body.style.background = dark? 'linear-gradient(180deg,#0f172a,#0b1220)' : 'linear-gradient(180deg,#f8fafc,#eef2ff)'; document.body.style.color = dark? '#e6eef8':'#0b1220'; });
+    // Quick actions
+    document.getElementById('quickReport').addEventListener('click',()=>{ alert('Creating report (demo)'); addActivity('Quick report created'); });
+    document.getElementById('quickImport').addEventListener('click',()=>{ alert('Import (demo)'); addActivity('Import started'); });
 
-    // Wire up nav buttons (visual only)
-    $all('[data-nav]').forEach(btn=>btn.addEventListener('click',e=>{ $all('[data-nav]').forEach(b=>b.classList.remove('bg-white/3')); e.currentTarget.classList.add('bg-white/3'); }));
+    // Theme toggle
+    let dark = true; document.getElementById('toggleTheme').addEventListener('click',()=>{ dark=!dark; if(!dark){ document.body.style.background='linear-gradient(180deg,#f8fafc,#eef2ff)'; document.body.style.color='#08122b'; } else { document.body.style.background='linear-gradient(180deg,#0f172a,#0b1220)'; document.body.style.color='#e6eef8'; } });
 
-    // Add a small periodic update to mimic live data
-    setInterval(()=>{
-      // shift timeseries and add a new point
-      const last = timeseries[timeseries.length-1]; const newVal = Math.max(200, Math.round(last.value + (Math.random()-0.5)*200));
-      timeseries.push({date:new Date().toISOString().slice(0,10), value:newVal}); timeseries.shift();
-      lineChart.data.datasets[0].data = timeseries.map(t=>t.value); lineChart.data.labels = timeseries.map(t=>t.date); lineChart.update();
-      addActivity('Live update');
-    },8000);
+    // Page-level deep links: clicking nav also focuses scroll to main
+    document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>{ document.querySelector('main').scrollIntoView({behavior:'smooth'}); }));
 
-    // Make some colors exist for legend (small hack)
-    const style = document.createElement('style'); style.innerHTML = `:root{--c0:#6366f1;--c1:#06b6d4;--c2:#f97316}`; document.head.appendChild(style);
+    // Small periodic updates to demonstrate live data
+    setInterval(()=>{ // update line chart by adding new point
+      const newVal = Math.max(200, Math.round(timeseries[timeseries.length-1].value + (Math.random()-0.5)*400)); timeseries.push({date:new Date().toISOString().slice(0,10),value:newVal}); timeseries.shift(); overviewLine.data.labels = timeseries.map(t=>t.date); overviewLine.data.datasets[0].data = timeseries.map(t=>t.value); overviewLine.update(); addActivity('Live update'); }, 10000);
+
+    // Accessibility: allow keyboard nav between pages using number keys 1-8
+    window.addEventListener('keydown',(e)=>{ if(e.key>='1' && e.key<='8'){ const idx = Number(e.key)-1; if(navBtns[idx]){ navBtns[idx].click(); } } });
 
   </script>
 </body>
