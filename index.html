@@ -84,6 +84,13 @@ body.light{--bg:#fff; --panel:#f2f4f8; --text:#000; --text-muted:#444; --card:#f
       <div class="pill">Online</div>
     </div>
 
+    <div class="section-title">Data Ops</div>
+    <nav aria-label="Data Operations" style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+      <button class="nav-btn" data-page="dataPackets">🧩 Data Packets</button>
+      <button class="nav-btn" data-page="inventory">📦 Inventory Mgmt</button>
+      <button class="nav-btn" data-page="suppliers">🤝 Suppliers</button>
+    </nav>
+
     <div class="section-title">Quick actions</div>
     <div class="actions">
       <button id="exportSnapshot" class="btn">Export snapshot</button>
@@ -264,6 +271,94 @@ body.light{--bg:#fff; --panel:#f2f4f8; --text:#000; --text-muted:#444; --card:#f
       </div>
       <footer>© <span id="yr"></span> Aurelo Bay</footer>
     </section>
+
+    <!-- DATA PACKETS -->
+    <section id="dataPackets" class="page">
+      <h2>Data Packets Marketplace</h2>
+      <div class="grid cols-4" id="dpKPIs"></div>
+      <div class="card" style="margin-top:12px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input id="dpSearch" class="search" placeholder="Search packets, schemas, tags..."/>
+          <select id="dpCategory" class="btn ghost" style="padding:8px;border-radius:8px">
+            <option value="">All categories</option>
+            <option value="POS">POS</option>
+            <option value="E‑com">E‑com</option>
+            <option value="Footfall">Footfall</option>
+            <option value="Pricing">Pricing</option>
+            <option value="Supply">Supply</option>
+          </select>
+          <label class="muted">Min quality <input id="dpQmin" type="range" min="60" max="99" value="80"/></label>
+          <span id="dpQval" class="badge">80</span>
+          <button id="exportPackets" class="btn">Export catalog CSV</button>
+        </div>
+      </div>
+      <div class="card table-wrap" style="margin-top:12px">
+        <table id="dpTable">
+          <thead>
+            <tr>
+              <th>Packet</th><th>Category</th><th>Schema Fields</th><th>Rows</th><th>Size</th>
+              <th>Refresh</th><th>Quality</th><th>Price/mo</th><th>License</th><th>Downloads</th><th>Updated</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <strong>Revenue by Category (Last 30d)</strong>
+        <canvas id="dpRevenueChart" height="160"></canvas>
+      </div>
+    </section>
+
+    <!-- INVENTORY MGMT -->
+    <section id="inventory" class="page">
+      <h2>Inventory Management</h2>
+      <div class="grid cols-4" id="invKPIs"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin:8px 0;flex-wrap:wrap">
+        <select id="invStore" class="btn ghost" style="padding:8px;border-radius:8px">
+          <option value="">All stores</option><option>San Francisco</option><option>San Jose</option>
+          <option>Oakland</option><option>Palo Alto</option><option>Berkeley</option><option>Online</option>
+        </select>
+        <button id="recalcEOQ" class="btn">Recalculate EOQ</button>
+        <button id="exportInventory" class="btn">Export Inventory CSV</button>
+      </div>
+      <div class="card table-wrap">
+        <table id="invTable">
+          <thead>
+            <tr>
+              <th>SKU</th><th>Name</th><th>Category</th><th>In Stock</th><th>On Order</th><th>Backorder</th>
+              <th>Unit Cost</th><th>Price</th><th>Margin%</th><th>Demand (30d)</th><th>Forecast (30d)</th>
+              <th>ROP</th><th>Safety</th><th>EOQ</th><th>Lead (d)</th><th>Supplier</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="grid cols-2" style="margin-top:12px">
+        <div class="card"><strong>Low-Stock Count by Category</strong><canvas id="invLowChart" height="160"></canvas></div>
+        <div class="card"><strong>Days of Supply Distribution</strong><canvas id="invDOSChart" height="160"></canvas></div>
+      </div>
+    </section>
+
+    <!-- SUPPLIERS -->
+    <section id="suppliers" class="page">
+      <h2>Suppliers</h2>
+      <div class="grid cols-4" id="supKPIs"></div>
+      <div class="card table-wrap" style="margin-top:12px">
+        <table id="supTable">
+          <thead>
+            <tr>
+              <th>Supplier</th><th>Category</th><th>Lead (d)</th><th>On-time%</th><th>Defect%</th>
+              <th>MOQ</th><th>Payment</th><th>Price Index</th><th>Spend YTD</th><th>Risk</th><th>Contact</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <strong>On-time vs Defect Rate</strong>
+        <canvas id="supScatter" height="180"></canvas>
+      </div>
+    </section>
   </main>
 </div>
 
@@ -341,6 +436,9 @@ const PRODUCTS = [
   ['GROC-408','Oat Milk (64oz)','Grocery',6]
 ].map(([sku,name,cat,price])=>({sku,name,cat,price}));
 
+/* Data Packet categories */
+const DP_CATS = ['POS','E‑com','Footfall','Pricing','Supply'];
+
 /* Weighted pick helper */
 function pickWeighted(weights){
   const total = weights.reduce((a,b)=>a+b,0); let r = Math.random()*total;
@@ -408,16 +506,16 @@ function aggregate(){
   const appleShare = Math.round(ORDERS.filter(b=>b.pay==='Apple Pay').length / orders * 100);
   const online = ORDERS.filter(b=>b.channel==='Online').length;
   const instore = orders - online;
-  const returns = Math.round(orders * 0.035); // ~3.5%
+  const returns = Math.round(orders * 0.035);
   const refundRate = Math.round(returns / orders * 1000)/10;
-  const repeatCust = Math.round(orders * 0.22); // 22%
+  const repeatCust = Math.round(orders * 0.22);
   const newCust = orders - repeatCust;
-  const visitors = 18000 + Math.floor(Math.random()*6000); // foot + sessions
+  const visitors = 18000 + Math.floor(Math.random()*6000);
   const conversion = Math.round((orders/visitors)*1000)/10;
   const rpv = Math.round((net/visitors)*100)/100;
-  const mrr = Math.round((net*0.12)/12); // 12% recurring lines → made-up ratio
-  const cac = 14 + Math.round(Math.random()*8); // $
-  const ltv = Math.round(aov * (3 + Math.random()*6)); // very rough sim
+  const mrr = Math.round((net*0.12)/12);
+  const cac = 14 + Math.round(Math.random()*8);
+  const ltv = Math.round(aov * (3 + Math.random()*6));
   return {gross, net, tax, orders, aov, itemsSold, cardShare, appleShare, online, instore, returns, refundRate, repeatCust, newCust, visitors, conversion, rpv, mrr, cac, ltv};
 }
 const AGG = aggregate();
@@ -502,30 +600,15 @@ function buildTopItems(){
   });
 }
 function buildRegionStacked(){
-  // Aggregate revenue by city per week day (Mon..Sun)
   const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const series = STORES.slice(0,5); // physical stores only
   const agg = {}; series.forEach(s=> agg[s]=Array(7).fill(0));
-  ORDERS.forEach(o=>{
-    const d = new Date(); const di = new Date().getDay(); // simulated spread
-  });
-  // Simulate with structure resembling realistic mix
   for(let i=0;i<7;i++){
-    series.forEach((s,si)=>{
-      agg[s][i] = 50000 + si*12000 + i*8000 + Math.random()*18000; // just a plausible stacked shape
-    });
+    series.forEach((s,si)=>{ agg[s][i] = 50000 + si*12000 + i*8000 + Math.random()*18000; });
   }
   regionStackedChart = new Chart(byId('regionStackedChart'),{
     type:'bar',
-    data:{
-      labels:days,
-      datasets: series.map((s,idx)=>({
-        label:s,
-        data:agg[s],
-        backgroundColor:['#60a5fa','#7c3aed','#22c55e','#f97316','#e11d48'][idx%5],
-        stack:'cities'
-      }))
-    },
+    data:{ labels:days, datasets: series.map((s,idx)=>({ label:s, data:agg[s], backgroundColor:['#60a5fa','#7c3aed','#22c55e','#f97316','#e11d48'][idx%5], stack:'cities' })) },
     options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true}}}
   });
 }
@@ -560,10 +643,8 @@ function renderOrders(){
 byId('orderSearch').addEventListener('input', e=>{
   const q = e.target.value.toLowerCase();
   const body = byId('orderTable').querySelector('tbody');
-  body.innerHTML = ORDERS.filter(b=>{
-    const hay = JSON.stringify(b).toLowerCase();
-    return !q || hay.includes(q);
-  }).slice(0,220).map(b=>`<tr>
+  body.innerHTML = ORDERS.filter(b=>{ const hay = JSON.stringify(b).toLowerCase(); return !q || hay.includes(q); })
+    .slice(0,220).map(b=>`<tr>
     <td>${b.order}</td><td>${b.time}</td><td>${b.store}</td><td>${b.channel}</td>
     <td>${b.qty}</td><td>${USD.format(b.subtotal)}</td><td>${USD.format(b.tax)}</td><td><strong>${USD.format(b.total)}</strong></td><td>${b.pay}</td></tr>`).join('');
 });
@@ -572,9 +653,8 @@ byId('orderPay').addEventListener('change', filterOrders);
 function filterOrders(){
   const store = byId('orderStore').value, pay = byId('orderPay').value;
   const body = byId('orderTable').querySelector('tbody');
-  body.innerHTML = ORDERS.filter(b=>{
-    return (!store || b.store===store) && (!pay || b.pay===pay);
-  }).slice(0,220).map(b=>`<tr>
+  body.innerHTML = ORDERS.filter(b=>{ return (!store || b.store===store) && (!pay || b.pay===pay); })
+    .slice(0,220).map(b=>`<tr>
     <td>${b.order}</td><td>${b.time}</td><td>${b.store}</td><td>${b.channel}</td>
     <td>${b.qty}</td><td>${USD.format(b.subtotal)}</td><td>${USD.format(b.tax)}</td><td><strong>${USD.format(b.total)}</strong></td><td>${b.pay}</td></tr>`).join('');
 }
@@ -584,6 +664,54 @@ byId('exportOrders').addEventListener('click', ()=>{
   const csv = [headers.join(',')].concat(rows.map(r=>r.join(','))).join('\n');
   const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href=url; a.download='aurelo_orders.csv'; a.click(); URL.revokeObjectURL(url);
+});
+
+/* -------------------------- DATA PACKETS (Marketplace) -------------------------- */
+const PACKETS = Array.from({length: 60}, (_,i)=>{
+  const cat = DP_CATS[i%DP_CATS.length];
+  const fields = 8 + Math.floor(Math.random()*12);
+  const rows = 50000 + Math.floor(Math.random()*900000);
+  const mb = 5 + Math.floor(rows/20000) + Math.floor(Math.random()*40);
+  const price = cat==='POS'? 299: cat==='E‑com'? 249: cat==='Footfall'? 199: cat==='Pricing'? 179: 159;
+  const q = 75 + Math.floor(Math.random()*24);
+  const dl = 50 + Math.floor(Math.random()*1200);
+  const refresh = ['Hourly','Daily','Weekly'][pickWeighted([10,65,25])];
+  const lic = ['Std','Pro','Enterprise'][pickWeighted([55,35,10])];
+  const updated = new Date(Date.now()-Math.floor(Math.random()*10)*86400000).toLocaleDateString();
+  return {name:`${cat} Packet #${i+1}`, cat, fields, rows, mb, price, q, dl, refresh, lic, updated};
+});
+function renderPackets(){
+  const body = byId('dpTable').querySelector('tbody');
+  const qmin = Number(byId('dpQmin').value||80); byId('dpQval').textContent = qmin;
+  const cat = byId('dpCategory').value; const search = (byId('dpSearch').value||'').toLowerCase();
+  const data = PACKETS.filter(p=> (p.q>=qmin) && (!cat || p.cat===cat) && (!search || JSON.stringify(p).toLowerCase().includes(search)));
+  body.innerHTML = data.slice(0,200).map(p=>`<tr>
+    <td>${p.name}</td><td>${p.cat}</td><td>${p.fields}</td><td>${fmtN(p.rows)}</td><td>${p.mb} MB</td>
+    <td>${p.refresh}</td><td><span class="badge">${p.q}</span></td><td>${USD.format(p.price)}</td><td>${p.lic}</td><td>${fmtN(p.dl)}</td><td>${p.updated}</td>
+  </tr>`).join('');
+  // KPIs
+  const k = [
+    {h:'Packets', v:PACKETS.length},
+    {h:'Avg Size', v:`${Math.round(PACKETS.reduce((s,p)=>s+p.mb,0)/PACKETS.length)} MB`},
+    {h:'Avg Quality', v:`${Math.round(PACKETS.reduce((s,p)=>s+p.q,0)/PACKETS.length)} / 100`},
+    {h:'Est. MRR', v:USD.format(PACKETS.reduce((s,p)=>s+p.price,0))}
+  ];
+  byId('dpKPIs').innerHTML = k.map(x=>`<div class="card"><div class="kpi">${x.v}</div><div class="kpi-sub">${x.h}</div></div>`).join('');
+  // Revenue by category chart
+  const agg = {}; DP_CATS.forEach(c=>agg[c]=0); PACKETS.forEach(p=> agg[p.cat]+=p.price);
+  if(window.dpRevenueChart) window.dpRevenueChart.destroy();
+  window.dpRevenueChart = new Chart(byId('dpRevenueChart'),{
+    type:'bar', data:{labels:Object.keys(agg), datasets:[{label:'MRR', data:Object.values(agg), backgroundColor:'#7c3aed'}]}, options:{plugins:{legend:{display:false}}}
+  });
+}
+byId('dpQmin').addEventListener('input', renderPackets);
+byId('dpCategory').addEventListener('change', renderPackets);
+byId('dpSearch').addEventListener('input', renderPackets);
+byId('exportPackets').addEventListener('click', ()=>{
+  const headers = ['Packet','Category','Fields','Rows','Size(MB)','Refresh','Quality','Price','License','Downloads','Updated'];
+  const csv = [headers.join(',')].concat(PACKETS.map(p=>[p.name,p.cat,p.fields,p.rows,p.mb,p.refresh,p.q,p.price,p.lic,p.dl,p.updated].join(','))).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='aurelo_packets.csv'; a.click(); URL.revokeObjectURL(url);
 });
 
 /* -------------------------- PRODUCTS PAGE -------------------------- */
@@ -630,6 +758,101 @@ function renderAccounts(){
 function renderUsers(){
   const body = byId('usersTable').querySelector('tbody');
   body.innerHTML = USERS.map(u=>`<tr><td>${u.n}</td><td>${u.role}</td><td>${u.loc}</td><td>${u.active?'Yes':'No'}</td></tr>`).join('');
+}
+
+/* -------------------------- INVENTORY MANAGEMENT -------------------------- */
+const SUPPLIERS = Array.from({length: 24}, (_,i)=>({
+  name:`Supplier ${i+1}`,
+  cat: CATEGORY[i % CATEGORY.length],
+  lead: 5 + Math.floor(Math.random()*21),
+  ontime: 80 + Math.floor(Math.random()*20),
+  defect: (Math.random()*3.5).toFixed(1),
+  moq: 20 + Math.floor(Math.random()*180),
+  terms: ['Net 15','Net 30','2/10 Net 30','Prepaid'][pickWeighted([20,55,15,10])],
+  priceIdx: (90 + Math.random()*25).toFixed(0),
+  spend: Math.round(5000 + Math.random()*250000),
+  contact: `ops@supplier${i+1}.com`
+}));
+
+function buildInventoryLines(){
+  return PRODUCTS.map((p,idx)=>{
+    const supplier = SUPPLIERS[idx % SUPPLIERS.length].name;
+    const demand30 = 20 + Math.floor(Math.random()*250);
+    const unitCost = Math.round(p.price * (0.42 + Math.random()*0.18));
+    const stock = 10 + Math.floor(Math.random()*420);
+    const onOrder = Math.floor(Math.random()*180);
+    const back = Math.random()<0.06 ? Math.floor(Math.random()*20): 0;
+    const lead = SUPPLIERS[idx % SUPPLIERS.length].lead;
+    const sigma = Math.ceil(demand30*0.2);
+    const daily = demand30/30;
+    const safety = Math.ceil(1.65 * Math.sqrt(lead) * (sigma/30));
+    const rop = Math.ceil(daily*lead + safety);
+    const forecast = Math.round(demand30 * (0.98 + Math.random()*0.12));
+    const eoq = Math.ceil(Math.sqrt((2* (800 + Math.random()*1200) * demand30) / Math.max(1,(unitCost*0.22))));
+    const margin = Math.round(((p.price - unitCost)/p.price)*100);
+    const status = stock<=0? 'Stockout' : stock<rop? 'Low' : 'Healthy';
+    return { ...p, supplier, unitCost, stock, onOrder, back, lead, safety, rop, eoq, demand30, forecast, margin, status };
+  });
+}
+const INV_LINES = buildInventoryLines();
+
+function renderInventory(){
+  const body = byId('invTable').querySelector('tbody');
+  body.innerHTML = INV_LINES.map(r=>`<tr>
+    <td>${r.sku}</td><td>${r.name}</td><td>${r.cat}</td>
+    <td>${fmtN(r.stock)}</td><td>${fmtN(r.onOrder)}</td><td>${fmtN(r.back)}</td>
+    <td>${USD.format(r.unitCost)}</td><td>${USD.format(r.price)}</td><td>${r.margin}%</td>
+    <td>${fmtN(r.demand30)}</td><td>${fmtN(r.forecast)}</td>
+    <td>${fmtN(r.rop)}</td><td>${fmtN(r.safety)}</td><td>${fmtN(r.eoq)}</td>
+    <td>${r.lead}</td><td>${r.supplier}</td>
+    <td><span class="badge" style="background:${r.status==='Healthy'?'rgba(34,197,94,.2)': r.status==='Low'?'rgba(234,179,8,.2)':'rgba(239,68,68,.2)'}">${r.status}</span></td>
+  </tr>`).join('');
+  // KPIs
+  const k = [
+    {h:'SKUs', v:INV_LINES.length},
+    {h:'In-Stock %', v:`${Math.round(INV_LINES.filter(x=>x.stock>0).length/INV_LINES.length*100)}%`},
+    {h:'Stockouts', v:INV_LINES.filter(x=>x.stock<=0).length},
+    {h:'Avg Lead', v:`${Math.round(INV_LINES.reduce((s,x)=>s+x.lead,0)/INV_LINES.length)} d`}
+  ];
+  byId('invKPIs').innerHTML = k.map(x=>`<div class="card"><div class="kpi">${x.v}</div><div class="kpi-sub">${x.h}</div></div>`).join('');
+  // Low stock chart by category
+  const lowAgg = {}; CATEGORY.forEach(c=>lowAgg[c]=0); INV_LINES.forEach(r=>{ if(r.status!=='Healthy') lowAgg[r.cat]++; });
+  if(window.invLowChart) window.invLowChart.destroy();
+  window.invLowChart = new Chart(byId('invLowChart'),{ type:'bar', data:{labels:Object.keys(lowAgg), datasets:[{label:'Low/Stockout', data:Object.values(lowAgg), backgroundColor:'#ef4444'}]}, options:{plugins:{legend:{display:false}}} });
+  // Days of supply distribution
+  const dos = INV_LINES.map(r=> Math.max(0, Math.round(r.stock / Math.max(1,r.demand30/30))));
+  const buckets = {'0-7':0,'8-14':0,'15-30':0,'31-60':0,'60+':0};
+  dos.forEach(d=>{ if(d<=7) buckets['0-7']++; else if(d<=14) buckets['8-14']++; else if(d<=30) buckets['15-30']++; else if(d<=60) buckets['31-60']++; else buckets['60+']++; });
+  if(window.invDOSChart) window.invDOSChart.destroy();
+  window.invDOSChart = new Chart(byId('invDOSChart'),{ type:'bar', data:{labels:Object.keys(buckets), datasets:[{label:'SKU count', data:Object.values(buckets), backgroundColor:'#60a5fa'}]}, options:{plugins:{legend:{display:false}}} });
+}
+byId('recalcEOQ').addEventListener('click', ()=>{ INV_LINES.forEach(r=> r.eoq = Math.ceil(Math.sqrt((2*(800+Math.random()*1200)*r.demand30)/Math.max(1,(r.unitCost*0.22)))) ); renderInventory(); });
+byId('exportInventory').addEventListener('click', ()=>{
+  const headers = ['SKU','Name','Category','Stock','OnOrder','Backorder','UnitCost','Price','Margin','Demand30','Forecast30','ROP','Safety','EOQ','Lead','Supplier','Status'];
+  const csv = [headers.join(',')].concat(INV_LINES.map(r=>[r.sku,r.name,r.cat,r.stock,r.onOrder,r.back,r.unitCost,r.price,r.margin,r.demand30,r.forecast,r.rop,r.safety,r.eoq,r.lead,r.supplier,r.status].join(','))).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='aurelo_inventory.csv'; a.click(); URL.revokeObjectURL(url);
+});
+
+/* -------------------------- SUPPLIERS -------------------------- */
+function renderSuppliers(){
+  const body = byId('supTable').querySelector('tbody');
+  body.innerHTML = SUPPLIERS.map(s=>`<tr>
+    <td>${s.name}</td><td>${s.cat}</td><td>${s.lead}</td><td>${s.ontime}%</td><td>${s.defect}%</td>
+    <td>${s.moq}</td><td>${s.terms}</td><td>${s.priceIdx}</td><td>${USD.format(s.spend)}</td><td><span class="badge">${Number(s.defect)<1.5 && s.ontime>92?'Low':'Med'}</span></td><td>${s.contact}</td>
+  </tr>`).join('');
+  // KPIs
+  const k = [
+    {h:'Suppliers', v:SUPPLIERS.length},
+    {h:'Avg Lead', v:`${Math.round(SUPPLIERS.reduce((s,x)=>s+x.lead,0)/SUPPLIERS.length)} d`},
+    {h:'On-time ≥ 95%', v:SUPPLIERS.filter(s=>s.ontime>=95).length},
+    {h:'Spend YTD', v:USD.format(SUPPLIERS.reduce((s,x)=>s+x.spend,0))}
+  ];
+  byId('supKPIs').innerHTML = k.map(x=>`<div class="card"><div class="kpi">${x.v}</div><div class="kpi-sub">${x.h}</div></div>`).join('');
+  // Scatter: on-time vs defect (bubble = spend index)
+  const data = SUPPLIERS.map(s=>({x:s.ontime, y:Number(s.defect), r: Math.max(4, Math.round(s.spend/30000)) }));
+  if(window.supScatter) window.supScatter.destroy();
+  window.supScatter = new Chart(byId('supScatter'),{ type:'bubble', data:{ datasets:[{label:'Suppliers', data}] }, options:{ scales:{ x:{ title:{display:true, text:'On-time %'} }, y:{ title:{display:true, text:'Defect %'} } } } });
 }
 
 /* -------------------------- ANALYTICS -------------------------- */
@@ -695,6 +918,9 @@ function boot(){
   renderProducts();
   renderAccounts();
   renderUsers();
+  renderPackets();
+  renderInventory();
+  renderSuppliers();
   buildHourly(); buildWeekly(); buildCategory(); buildPayment(); buildTopItems(); buildRegionStacked(); buildMonthly();
   renderInsights();
   byId('weekTotal').title = 'Includes in-store and online revenue';
@@ -704,4 +930,3 @@ boot();
 </script>
 </body>
 </html>
-
