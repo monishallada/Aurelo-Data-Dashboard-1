@@ -2,627 +2,789 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aurelo Bay — Enterprise Ops (USD)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aurelo Data — Store Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-:root{
-  --bg:#071027; --panel:#0f1724; --muted:#93a8bf; --accent:#60a5fa; --glass:rgba(255,255,255,0.04);
-  --card:#0b1220; --text:#e6eef8; --text-muted:#93a8bf;
-}
-*{box-sizing:border-box}
-body{margin:0;background:linear-gradient(180deg,var(--bg),#05111b);color:var(--text);
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
-.container{max-width:1600px;margin:18px auto;display:grid;grid-template-columns:280px 1fr;gap:18px;padding:12px}
-aside.sidebar{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:16px;height:calc(100vh - 36px);position:sticky;top:18px;overflow:auto}
-.logo{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.brand-circle{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(90deg,#7c3aed,#06b6d4);font-weight:800}
-.brand-title{font-weight:700;font-size:16px}
-nav#mainNav{display:flex;flex-direction:column;gap:6px;margin-top:12px}
-button.nav-btn{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;text-align:left;font-size:14px}
-button.nav-btn:hover{background:var(--glass);color:#fff}
-button.nav-btn.active{background:linear-gradient(90deg,rgba(99,102,241,0.12),rgba(6,182,212,0.06));color:#fff}
-.sidebar .section-title{font-size:12px;color:var(--text-muted);margin-top:12px}
-.pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--text-muted);font-weight:600}
-.sidebar .actions{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-main{padding:6px}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.search-box{display:flex;gap:8px;align-items:center}
-input.search{padding:9px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:inherit;min-width:260px}
-.btn{padding:8px 12px;border-radius:10px;border:0;background:var(--accent);color:#05203b;cursor:pointer;font-weight:600}
-.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.12);color:var(--text-muted)}
-.grid{display:grid;gap:12px}
-.cols-2{grid-template-columns:repeat(2,1fr)}
-.cols-3{grid-template-columns:repeat(3,1fr)}
-.cols-4{grid-template-columns:repeat(4,1fr)}
-.card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.08)}
-.kpi{font-size:20px;font-weight:800}
-.kpi-sub{color:var(--text-muted);font-size:12px}
-.muted{color:var(--text-muted);font-size:13px}
-.badge{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,0.08);font-weight:700}
-.table-wrap{overflow:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{color:var(--text-muted);text-align:left;padding:10px;border-bottom:1px solid rgba(255,255,255,0.12)}
-tbody td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.06)}
-.page{display:none}
-.page.active{display:block}
-footer{margin-top:18px;color:var(--text-muted);font-size:12px;text-align:center}
-/* Light theme */
-body.light{--bg:#fff; --panel:#f2f4f8; --text:#000; --text-muted:#444; --card:#fefefe; --glass:rgba(0,0,0,0.06)}
-@media (max-width: 980px){.container{grid-template-columns:1fr} aside.sidebar{height:auto;position:relative}}
+  :root{
+    --bg:#070B1A;        /* deep space */
+    --bg-2:#0B1328;      /* panels */
+    --glass:rgba(255,255,255,.05);
+    --card:#0E1733; 
+    --text:#E7EEF9; 
+    --muted:#9AB0C8;
+    --accent:#7C5CFF;    /* Aurelo purple */
+    --accent-2:#25D0A6;  /* mint */
+    --warn:#FFB454;
+    --danger:#FF5D7A;
+    --good:#43D17A;
+    --border:rgba(255,255,255,.08);
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:
+    radial-gradient(1200px 800px at 10% -10%, rgba(124,92,255,.15), transparent 60%),
+    radial-gradient(800px 600px at 110% 20%, rgba(37,208,166,.12), transparent 50%),
+    linear-gradient(180deg,var(--bg),#050912);
+    font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text);
+  }
+  .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+  aside{background:linear-gradient(180deg,var(--bg-2),#0a1225);border-right:1px solid var(--border);padding:20px;position:sticky;top:0;height:100vh}
+  .brand{display:flex;align-items:center;gap:12px;margin:6px 6px 18px}
+  .logo{width:42px;height:42px;border-radius:12px;background:
+     conic-gradient(from 120deg, var(--accent), transparent 60%),
+     conic-gradient(from -20deg, var(--accent-2), transparent 65%),
+     linear-gradient(135deg, #1b2547, #0E1733); box-shadow:0 8px 22px rgba(124,92,255,.25)}
+  .brand h1{font-size:18px;letter-spacing:.4px;margin:0}
+  .brand small{display:block;color:var(--muted);margin-top:2px}
+  nav{margin-top:14px}
+  .nav-group{margin:18px 0 6px 10px;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.12em}
+  .nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;margin:6px;border-radius:12px;color:var(--text);text-decoration:none;border:1px solid transparent}
+  .nav a:hover{background:var(--glass);border-color:var(--border)}
+  .nav a.active{background:linear-gradient(180deg,#121d3f,#0c1430);border-color:#1e2b52}
+  .nav .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
+  .pro-badge{margin:10px 6px;padding:12px;border-radius:16px;background:linear-gradient(180deg,#101a39,#0b1329);border:1px dashed #243056}
+  .pro-badge b{color:var(--accent)}
+
+  header{display:flex;align-items:center;gap:14px;padding:16px 22px;border-bottom:1px solid var(--border);backdrop-filter:saturate(1.2) blur(6px);position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(11,19,40,.75),rgba(11,19,40,.45))}
+  .search{flex:1;display:flex;align-items:center;background:var(--glass);border:1px solid var(--border);border-radius:14px;padding:8px 12px}
+  .search input{all:unset;flex:1;font-size:14px;color:var(--text)}
+  .toolbar{display:flex;gap:10px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:linear-gradient(180deg,#101a39,#0b1329);color:var(--text);cursor:pointer;box-shadow:var(--shadow)}
+  .btn:hover{filter:brightness(1.08)}
+  .btn.primary{background:linear-gradient(180deg, #764dff, #5a3fe0);border-color:#6a5bff}
+  .btn.ghost{background:var(--glass)}
+  .btn.small{padding:6px 10px;border-radius:10px}
+
+  main{padding:22px;display:grid;gap:18px}
+  .grid{display:grid;gap:18px}
+  .cols-4{grid-template-columns:repeat(4, minmax(0,1fr))}
+  .cols-3{grid-template-columns:repeat(3, minmax(0,1fr))}
+  .cols-2{grid-template-columns:repeat(2, minmax(0,1fr))}
+
+  .card{background:linear-gradient(180deg,#0f1834,#0b1329);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .card .head{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 0}
+  .card .title{font-weight:700;letter-spacing:.3px}
+  .card .sub{color:var(--muted);font-size:12px}
+  .card .content{padding:14px 16px 18px}
+  .kpi{display:flex;align-items:center;justify-content:space-between}
+  .kpi .value{font-size:28px;font-weight:800}
+  .kpi .trend{font-size:12px;border-radius:999px;padding:6px 10px;border:1px solid var(--border);background:var(--glass)}
+  .trend.up{color:var(--good)} .trend.down{color:var(--danger)}
+
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border)}
+  thead th{position:sticky;top:0;background:#0c1430;border-bottom:1px solid #243056;z-index:5}
+  tbody tr:hover{background:rgba(124,92,255,.06)}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:var(--glass);font-size:12px}
+  .badge.warn{border-color:#4a3a1f;background:rgba(255,180,84,.08);color:#ffce85}
+  .badge.ok{border-color:#1e3b2c;background:rgba(67,209,122,.08);color:#9BE2B9}
+  .badge.danger{border-color:#562331;background:rgba(255,93,122,.08);color:#ff9aab}
+  .pill{padding:4px 8px;border-radius:8px;background:var(--glass);border:1px solid var(--border);font-size:12px}
+
+  .row{display:flex;gap:14px;align-items:center}
+  .row.right{justify-content:flex-end}
+  .divider{height:1px;background:var(--border);margin:8px 0}
+  .muted{color:var(--muted)}
+  .hint{font-size:12px;color:var(--muted)}
+
+  .section{display:none}
+  .section.active{display:block}
+
+  /* Modal */
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,12,.6);backdrop-filter:blur(4px);z-index:100}
+  .modal.open{display:flex}
+  .modal .panel{width:min(720px,92vw);background:linear-gradient(180deg,#101a39,#0b1329);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}
+  .modal .panel header{position:static;background:transparent;border:none;padding:16px 18px}
+  .modal .panel .body{padding:16px 18px}
+  .field{display:grid;gap:8px;margin:10px 0}
+  .field label{font-size:12px;color:var(--muted)}
+  .field input,.field select,.field textarea{background:var(--glass);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:10px 12px;outline:none}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1px solid var(--border);background:var(--glass);border-radius:999px;padding:6px 10px;font-size:12px}
+
+  .toast{position:fixed;right:18px;bottom:18px;padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:linear-gradient(180deg,#0f1834,#0b1329);box-shadow:var(--shadow);display:none}
+  .toast.show{display:block}
+
+  @media (max-width:1200px){
+    .cols-4{grid-template-columns:repeat(2, minmax(0,1fr))}
+  }
+  @media (max-width:900px){
+    .app{grid-template-columns:1fr}
+    aside{position:static;height:auto}
+    header{position:static}
+    .cols-3,.cols-4{grid-template-columns:1fr}
+  }
 </style>
 </head>
 <body>
-<div class="container">
-  <!-- SIDEBAR -->
-  <aside class="sidebar" aria-label="Sidebar">
-    <div class="logo">
-      <div class="brand-circle">AB</div>
-      <div>
-        <div class="brand-title">Aurelo Bay</div>
-        <div class="muted" style="font-size:12px">Unified Ops & Analytics</div>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside>
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>Aurelo Data</h1>
+          <small>Store Intelligence Console</small>
+        </div>
+      </div>
+      <div class="pro-badge">
+        <div style="display:flex;align-items:center;gap:10px;justify-content:space-between">
+          <div>
+            <b>Microknots</b> AI Suite<br>
+            <span class="muted" style="font-size:12px">Retail Analytics • Data Packets • Ops</span>
+          </div>
+          <span class="pill">v1.0</span>
+        </div>
+      </div>
+      <nav class="nav">
+        <div class="nav-group">Navigate</div>
+        <a href="#" data-section="overview" class="active"><span class="dot"></span> Overview</a>
+        <a href="#" data-section="inventory"><span class="dot" style="background:var(--accent-2)"></span> Inventory</a>
+        <a href="#" data-section="packets"><span class="dot" style="background:#a16eff"></span> Data Packets</a>
+        <a href="#" data-section="logistics"><span class="dot" style="background:#52e3c2"></span> Logistics</a>
+        <a href="#" data-section="suppliers"><span class="dot" style="background:#ffd36b"></span> Suppliers</a>
+        <a href="#" data-section="finance"><span class="dot" style="background:#7bd77a"></span> Finance</a>
+        <a href="#" data-section="marketing"><span class="dot" style="background:#6bd7ff"></span> Marketing</a>
+        <a href="#" data-section="alerts"><span class="dot" style="background:#ff6b9a"></span> Alerts & Tasks</a>
+        <div class="nav-group">Admin</div>
+        <a href="#" data-section="settings"><span class="dot" style="background:#7C5CFF"></span> Settings</a>
+      </nav>
+      <div style="margin-top:18px" class="hint">Tip: Press <b>/</b> to search, <b>G</b> + <b>O</b> for Overview.</div>
+    </aside>
+
+    <!-- MAIN -->
+    <div>
+      <header>
+        <div class="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#9AB0C8" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="10" r="6" stroke="#9AB0C8" stroke-width="2" fill="none"/></svg>
+          <input id="globalSearch" placeholder="Search products, packets, shipments, suppliers…" />
+        </div>
+        <div class="toolbar">
+          <button class="btn ghost" id="rngBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M7 11h10M7 15h7M7 7h10" stroke="#9AB0C8" stroke-width="2" stroke-linecap="round"/></svg>
+            Range: <span id="dateRangeLabel">Last 30 days</span>
+          </button>
+          <button class="btn" id="exportCSV">Export CSV</button>
+          <button class="btn primary" id="addItem">Add Item</button>
+        </div>
+      </header>
+
+      <main>
+        <!-- OVERVIEW -->
+        <section id="overview" class="section active">
+          <div class="grid cols-4">
+            <div class="card">
+              <div class="head"><div class="title">Revenue</div><div class="sub">vs last period</div></div>
+              <div class="content kpi">
+                <div class="value" id="kpiRevenue">$0</div>
+                <div class="trend up" id="kpiRevenueTrend">+0%</div>
+              </div>
+              <div class="content"><canvas id="revChart" height="110"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="head"><div class="title">Gross Margin</div><div class="sub">blended</div></div>
+              <div class="content kpi"><div class="value" id="kpiMargin">0%</div><div class="trend" id="kpiMarginTrend">+0.0 pp</div></div>
+              <div class="content"><canvas id="marginChart" height="110"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="head"><div class="title">Inventory Health</div><div class="sub">days on hand</div></div>
+              <div class="content kpi"><div class="value" id="kpiDOH">0</div><div class="trend down" id="kpiDOHTrend">-0d</div></div>
+              <div class="content"><canvas id="dohChart" height="110"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="head"><div class="title">TTM Alerts</div><div class="sub">operational</div></div>
+              <div class="content kpi"><div class="value" id="kpiAlerts">0</div><div class="trend" id="kpiAlertsTrend">Open</div></div>
+              <div class="content">
+                <div class="chips" id="alertChips"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid cols-2">
+            <div class="card">
+              <div class="head">
+                <div>
+                  <div class="title">Top 15 SKUs by Contribution</div>
+                  <div class="sub">Pareto — 80/20 view</div>
+                </div>
+                <div class="row">
+                  <span class="pill">USD</span>
+                  <span class="pill">Last 30 days</span>
+                </div>
+              </div>
+              <div class="content"><canvas id="paretoChart" height="150"></canvas></div>
+            </div>
+
+            <div class="card">
+              <div class="head">
+                <div class="title">Cash Flow (Ops)</div>
+                <div class="sub">Inflow vs Outflow</div>
+              </div>
+              <div class="content"><canvas id="cashChart" height="150"></canvas></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- INVENTORY -->
+        <section id="inventory" class="section">
+          <div class="card">
+            <div class="head">
+              <div>
+                <div class="title">Inventory</div>
+                <div class="sub">Manage stock, reorders, and thresholds</div>
+              </div>
+              <div class="row">
+                <input id="invSearch" placeholder="Filter by SKU or name" style="all:unset;background:var(--glass);border:1px solid var(--border);padding:8px 10px;border-radius:10px"> 
+                <select id="invFilter" style="all:unset;background:var(--glass);border:1px solid var(--border);padding:8px 10px;border-radius:10px">
+                  <option value="all">All</option>
+                  <option value="low">Low stock</option>
+                  <option value="oos">Out of stock</option>
+                </select>
+                <button class="btn small" id="invRecalc">Recompute DOH</button>
+              </div>
+            </div>
+            <div class="content" style="overflow:auto">
+              <table id="invTable">
+                <thead>
+                  <tr>
+                    <th>SKU</th><th>Name</th><th>Category</th><th>On Hand</th>
+                    <th>Reorder Pt</th><th>Lead (d)</th><th>Unit Cost</th><th>Unit Price</th>
+                    <th>DOH</th><th>Status</th><th></th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+              <div class="hint">Inline edit: double‑click cells. Changes persist locally.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DATA PACKETS -->
+        <section id="packets" class="section">
+          <div class="grid cols-2">
+            <div class="card">
+              <div class="head"><div class="title">Packet Builder</div><div class="sub">Define schema & joins</div></div>
+              <div class="content">
+                <div class="field">
+                  <label>Sources</label>
+                  <div class="chips">
+                    <span class="chip">POS Sales</span>
+                    <span class="chip">Inventory Ledger</span>
+                    <span class="chip">Suppliers</span>
+                    <span class="chip">Shipments</span>
+                    <span class="chip">Marketing Spend</span>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Columns</label>
+                  <div class="row" style="gap:10px;flex-wrap:wrap">
+                    <label><input type="checkbox" class="pkt-col" value="date" checked> Date</label>
+                    <label><input type="checkbox" class="pkt-col" value="sku" checked> SKU</label>
+                    <label><input type="checkbox" class="pkt-col" value="name" checked> Name</label>
+                    <label><input type="checkbox" class="pkt-col" value="units" checked> Units</label>
+                    <label><input type="checkbox" class="pkt-col" value="revenue" checked> Revenue</label>
+                    <label><input type="checkbox" class="pkt-col" value="cogs" checked> COGS</label>
+                    <label><input type="checkbox" class="pkt-col" value="margin"> Margin%</label>
+                    <label><input type="checkbox" class="pkt-col" value="doh"> DOH</label>
+                    <label><input type="checkbox" class="pkt-col" value="supplier"> Supplier</label>
+                    <label><input type="checkbox" class="pkt-col" value="lead"> LeadDays</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <button class="btn" id="pktPreview">Preview (100 rows)</button>
+                  <button class="btn primary" id="pktExport">Export JSON</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="head"><div class="title">Preview</div><div class="sub">Synthetic sample</div></div>
+              <div class="content" style="max-height:360px;overflow:auto">
+                <table id="pktTable"><thead></thead><tbody></tbody></table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- LOGISTICS -->
+        <section id="logistics" class="section">
+          <div class="card">
+            <div class="head"><div class="title">Shipments Tracker</div><div class="sub">Inbound & Outbound</div></div>
+            <div class="content" style="overflow:auto">
+              <table id="shipTable">
+                <thead>
+                  <tr>
+                    <th>#</th><th>Type</th><th>Carrier</th><th>ETA</th><th>From → To</th><th>Items</th><th>Status</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SUPPLIERS -->
+        <section id="suppliers" class="section">
+          <div class="grid cols-3" id="supGrid"></div>
+        </section>
+
+        <!-- FINANCE -->
+        <section id="finance" class="section">
+          <div class="grid cols-3">
+            <div class="card"><div class="head"><div class="title">Revenue vs COGS</div></div><div class="content"><canvas id="finRev" height="140"></canvas></div></div>
+            <div class="card"><div class="head"><div class="title">Category Mix</div></div><div class="content"><canvas id="finMix" height="140"></canvas></div></div>
+            <div class="card"><div class="head"><div class="title">Monthly Profit</div></div><div class="content"><canvas id="finProfit" height="140"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="head"><div class="title">AP/AR Aging</div><div class="sub">Outstanding balances</div></div>
+            <div class="content" style="overflow:auto">
+              <table id="agingTable"><thead><tr><th>Partner</th><th>Type</th><th>0–30</th><th>31–60</th><th>61–90</th><th>90+</th><th>Total</th></tr></thead><tbody></tbody></table>
+            </div>
+          </div>
+        </section>
+
+        <!-- MARKETING -->
+        <section id="marketing" class="section">
+          <div class="grid cols-2">
+            <div class="card"><div class="head"><div class="title">Campaign ROAS</div><div class="sub">by channel</div></div><div class="content"><canvas id="mkRoas" height="160"></canvas></div></div>
+            <div class="card"><div class="head"><div class="title">Funnel</div><div class="sub">session → purchase</div></div><div class="content"><canvas id="mkFunnel" height="160"></canvas></div></div>
+          </div>
+        </section>
+
+        <!-- ALERTS & TASKS -->
+        <section id="alerts" class="section">
+          <div class="grid cols-2">
+            <div class="card">
+              <div class="head"><div class="title">Operational Alerts</div><div class="sub">Auto-generated</div></div>
+              <div class="content" id="alertList"></div>
+            </div>
+            <div class="card">
+              <div class="head"><div class="title">Task Board</div><div class="sub">Today & Upcoming</div></div>
+              <div class="content" id="taskList"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section id="settings" class="section">
+          <div class="grid cols-2">
+            <div class="card">
+              <div class="head"><div class="title">Preferences</div><div class="sub">Persisted locally</div></div>
+              <div class="content">
+                <div class="field"><label>Currency</label>
+                  <select id="prefCurrency">
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="CNY">CNY</option>
+                  </select>
+                </div>
+                <div class="field"><label>Theme Accents</label>
+                  <div class="row"><input id="accentPicker" type="color" value="#7C5CFF"><span class="hint">Affects charts & highlights</span></div>
+                </div>
+                <div class="row">
+                  <button class="btn" id="savePrefs">Save</button>
+                  <button class="btn ghost" id="resetPrefs">Reset</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="head"><div class="title">Data</div><div class="sub">Import / Export</div></div>
+              <div class="content">
+                <div class="field"><label>Import Inventory CSV</label>
+                  <input type="file" id="csvFile" accept=".csv" />
+                </div>
+                <button class="btn" id="importCsvBtn">Import</button>
+                <div class="divider"></div>
+                <button class="btn primary" id="downloadState">Download State JSON</button>
+                <span class="hint">For backup or transfer</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD ITEM -->
+  <div class="modal" id="modal">
+    <div class="panel">
+      <header>
+        <div class="title">Add Inventory Item</div>
+        <button class="btn small ghost" id="closeModal">Close</button>
+      </header>
+      <div class="body">
+        <div class="grid cols-2">
+          <div class="field"><label>SKU</label><input id="mSku" placeholder="SKU-001"></div>
+          <div class="field"><label>Name</label><input id="mName" placeholder="Blueberry Muffin"></div>
+          <div class="field"><label>Category</label><input id="mCat" placeholder="Bakery"></div>
+          <div class="field"><label>On Hand</label><input id="mQty" type="number" value="20"></div>
+          <div class="field"><label>Reorder Pt</label><input id="mROP" type="number" value="10"></div>
+          <div class="field"><label>Lead Days</label><input id="mLead" type="number" value="7"></div>
+          <div class="field"><label>Unit Cost</label><input id="mCost" type="number" step="0.01" value="2.25"></div>
+          <div class="field"><label>Unit Price</label><input id="mPrice" type="number" step="0.01" value="3.99"></div>
+        </div>
+        <div class="row right"><button class="btn primary" id="mSave">Save Item</button></div>
       </div>
     </div>
+  </div>
 
-    <nav id="mainNav" aria-label="Primary">
-      <button class="nav-btn active" data-page="overview">🏠 Overview</button>
-      <button class="nav-btn" data-page="sales">🧾 Sales</button>
-      <button class="nav-btn" data-page="products">🛒 Products</button>
-      <button class="nav-btn" data-page="inventory">📦 Inventory</button>
-      <button class="nav-btn" data-page="marketing">📣 Marketing</button>
-      <button class="nav-btn" data-page="pnl">📊 P&L</button>
-      <button class="nav-btn" data-page="logistics">🚚 Logistics</button>
-      <button class="nav-btn" data-page="accounts">🏦 Accounts</button>
-      <button class="nav-btn" data-page="support">🎧 Support</button>
-      <button class="nav-btn" data-page="ai">🧠 AI Search Models</button>
-      <button class="nav-btn" data-page="chatbots">🤖 Chatbots</button>
-      <button class="nav-btn" data-page="pipelines">🔗 Data Pipelines</button>
-      <button class="nav-btn" data-page="analytics">📈 Analytics</button>
-      <button class="nav-btn" data-page="users">👥 Users</button>
-      <button class="nav-btn" data-page="alerts">🚨 Alerts</button>
-      <button class="nav-btn" data-page="settings">⚙️ Settings</button>
-    </nav>
-
-    <div class="section-title">Bay Area Stores</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-      <div class="pill">San Francisco</div>
-      <div class="pill">San Jose</div>
-      <div class="pill">Oakland</div>
-      <div class="pill">Palo Alto</div>
-      <div class="pill">Berkeley</div>
-      <div class="pill">Online</div>
-    </div>
-
-    <div class="section-title">Quick actions</div>
-    <div class="actions">
-      <button id="exportSnapshot" class="btn">Export snapshot</button>
-      <button id="toggleTheme" class="btn ghost">Toggle theme</button>
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <main>
-    <div class="header">
-      <div class="search-box">
-        <input id="globalSearch" class="search" placeholder="Search orders, SKUs, customers, accounts, tickets..." />
-      </div>
-      <div class="muted">Manager: Monish • Admin</div>
-    </div>
-
-    <!-- OVERVIEW -->
-    <section id="overview" class="page active">
-      <h2>Overview</h2>
-      <div class="grid cols-4" id="kpiGrid"></div>
-
-      <div class="grid cols-2" style="margin-top:12px">
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <strong>Today — Hourly Sales</strong>
-            <span class="muted" id="todayRange"></span>
-          </div>
-          <canvas id="hourlyChart" height="150"></canvas>
-        </div>
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <strong>This Week — Daily Revenue</strong>
-            <span class="muted" id="weekTotal"></span>
-          </div>
-          <canvas id="weeklyChart" height="150"></canvas>
-        </div>
-      </div>
-
-      <div class="grid cols-3" style="margin-top:12px">
-        <div class="card">
-          <strong>Category Mix</strong>
-          <div class="muted" style="margin:6px 0">Electronics, Home, Apparel, Sports, Grocery</div>
-          <canvas id="categoryChart" height="160"></canvas>
-        </div>
-        <div class="card">
-          <strong>Payment Mix</strong>
-          <div class="muted" style="margin:6px 0">Card, Apple Pay, Google Pay, Cash</div>
-          <canvas id="paymentChart" height="160"></canvas>
-        </div>
-        <div class="card">
-          <strong>Top Products (Today)</strong>
-          <div class="muted" style="margin:6px 0">Qty sold by SKU</div>
-          <canvas id="topItemsChart" height="160"></canvas>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <strong>Sales by City (This Month)</strong>
-        <canvas id="regionStackedChart" height="150"></canvas>
-      </div>
-    </section>
-
-    <!-- SALES -->
-    <section id="sales" class="page">
-      <h2>Orders</h2>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
-        <input id="orderSearch" class="search" style="min-width:240px" placeholder="Search order ID / email / item / city" />
-        <select id="orderStore" class="btn ghost" style="padding:8px;border-radius:8px">
-          <option value="">All stores</option><option>San Francisco</option><option>San Jose</option><option>Oakland</option><option>Palo Alto</option><option>Berkeley</option><option>Online</option>
-        </select>
-        <select id="orderPay" class="btn ghost" style="padding:8px;border-radius:8px">
-          <option value="">All payment</option><option>Card</option><option>Apple Pay</option><option>Google Pay</option><option>Cash</option>
-        </select>
-        <button id="exportOrders" class="btn">Export CSV</button>
-      </div>
-      <div class="card table-wrap">
-        <table id="orderTable">
-          <thead>
-            <tr><th>Order</th><th>Time</th><th>Store</th><th>Channel</th><th>Items</th><th>Sub-total</th><th>Tax (8.75%)</th><th>Total</th><th>Payment</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div class="muted" id="orderCount" style="margin-top:8px">0 orders</div>
-    </section>
-
-    <!-- PRODUCTS -->
-    <section id="products" class="page">
-      <h2>Products</h2>
-      <div class="grid cols-3" id="productKPIs"></div>
-      <div class="card table-wrap" style="margin-top:12px">
-        <table id="productTable">
-          <thead><tr><th>SKU</th><th>Name</th><th>Category</th><th>Price</th><th>Units (30d)</th><th>Gross Sales</th><th>Return %</th><th>Rating</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- INVENTORY -->
-    <section id="inventory" class="page">
-      <h2>Inventory Management</h2>
-      <div class="grid cols-4" id="invKPIs"></div>
-      <div class="grid cols-2" style="margin-top:12px">
-        <div class="card">
-          <strong>Stock by Category</strong>
-          <canvas id="invCatChart" height="150"></canvas>
-        </div>
-        <div class="card">
-          <strong>Reorder Queue (Top)</strong>
-          <div class="table-wrap" style="margin-top:8px">
-            <table id="invReorder">
-              <thead><tr><th>SKU</th><th>Name</th><th>On Hand</th><th>ROP</th><th>ETA</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div class="card" style="margin-top:12px">
-        <strong>Inventory Table</strong>
-        <div class="table-wrap" style="margin-top:8px">
-          <table id="invTable">
-            <thead><tr><th>SKU</th><th>Name</th><th>On Hand</th><th>Allocated</th><th>Backorder</th><th>Turn (30d)</th><th>Shrink%</th><th>Valuation</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- MARKETING -->
-    <section id="marketing" class="page">
-      <h2>Marketing</h2>
-      <div class="grid cols-4" id="mktKPIs"></div>
-      <div class="grid cols-2" style="margin-top:12px">
-        <div class="card">
-          <strong>Attribution (Last 30d)</strong>
-          <canvas id="mktAttrChart" height="150"></canvas>
-        </div>
-        <div class="card">
-          <strong>Campaign ROAS</strong>
-          <canvas id="mktRoasChart" height="150"></canvas>
-        </div>
-      </div>
-    </section>
-
-    <!-- P&L -->
-    <section id="pnl" class="page">
-      <h2>P&L</h2>
-      <div class="grid cols-4" id="pnlKPIs"></div>
-      <div class="card" style="margin-top:12px">
-        <strong>Monthly P&L Trend</strong>
-        <canvas id="pnlChart" height="160"></canvas>
-      </div>
-    </section>
-
-    <!-- LOGISTICS -->
-    <section id="logistics" class="page">
-      <h2>Logistics</h2>
-      <div class="grid cols-4" id="logKPIs"></div>
-      <div class="grid cols-2" style="margin-top:12px">
-        <div class="card">
-          <strong>Carrier Mix</strong>
-          <canvas id="logCarrierChart" height="150"></canvas>
-        </div>
-        <div class="card">
-          <strong>Fulfillment SLA (hrs)</strong>
-          <canvas id="logSlaChart" height="150"></canvas>
-        </div>
-      </div>
-    </section>
-
-    <!-- ACCOUNTS -->
-    <section id="accounts" class="page">
-      <h2>B2B / Wholesale Accounts</h2>
-      <div class="grid cols-3" id="accKPIs"></div>
-      <div class="card table-wrap" style="margin-top:12px">
-        <table id="accTable">
-          <thead><tr><th>Account</th><th>City</th><th>Contact</th><th>Open Balance</th><th>Status</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- SUPPORT -->
-    <section id="support" class="page">
-      <h2>Customer Support</h2>
-      <div class="grid cols-4" id="supKPIs"></div>
-      <div class="grid cols-2" style="margin-top:12px">
-        <div class="card">
-          <strong>Tickets by Type</strong>
-          <canvas id="supTypeChart" height="150"></canvas>
-        </div>
-        <div class="card">
-          <strong>CSAT Trend</strong>
-          <canvas id="supCsatChart" height="150"></canvas>
-        </div>
-      </div>
-      <div class="card" style="margin-top:12px">
-        <strong>Recent Tickets</strong>
-        <div class="table-wrap" style="margin-top:8px">
-          <table id="supTable">
-            <thead><tr><th>ID</th><th>Channel</th><th>Type</th><th>Priority</th><th>First Response</th><th>Resolution</th><th>CSAT</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- AI SEARCH MODELS -->
-    <section id="ai" class="page">
-      <h2>AI Search Models</h2>
-      <div class="grid cols-4" id="aiKPIs"></div>
-      <div class="grid cols-2" style="margin-top:12px">
-        <div class="card">
-          <strong>Embedding Versions (Recall@10)</strong>
-          <canvas id="aiRecallChart" height="150"></canvas>
-        </div>
-        <div class="card">
-          <strong>Latency (p50/p95 ms)</strong>
-          <canvas id="aiLatencyChart" height="150"></canvas>
-        </div>
-      </div>
-      <div class="card" style="margin-top:12px">
-        <strong>Offline Eval Results</strong>
-        <div class="table-wrap" style="margin-top:8px">
-          <table id="aiTable">
-            <thead><tr><th>Model</th><th>Version</th><th>Recall@10</th><th>MRR</th><th>Latency p95</th><th>Notes</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- CHATBOTS -->
-    <section id="chatbots" class="page">
-      <h2>Chatbots</h2>
-      <div class="grid cols-4" id="botKPIs"></div>
-      <div class="grid cols-2" style="margin-top:12px">
-        <div class="card">
-          <strong>Containment Rate</strong>
-          <canvas id="botContainChart" height="150"></canvas>
-        </div>
-        <div class="card">
-          <strong>Average Handle Time (sec)</strong>
-          <canvas id="botAhtChart" height="150"></canvas>
-        </div>
-      </div>
-      <div class="card" style="margin-top:12px">
-        <strong>Recent Conversations</strong>
-        <div class="table-wrap" style="margin-top:8px">
-          <table id="botTable">
-            <thead><tr><th>Conv ID</th><th>Channel</th><th>Intent</th><th>Resolved</th><th>Handoff</th><th>CSAT</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- DATA PIPELINES -->
-    <section id="pipelines" class="page">
-      <h2>Data Pipelines</h2>
-      <div class="grid cols-4" id="pipeKPIs"></div>
-      <div class="grid cols-2" style="margin-top:12px">
-        <div class="card">
-          <strong>Batch Jobs (status)</strong>
-          <div class="table-wrap" style="margin-top:8px">
-            <table id="pipeBatch">
-              <thead><tr><th>Job</th><th>Schedule</th><th>Last Run</th><th>Status</th><th>Freshness</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-        <div class="card">
-          <strong>Streaming (throughput)</strong>
-          <canvas id="pipeStreamChart" height="150"></canvas>
-        </div>
-      </div>
-      <div class="card" style="margin-top:12px">
-        <strong>Data Quality (DQ) Rules</strong>
-        <div class="table-wrap" style="margin-top:8px">
-          <table id="pipeDQ">
-            <thead><tr><th>Dataset</th><th>Rule</th><th>Pass%</th><th>Last Check</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ANALYTICS (simulator + monthly revenue already shown) -->
-    <section id="analytics" class="page">
-      <h2>Analytics & Simulator</h2>
-      <div class="grid cols-2">
-        <div class="card">
-          <strong>Scenario: Promo vs Churn</strong>
-          <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
-            <label class="muted">Promo% <input id="simPromo" type="range" min="0" max="40" value="12" /></label>
-            <span id="simPromoVal" class="badge">12%</span>
-            <label class="muted" style="margin-left:10px">Churn% <input id="simChurn" type="range" min="0" max="15" value="3" /></label>
-            <span id="simChurnVal" class="badge">3%</span>
-            <label class="muted" style="margin-left:10px">New CAC ($) <input id="simCAC" type="number" value="14" style="width:70px" /></label>
-            <button id="runSim" class="btn">Run</button>
-          </div>
-          <div class="muted" id="simResult" style="margin-top:8px">Adjust sliders and run.</div>
-        </div>
-        <div class="card">
-          <strong>Insights</strong>
-          <ul id="insightsList" class="muted" style="margin-top:6px"></ul>
-        </div>
-      </div>
-      <div class="card" style="margin-top:12px">
-        <strong>Monthly Revenue (Last 12m vs Prev 12m)</strong>
-        <canvas id="monthlyChart" height="160"></canvas>
-      </div>
-    </section>
-
-    <!-- USERS -->
-    <section id="users" class="page">
-      <h2>Users</h2>
-      <div class="card table-wrap">
-        <table id="usersTable">
-          <thead><tr><th>Name</th><th>Role</th><th>Location</th><th>Active</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ALERTS -->
-    <section id="alerts" class="page">
-      <h2>Alerts</h2>
-      <div class="card">
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <label class="muted">High returns > <input id="thReturn" type="number" value="6" style="width:64px"> %</label>
-          <label class="muted">Card share < input id="thCard" type="number" value="50" style="width:64px"> %</label>
-          <label class="muted">AOV > < input id="thAOV" type="number" value="85" style="width:64px"> $</label>
-          <button id="saveAlerts" class="btn">Save</button>
-        </div>
-      </div>
-      <div id="alertLog" class="muted" style="margin-top:8px"></div>
-    </section>
-
-    <!-- SETTINGS -->
-    <section id="settings" class="page">
-      <h2>Settings</h2>
-      <div class="card">
-        <label class="muted"><input id="prefEmail" type="checkbox" checked> Email daily summary</label>
-        <div style="height:8px"></div>
-        <label class="muted"><input id="prefTheme" type="checkbox"> Start in Light theme</label>
-        <div style="margin-top:10px"><button id="saveSettings" class="btn">Save preferences</button></div>
-      </div>
-      <footer>© <span id="yr"></span> Aurelo Bay</footer>
-    </section>
-  </main>
-</div>
+  <div class="toast" id="toast"></div>
 
 <script>
-/* -------------------------- Utilities -------------------------- */
-const USD = new Intl.NumberFormat('en-US', { style:'currency', currency:'USD', maximumFractionDigits:0 });
-const fmtN = n => new Intl.NumberFormat('en-US').format(n);
-const byId = id => document.getElementById(id);
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
-const todayStr = () => new Date().toLocaleDateString('en-US',{weekday:'short', month:'short', day:'2-digit'});
+(function(){
+  // ---- Utilities ----
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => [...document.querySelectorAll(sel)];
+  const fmt = (v,curr='USD') => new Intl.NumberFormat('en-US',{style:'currency',currency:curr,maximumFractionDigits:0}).format(v);
+  const rand = (a,b) => Math.round(a + Math.random()*(b-a));
+  const sample = arr => arr[Math.floor(Math.random()*arr.length)];
+  const toast = (msg) => { const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200) };
+  const saveLS = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
+  const getLS = (k,d)=>{ try{return JSON.parse(localStorage.getItem(k)) ?? d}catch(e){return d}};
 
-/* -------------------------- Navigation + Theme -------------------------- */
-$('#mainNav').addEventListener('click', e=>{
-  const btn = e.target.closest('.nav-btn'); if(!btn) return;
-  $$('.nav-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
-  const id = btn.dataset.page; $$('.page').forEach(p=>p.classList.toggle('active', p.id===id));
-  history.pushState({page:id}, '', '#'+id);
-});
-window.addEventListener('popstate', (e)=>{ const id = (e.state&&e.state.page)||location.hash.replace('#','')||'overview';
-  $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===id));
-  $$('.page').forEach(p=>p.classList.toggle('active', p.id===id));
-});
-byId('toggleTheme').addEventListener('click', ()=>{ document.body.classList.toggle('light'); localStorage.setItem('ab_theme', document.body.classList.contains('light')?'light':'dark'); });
-(function(){ if(localStorage.getItem('ab_theme')==='light') document.body.classList.add('light'); })();
+  // ---- State (synthetic demo) ----
+  const state = getLS('aurelo_state', {
+    prefs:{currency:'USD',accent:'#7C5CFF'},
+    inventory:[], shipments:[], suppliers:[], alerts:[], tasks:[], sales:[]
+  });
 
-/* -------------------------- Core Retail Data (same base as before) -------------------------- */
-const STORES = ['San Francisco','San Jose','Oakland','Palo Alto','Berkeley','Online'];
-const PAY = ['Card','Apple Pay','Google Pay','Cash'];
-const CHANNEL = ['In-store','Online'];
-const CATEGORY = ['Electronics','Home','Apparel','Sports','Grocery'];
-const TAX_RATE = 0.0875;
-
-/* Product catalog */
-const PRODUCTS = [
-  ['ELEC-001','Aurelo Smart Speaker','Electronics',129],['ELEC-002','Noise-Cancel Headphones','Electronics',199],['ELEC-003','4K Streaming Stick','Electronics',59],
-  ['ELEC-004','Wireless Charger','Electronics',39],['ELEC-005','USB-C Hub 8-in-1','Electronics',79],['HOME-101','LED Floor Lamp','Home',89],['HOME-102','Ergo Office Chair','Home',179],
-  ['HOME-103','Bamboo Cutting Board','Home',24],['HOME-104','Aromatherapy Diffuser','Home',49],['HOME-105','Espresso Machine','Home',349],['APRL-201','Hoodie — Unisex','Apparel',65],
-  ['APRL-202','Performance Tee','Apparel',35],['APRL-203','Running Shorts','Apparel',45],['APRL-204','Windbreaker','Apparel',98],['APRL-205','Everyday Jeans','Apparel',79],
-  ['SPRT-301','Yoga Mat Pro','Sports',59],['SPRT-302','Adjustable Dumbbells','Sports',229],['SPRT-303','Foam Roller','Sports',29],['SPRT-304','Cycling Helmet','Sports',85],
-  ['SPRT-305','Tennis Racket','Sports',119],['GROC-401','Organic Coffee Beans (1lb)','Grocery',16],['GROC-402','Almond Butter (16oz)','Grocery',12],['GROC-403','Protein Bars (12pk)','Grocery',18],
-  ['GROC-404','Sparkling Water (12pk)','Grocery',11],['GROC-405','Olive Oil (1L)','Grocery',19],['ELEC-006','Bluetooth Tracker (4-pk)','Electronics',69],['ELEC-007','Smart Bulb (2-pk)','Electronics',29],
-  ['HOME-106','Air Purifier','Home',199],['HOME-107','Cast Iron Skillet','Home',44],['APRL-206','Baseball Cap','Apparel',28],['APRL-207','Sneakers','Apparel',120],
-  ['SPRT-306','Fitness Band','Sports',99],['SPRT-307','Jump Rope','Sports',18],['GROC-406','Trail Mix (2lb)','Grocery',14],['GROC-407','Kombucha (6pk)','Grocery',16],
-  ['ELEC-008','Portable SSD 1TB','Electronics',119],['HOME-108','Smart Thermostat','Home',229],['APRL-208','Socks (6-pk)','Apparel',22],['SPRT-308','Pickleball Set','Sports',89],
-  ['GROC-408','Oat Milk (64oz)','Grocery',6]
-].map(([sku,name,cat,price])=>({sku,name,cat,price}));
-
-/* Helpers */
-function pickWeighted(weights){const total=weights.reduce((a,b)=>a+b,0);let r=Math.random()*total;for(let i=0;i<weights.length;i++){if(r<weights[i])return i;r-=weights[i]}return weights.length-1;}
-function makeOrder(idx){
-  const store = STORES[pickWeighted([22,22,16,14,12,14])];
-  const channel = CHANNEL[pickWeighted([70,30])];
-  const pm = PAY[pickWeighted([55,20,10,15])];
-  const itemCount = 1 + Math.floor(Math.random()*4);
-  const items=[]; let subtotal=0; let qtyTotal=0;
-  for(let i=0;i<itemCount;i++){
-    const p = PRODUCTS[pickWeighted([8,8,7,7,7,7,6,5,5,6,7,7,6,6,6,6,5,5,5,5,5,5,5,5,5,6,6,5,5,4,5,5,4,4,4,6,5,4,4])];
-    const qty = 1 + Math.floor(Math.random()*3);
-    items.push({sku:p.sku, name:p.name, cat:p.cat, price:p.price, qty}); subtotal += p.price*qty; qtyTotal += qty;
+  // Seed data if empty
+  if(state.inventory.length===0){
+    const cats=['Bakery','Beverages','Snacks','Produce','Dairy','Household'];
+    for(let i=1;i<=80;i++){
+      const cat = sample(cats);
+      const price = rand(2,80)+0.99; const cost = +(price*(0.5+Math.random()*0.2)).toFixed(2);
+      const onhand = rand(0,260); const rop = rand(8,40); const lead = rand(3,14);
+      state.inventory.push({sku:`SKU-${String(i).padStart(3,'0')}`, name:`Product ${i}`, cat, qty:onhand, rop, lead, cost, price, doh: rand(5,40)});
+    }
   }
-  const tax = Math.round(subtotal*TAX_RATE); const total=subtotal+tax;
-  const now=new Date(); const hour=Math.floor(Math.random()*(now.getHours()||10)); const time=new Date(); time.setHours(hour,Math.floor(Math.random()*60),0,0);
-  return {order:'AB'+String(100000+idx), time:time.toTimeString().slice(0,5), store, channel, items, qty:qtyTotal, subtotal, tax, total, pay:pm};
-}
-const ORDERS = Array.from({length: 880}, (_,i)=> makeOrder(i));
+  if(state.sales.length===0){
+    for(let d=29; d>=0; d--){
+      state.sales.push({date: new Date(Date.now()-d*86400000), revenue: rand(2400,8800), cogs: rand(1200,5200)});
+    }
+  }
+  if(state.shipments.length===0){
+    const carriers=['UPS','FedEx','USPS','DHL'];
+    for(let i=1;i<=16;i++){
+      const inbound = Math.random()>.5;
+      state.shipments.push({id:1000+i, type: inbound?'Inbound':'Outbound', carrier: sample(carriers), etaDays: rand(1,14), from: inbound?'Supplier Hub':'Main Store', to: inbound?'Main Store':'Customer', items: rand(5,120), status: sample(['Created','In Transit','Delayed','Delivered'])});
+    }
+  }
+  if(state.suppliers.length===0){
+    for(let i=1;i<=9;i++){
+      state.suppliers.push({name:`Supplier ${i}`, rating: (3+Math.random()*2).toFixed(1), lead: rand(3,18), moq: rand(20,120), contact:`contact${i}@vendor.com`});
+    }
+  }
+  if(state.alerts.length===0){
+    const lowSkus = state.inventory.filter(x=>x.qty<x.rop).slice(0,6);
+    state.alerts = [
+      ...lowSkus.map(x=>({type:'Inventory', severity:'High', text:`Low stock for ${x.sku} (${x.name})`, tag:'Reorder'})),
+      {type:'Ops', severity:'Medium', text:'Shipment #1011 delayed 2 days', tag:'Logistics'},
+      {type:'Finance', severity:'Low', text:'AP aging 61–90 bucket above threshold', tag:'AP'},
+    ];
+  }
+  if(state.tasks.length===0){
+    state.tasks = [
+      {text:'Place PO for Bakery staples', done:false},
+      {text:'Export September Data Packet', done:true},
+      {text:'Review Supplier 4 SLA', done:false},
+    ];
+  }
 
-/* Accounts & Users (short) */
-const ACCOUNTS = Array.from({length: 250}, (_,i)=>({acc:`Account ${i+1}`,city:['San Francisco','San Jose','Oakland','Palo Alto','Berkeley'][i%5],contact:`+1 (415) ${200+Math.floor(Math.random()*700)}-${String(1000+Math.floor(Math.random()*9000)).slice(-4)}`,bal:Math.round(2000+Math.random()*160000),st:['Active','Overdue','Settled'][pickWeighted([68,14,18])]}));
-const USERS = [{n:'Riley Chen',role:'Store Manager',loc:'San Francisco',active:true},{n:'Jordan Patel',role:'Ops Analyst',loc:'San Jose',active:true},{n:'Avery Kim',role:'Cashier',loc:'Oakland',active:true},{n:'Sam Rivera',role:'E-Com Lead',loc:'Online',active:true},{n:'Taylor Brooks',role:'Sales Associate',loc:'Palo Alto',active:false}];
+  // Persist initial seed if new
+  saveLS('aurelo_state', state);
 
-/* -------------------------- Aggregations -------------------------- */
-function aggregate(){
-  const gross=ORDERS.reduce((s,b)=>s+b.total,0), net=ORDERS.reduce((s,b)=>s+b.subtotal,0), tax=ORDERS.reduce((s,b)=>s+b.tax,0), orders=ORDERS.length, itemsSold=ORDERS.reduce((s,b)=>s+b.qty,0);
-  const aov=Math.round(net/orders), cardShare=Math.round(ORDERS.filter(b=>b.pay==='Card').length/orders*100), appleShare=Math.round(ORDERS.filter(b=>b.pay==='Apple Pay').length/orders*100);
-  const online=ORDERS.filter(b=>b.channel==='Online').length, instore=orders-online, returns=Math.round(orders*0.035), refundRate=Math.round(returns/orders*1000)/10;
-  const repeatCust=Math.round(orders*0.22), newCust=orders-repeatCust, visitors=22000+Math.floor(Math.random()*7000), conversion=Math.round((orders/visitors)*1000)/10, rpv=Math.round((net/visitors)*100)/100;
-  const mrr=Math.round((net*0.14)/12), cac=14+Math.round(Math.random()*8), ltv=Math.round(aov*(3+Math.random()*6));
-  return {gross,net,tax,orders,aov,itemsSold,cardShare,appleShare,online,instore,returns,refundRate,repeatCust,newCust,visitors,conversion,rpv,mrr,cac,ltv};
-}
-const AGG = aggregate();
+  // ---- Navigation ----
+  const setSection = id => {
+    $$('.section').forEach(s=>s.classList.remove('active'));
+    $('#'+id).classList.add('active');
+    $$('.nav a').forEach(a=>a.classList.toggle('active', a.dataset.section===id));
+  };
+  $$('.nav a').forEach(a=> a.addEventListener('click', e=>{ e.preventDefault(); setSection(a.dataset.section) }));
 
-/* -------------------------- OVERVIEW -------------------------- */
-function renderKPIs(){
-  const grid=byId('kpiGrid');
-  const rows=[
-    {label:'Gross Sales (Today)',val:USD.format(AGG.gross),sub:'+8.2% vs yesterday'},
-    {label:'Net Sales (ex-tax)',val:USD.format(AGG.net),sub:'Tax 8.75%'},
-    {label:'Orders',val:fmtN(AGG.orders),sub:`In-store ${fmtN(AGG.instore)} · Online ${fmtN(AGG.online)}`},
-    {label:'Avg Order Value',val:USD.format(AGG.aov),sub:'AOV'},
-    {label:'Items Sold',val:fmtN(AGG.itemsSold),sub:'Units'},
-    {label:'Sales Tax',val:USD.format(AGG.tax),sub:'To remit'},
-    {label:'Card Share',val:AGG.cardShare+'%',sub:'Tap-to-pay lanes'},
-    {label:'Apple Pay',val:AGG.appleShare+'%',sub:'Express checkout'},
-    {label:'Returns',val:fmtN(AGG.returns),sub:`Refund rate ${AGG.refundRate}%`},
-    {label:'Customers',val:`${fmtN(AGG.newCust)} new / ${fmtN(AGG.repeatCust)} repeat`,sub:'~22% repeat'},
-    {label:'Conversion',val:AGG.conversion+'%',sub:`Visitors ${fmtN(AGG.visitors)}`},
-    {label:'RPV',val:'$'+AGG.rpv,sub:'Revenue per Visitor'},
-    {label:'CAC',val:USD.format(AGG.cac),sub:'Simulated'},
-    {label:'LTV',val:USD.format(AGG.ltv),sub:'Simulated'},
-    {label:'MRR',val:USD.format(AGG.mrr),sub:'Subscriptions est.'},
-    {label:'Top City',val:'San Francisco',sub:'by revenue'},
-  ];
-  grid.innerHTML=rows.map(r=>`<div class="card"><div class="kpi">${r.val}</div><div class="kpi-sub">${r.label}</div><div class="muted" style="margin-top:4px">${r.sub}</div></div>`).join('');
-  byId('todayRange').textContent=todayStr();
-}
+  // Hotkeys
+  document.addEventListener('keydown', e=>{
+    if(e.key==='/'){ e.preventDefault(); $('#globalSearch').focus(); }
+    if(e.key.toLowerCase()==='g' && e.metaKey===false && e.ctrlKey===false){
+      // simple chord G+O for overview
+      document.addEventListener('keydown', function go(ev){ if(ev.key.toLowerCase()==='o'){ setSection('overview'); document.removeEventListener('keydown', go) }}, {once:true});
+    }
+  })
 
-/* Charts reused from earlier build */
-let hourlyChart, weeklyChart, categoryChart, paymentChart, topItemsChart, regionStackedChart, monthlyChart, invCatChart, mktAttrChart, mktRoasChart, pnlChart, logCarrierChart, logSlaChart, supTypeChart, supCsatChart, aiRecallChart, aiLatencyChart, pipeStreamChart;
-function buildHourly(){const hours=Array.from({length:14},(_,i)=>i+8);const vals=hours.map(h=>h>=12&&h<=14?35000+Math.random()*18000:h>=18&&h<=20?42000+Math.random()*20000:15000+Math.random()*12000);hourlyChart=new Chart(byId('hourlyChart'),{type:'line',data:{labels:hours.map(h=>`${String(h).padStart(2,'0')}:00`),datasets:[{label:'Revenue',data:vals,borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,0.18)',fill:true,tension:.3}]},options:{responsive:true,plugins:{legend:{display:false}}})}
-function buildWeekly(){const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];const vals=days.map((d,i)=>(i>=4?280000:210000)+Math.random()*80000);weeklyChart=new Chart(byId('weeklyChart'),{type:'bar',data:{labels:days,datasets:[{label:'Revenue',data:vals,backgroundColor:'#60a5fa'}]},options:{responsive:true,plugins:{legend:{display:false}}}});byId('weekTotal').textContent='Week Total: '+USD.format(vals.reduce((a,b)=>a+b,0))}
-function buildCategory(){const catAgg={Electronics:0,Home:0,Apparel:0,Sports:0,Grocery:0};ORDERS.forEach(o=>o.items.forEach(i=>catAgg[i.cat]+=i.price*i.qty));categoryChart=new Chart(byId('categoryChart'),{type:'doughnut',data:{labels:Object.keys(catAgg),datasets:[{data:Object.values(catAgg),backgroundColor:['#60a5fa','#7c3aed','#22c55e','#f97316','#a78bfa']}]},options:{plugins:{legend:{position:'bottom'}}}})}
-function buildPayment(){const pmAgg={Card:0,'Apple Pay':0,'Google Pay':0,Cash:0};ORDERS.forEach(o=>pmAgg[o.pay]+=o.total);paymentChart=new Chart(byId('paymentChart'),{type:'doughnut',data:{labels:Object.keys(pmAgg),datasets:[{data:Object.values(pmAgg),backgroundColor:['#22c55e','#60a5fa','#a78bfa','#f59e0b']}]},options:{plugins:{legend:{position:'bottom'}}}})}
-function buildTopItems(){const qtyMap={};ORDERS.forEach(o=>o.items.forEach(i=>qtyMap[i.name]=(qtyMap[i.name]||0)+i.qty));const list=Object.entries(qtyMap).sort((a,b)=>b[1]-a[1]).slice(0,8);topItemsChart=new Chart(byId('topItemsChart'),{type:'bar',data:{labels:list.map(x=>x[0]),datasets:[{label:'Units',data:list.map(x=>x[1]),backgroundColor:'#f59e0b'}]},options:{plugins:{legend:{display:false}},scales:{x:{ticks:{maxRotation:60,minRotation:0}}}})}
-function buildRegionStacked(){const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];const series=STORES.slice(0,5);const agg={};series.forEach(s=>agg[s]=Array(7).fill(0));for(let i=0;i<7;i++){series.forEach((s,si)=>{agg[s][i]=50000+si*12000+i*8000+Math.random()*18000})}regionStackedChart=new Chart(byId('regionStackedChart'),{type:'bar',data:{labels:days,datasets:series.map((s,idx)=>({label:s,data:agg[s],backgroundColor:['#60a5fa','#7c3aed','#22c55e','#f97316','#e11d48'][idx%5],stack:'cities'}))},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true}}})}
-function buildMonthly(){const months=['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'];const thisYear=months.map((_,i)=>900000+i*38000+Math.random()*90000);const lastYear=months.map((_,i)=>740000+i*32000+Math.random()*80000);monthlyChart=new Chart(byId('monthlyChart'),{type:'line',data:{labels:months,datasets:[{label:'This Year',data:thisYear,borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,0.18)',fill:true,tension:.35},{label:'Prev Year',data:lastYear,borderColor:'#94a3b8',borderDash:[6,6],tension:.35}]},options:{responsive:true}})}
+  // ---- Overview KPIs & Charts ----
+  const currency = ()=> getLS('aurelo_state', state).prefs.currency;
+  const accent = ()=> getLS('aurelo_state', state).prefs.accent;
+  function computeKPIs(){
+    const s = getLS('aurelo_state', state).sales;
+    const last = s.slice(-7); const prev = s.slice(-14,-7);
+    const sum = arr => arr.reduce((t,x)=>t+x,0);
+    const revNow = sum(last.map(x=>x.revenue));
+    const revPrev = sum(prev.map(x=>x.revenue))||1;
+    const trend = ((revNow-revPrev)/revPrev*100).toFixed(1);
+    $('#kpiRevenue').textContent = fmt(revNow, currency());
+    $('#kpiRevenueTrend').textContent = (trend>=0?'+':'')+trend+'%';
+    $('#kpiRevenueTrend').classList.toggle('up', trend>=0);
+    $('#kpiRevenueTrend').classList.toggle('down', trend<0);
 
-/* -------------------------- SALES TABLE -------------------------- */
-function renderOrders(){const body=byId('orderTable').querySelector('tbody');body.innerHTML=ORDERS.slice(0,260).map(b=>`<tr><td>${b.order}</td><td>${b.time}</td><td>${b.store}</td><td>${b.channel}</td><td>${b.qty}</td><td>${USD.format(b.subtotal)}</td><td>${USD.format(b.tax)}</td><td><strong>${USD.format(b.total)}</strong></td><td>${b.pay}</td></tr>`).join('');byId('orderCount').textContent=`${ORDERS.length} orders (sampled ${Math.min(260,ORDERS.length)})`}
-byId('orderSearch').addEventListener('input',e=>{const q=e.target.value.toLowerCase();const body=byId('orderTable').querySelector('tbody');body.innerHTML=ORDERS.filter(b=>{const hay=JSON.stringify(b).toLowerCase();return !q||hay.includes(q)}).slice(0,260).map(b=>`<tr><td>${b.order}</td><td>${b.time}</td><td>${b.store}</td><td>${b.channel}</td><td>${b.qty}</td><td>${USD.format(b.subtotal)}</td><td>${USD.format(b.tax)}</td><td><strong>${USD.format(b.total)}</strong></td><td>${b.pay}</td></tr>`).join('')})
-byId('orderStore').addEventListener('change',filterOrders);byId('orderPay').addEventListener('change',filterOrders);
-function filterOrders(){const s=byId('orderStore').value,p=byId('orderPay').value;const body=byId('orderTable').querySelector('tbody');body.innerHTML=ORDERS.filter(b=>(!s||b.store===s)&&(!p||b.pay===p)).slice(0,260).map(b=>`<tr><td>${b.order}</td><td>${b.time}</td><td>${b.store}</td><td>${b.channel}</td><td>${b.qty}</td><td>${USD.format(b.subtotal)}</td><td>${USD.format(b.tax)}</td><td><strong>${USD.format(b.total)}</strong></td><td>${b.pay}</td></tr>`).join('')}
-byId('exportOrders').addEventListener('click',()=>{const headers=['Order','Time','Store','Channel','Items','Subtotal','Tax','Total','Payment'];const rows=ORDERS.map(b=>[b.order,b.time,b.store,b.channel,b.qty,b.subtotal,b.tax,b.total,b.pay]);const csv=[headers.join(',')].concat(rows.map(r=>r.join(','))).join('\n');const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='orders.csv';a.click();URL.revokeObjectURL(url)})
+    const cogsNow = sum(last.map(x=>x.cogs));
+    const margin = (1 - cogsNow/revNow)*100; const marginPrev = (1 - (sum(prev.map(x=>x.cogs))/revPrev))*100;
+    $('#kpiMargin').textContent = margin.toFixed(1)+'%';
+    $('#kpiMarginTrend').textContent = ((margin-marginPrev)>=0?'+':'')+ (margin-marginPrev).toFixed(1) + ' pp';
 
-/* -------------------------- PRODUCTS PAGE -------------------------- */
-function renderProducts(){const perf=PRODUCTS.map(p=>{const base={Electronics:65,Home:50,Apparel:58,Sports:46,Grocery:74}[p.cat];const units30=base+Math.floor(Math.random()*base*1.4);const gross=units30*p.price;const returnPct=(p.cat==='Apparel'?(3+Math.random()*2.5):p.cat==='Electronics'?(2+Math.random()*1.5):(1+Math.random()*1.5)).toFixed(1);const rating=(4+Math.random()).toFixed(1);return {...p,units30,gross,returnPct,rating}}).sort((a,b)=>b.gross-a.gross);byId('productTable').querySelector('tbody').innerHTML=perf.map(p=>`<tr><td>${p.sku}</td><td>${p.name}</td><td>${p.cat}</td><td>${USD.format(p.price)}</td><td>${fmtN(p.units30)}</td><td>${USD.format(p.gross)}</td><td>${p.returnPct}%</td><td>${p.rating}★</td></tr>`).join('');const totalGross=perf.reduce((s,p)=>s+p.gross,0);const top=perf[0];const elecShare=Math.round(perf.filter(p=>p.cat==='Electronics').reduce((s,p)=>s+p.gross,0)/totalGross*100);byId('productKPIs').innerHTML=`<div class="card"><div class="kpi">${USD.format(totalGross)}</div><div class="kpi-sub">30-Day Product Revenue</div></div><div class="card"><div class="kpi">${top.name}</div><div class="kpi-sub">Top Grossing SKU</div></div><div class="card"><div class="kpi">${elecShare}%</div><div class="kpi-sub">Electronics Revenue Share</div></div>`}
+    const doh = Math.round(getLS('aurelo_state', state).inventory.reduce((t,x)=>t+x.doh,0)/state.inventory.length);
+    $('#kpiDOH').textContent = doh; $('#kpiDOHTrend').textContent = (doh-22>=0?'+':'')+(doh-22)+'d';
 
-/* -------------------------- INVENTORY -------------------------- */
-function buildInventoryData(){return PRODUCTS.map(p=>{const onHand=10+Math.floor(Math.random()*400), allocated=Math.floor(onHand*Math.random()*0.25), back=Math.floor(Math.random()*10), turn=(Math.random()*4+0.6).toFixed(2), shrink=(Math.random()*1.8).toFixed(2);const valuation=onHand*p.price;const rop= 8+Math.floor(Math.random()*40);const eta=['2d','4d','7d','12d','–'][pickWeighted([30,25,20,15,10])];return {...p,onHand,allocated,back,turn,shrink,valuation,rop,eta}})}
-const INV = buildInventoryData();
-function renderInventory(){const totOH=INV.reduce((s,x)=>s+x.onHand,0), totVal=INV.reduce((s,x)=>s+x.valuation,0), bo=INV.reduce((s,x)=>s+x.back,0), avgTurn=(INV.reduce((s,x)=>s+Number(x.turn),0)/INV.length).toFixed(2);byId('invKPIs').innerHTML=`<div class="card"><div class="kpi">${fmtN(totOH)}</div><div class="kpi-sub">Units On Hand</div></div><div class="card"><div class="kpi">${USD.format(totVal)}</div><div class="kpi-sub">Inventory Valuation</div></div><div class="card"><div class="kpi">${fmtN(bo)}</div><div class="kpi-sub">Backorders</div></div><div class="card"><div class="kpi">${avgTurn}x</div><div class="kpi-sub">Avg Turns (30d)</div></div>`;const catAgg={Electronics:0,Home:0,Apparel:0,Sports:0,Grocery:0};INV.forEach(i=>catAgg[i.cat]+=i.onHand);invCatChart=new Chart(byId('invCatChart'),{type:'bar',data:{labels:Object.keys(catAgg),datasets:[{label:'Units',data:Object.values(catAgg),backgroundColor:'#22c55e'}]},options:{plugins:{legend:{display:false}}}});byId('invReorder').querySelector('tbody').innerHTML=INV.filter(x=>x.onHand<x.rop).sort((a,b)=>a.onHand-a.rop-(b.onHand-b.rop)).slice(0,10).map(x=>`<tr><td>${x.sku}</td><td>${x.name}</td><td>${fmtN(x.onHand)}</td><td>${fmtN(x.rop)}</td><td>${x.eta}</td></tr>`).join('');byId('invTable').querySelector('tbody').innerHTML=INV.slice(0,200).map(x=>`<tr><td>${x.sku}</td><td>${x.name}</td><td>${fmtN(x.onHand)}</td><td>${fmtN(x.allocated)}</td><td>${fmtN(x.back)}</td><td>${x.turn}x</td><td>${x.shrink}%</td><td>${USD.format(x.valuation)}</td></tr>`).join('')}
+    $('#kpiAlerts').textContent = getLS('aurelo_state', state).alerts.length;
+    const chips = $('#alertChips'); chips.innerHTML='';
+    getLS('aurelo_state', state).alerts.slice(0,8).forEach(a=>{
+      const el = document.createElement('span'); el.className='chip'; el.textContent = a.tag; chips.appendChild(el)
+    })
+  }
 
-/* -------------------------- MARKETING -------------------------- */
-function renderMarketing(){const spend=120000+Math.random()*40000, revenue=spend*4.8, roas=(revenue/spend).toFixed(2), cac=(12+Math.random()*10).toFixed(0), emailOpen=(28+Math.random()*8).toFixed(1), ctr=(3.2+Math.random()*1.4).toFixed(1);byId('mktKPIs').innerHTML=`<div class="card"><div class="kpi">${USD.format(spend)}</div><div class="kpi-sub">Ad Spend (30d)</div></div><div class="card"><div class="kpi">${USD.format(revenue)}</div><div class="kpi-sub">Attributed Revenue</div></div><div class="card"><div class="kpi">${roas}x</div><div class="kpi-sub">ROAS</div></div><div class="card"><div class="kpi">${cac}</div><div class="kpi-sub">CAC ($)</div></div>`;mktAttrChart=new Chart(byId('mktAttrChart'),{type:'doughnut',data:{labels:['Paid Search','Paid Social','Email','Organic','Referral'],datasets:[{data:[28,24,18,22,8],backgroundColor:['#60a5fa','#7c3aed','#22c55e','#f97316','#a78bfa']}]},options:{plugins:{legend:{position:'bottom'}}}});mktRoasChart=new Chart(byId('mktRoasChart'),{type:'bar',data:{labels:['Search','Social','Email','Affiliate','Display'],datasets:[{label:'ROAS',data:[4.2,3.6,6.1,2.8,1.9],backgroundColor:'#60a5fa'}]},options:{plugins:{legend:{display:false}}}})}
+  function makeLine(id, labels, datasets){
+    return new Chart(document.getElementById(id), {
+      type:'line', data:{ labels, datasets }, options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{labels:{color:'#cfe0ff'} }},
+        scales:{ x:{ticks:{color:'#9AB0C8'}}, y:{ticks:{color:'#9AB0C8'}, grid:{color:'rgba(255,255,255,.08)'}} }
+      }});
+  }
+  function makeBar(id, labels, datasets){
+    return new Chart(document.getElementById(id), {
+      type:'bar', data:{ labels, datasets }, options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{labels:{color:'#cfe0ff'} }},
+        scales:{ x:{ticks:{color:'#9AB0C8'}}, y:{ticks:{color:'#9AB0C8'}, grid:{color:'rgba(255,255,255,.08)'}} }
+      }});
+  }
 
-/* -------------------------- P&L -------------------------- */
-function renderPnL(){const revMonth=AGG.net, cogs=Math.round(revMonth*0.58), gm=revMonth-cogs, gmPct=Math.round(gm/revMonth*1000)/10, opex=Math.round(revMonth*0.28), ebitda=gm-opex;byId('pnlKPIs').innerHTML=`<div class="card"><div class="kpi">${USD.format(revMonth)}</div><div class="kpi-sub">Revenue (Mo-to-date)</div></div><div class="card"><div class="kpi">${USD.format(cogs)}</div><div class="kpi-sub">COGS</div></div><div class="card"><div class="kpi">${USD.format(gm)} (${gmPct}%)</div><div class="kpi-sub">Gross Margin</div></div><div class="card"><div class="kpi">${USD.format(ebitda)}</div><div class="kpi-sub">EBITDA</div></div>`;const months=['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'];const rev=months.map((_,i)=>820000+i*42000+Math.random()*90000);const cogsS=rev.map(v=>Math.round(v*0.59));const gmS=rev.map((v,i)=>v-cogsS[i]);pnlChart=new Chart(byId('pnlChart'),{type:'line',data:{labels:months,datasets:[{label:'Revenue',data:rev,borderColor:'#60a5fa',tension:.35},{label:'COGS',data:cogsS,borderColor:'#ef4444',tension:.35},{label:'Gross Margin',data:gmS,borderColor:'#22c55e',tension:.35}]},options:{responsive:true}})}
+  const sLabels = state.sales.map(x=> new Date(x.date).toLocaleDateString());
+  const revChart = makeLine('revChart', sLabels, [
+    { label:'Revenue', data: state.sales.map(x=>x.revenue), borderColor: accent(), fill:false },
+    { label:'COGS', data: state.sales.map(x=>x.cogs), borderColor: '#25D0A6', fill:false }
+  ]);
+  const marginChart = makeBar('marginChart', sLabels, [
+    { label:'Margin %', data: state.sales.map(x=>Math.round((1-x.cogs/x.revenue)*100)), backgroundColor: accent() }
+  ]);
+  const dohChart = makeLine('dohChart', state.inventory.slice(0,30).map(x=>x.sku), [
+    { label:'DOH', data: state.inventory.slice(0,30).map(x=>x.doh), borderColor:'#52e3c2', fill:false }
+  ]);
 
-/* -------------------------- LOGISTICS -------------------------- */
-function renderLogistics(){const orders=AGG.orders, onTime=(94+Math.random()*4).toFixed(1), avgSla=(18+Math.random()*6).toFixed(1), whThroughput= (1200+Math.random()*600).toFixed(0);byId('logKPIs').innerHTML=`<div class="card"><div class="kpi">${fmtN(orders)}</div><div class="kpi-sub">Parcels (today)</div></div><div class="card"><div class="kpi">${onTime}%</div><div class="kpi-sub">On-time Delivery</div></div><div class="card"><div class="kpi">${avgSla}h</div><div class="kpi-sub">Avg Fulfillment SLA</div></div><div class="card"><div class="kpi">${fmtN(whThroughput)}/d</div><div class="kpi-sub">Warehouse Throughput</div></div>`;logCarrierChart=new Chart(byId('logCarrierChart'),{type:'doughnut',data:{labels:['UPS','FedEx','USPS','Other'],datasets:[{data:[38,34,24,4],backgroundColor:['#60a5fa','#22c55e','#f59e0b','#a78bfa']}]},options:{plugins:{legend:{position:'bottom'}}}});logSlaChart=new Chart(byId('logSlaChart'),{type:'bar',data:{labels:['Pick','Pack','Label','Dispatch','Transit'],datasets:[{label:'Avg Hours',data:[2.4,3.1,0.6,1.2,14.3],backgroundColor:'#7c3aed'}]},options:{plugins:{legend:{display:false}}}})}
+  // Pareto (Top SKUs)
+  const top = [...state.inventory].sort((a,b)=> (b.price-b.cost)*b.qty - (a.price-a.cost)*a.qty).slice(0,15);
+  makeBar('paretoChart', top.map(x=>x.sku), [{label:'Contribution', data: top.map(x=>Math.round((x.price-x.cost)*x.qty)), backgroundColor: accent()}]);
 
-/* -------------------------- ACCOUNTS -------------------------- */
-function renderAccounts(){const body=byId('accTable').querySelector('tbody');body.innerHTML=ACCOUNTS.slice(0,200).map(a=>`<tr><td>${a.acc}</td><td>${a.city}</td><td>${a.contact}</td><td>${USD.format(a.bal)}</td><td><span class="badge">${a.st}</span></td></tr>`).join('');const k=[{h:'Accounts',v:ACCOUNTS.length},{h:'Open Balance',v:USD.format(ACCOUNTS.reduce((s,a)=>s+a.bal,0))},{h:'Overdue',v:USD.format(ACCOUNTS.filter(a=>a.st==='Overdue').reduce((s,a)=>s+a.bal,0))}];byId('accKPIs').innerHTML=k.map(x=>`<div class="card"><div class="kpi">${x.v}</div><div class="kpi-sub">${x.h}</div></div>`).join('')}
+  // Cash Flow
+  const inflow = state.sales.map(x=> x.revenue * (0.92 + Math.random()*0.08));
+  const outflow = state.sales.map(x=> x.cogs * (0.95 + Math.random()*0.10));
+  makeLine('cashChart', sLabels, [
+    {label:'Inflow', data: inflow, borderColor: '#7bd77a', fill:false},
+    {label:'Outflow', data: outflow, borderColor: '#ff9aab', fill:false}
+  ]);
 
-/* -------------------------- SUPPORT -------------------------- */
-function renderSupport(){const backlog=120+Math.floor(Math.random()*80), frt=(18+Math.random()*10).toFixed(1), ttr=(36+Math.random()*20).toFixed(1), nps=(45+Math.random()*15).toFixed(0);byId('supKPIs').innerHTML=`<div class="card"><div class="kpi">${fmtN(backlog)}</div><div class="kpi-sub">Ticket Backlog</div></div><div class="card"><div class="kpi">${frt}m</div><div class="kpi-sub">First Response</div></div><div class="card"><div class="kpi">${ttr}h</div><div class="kpi-sub">Avg Resolution</div></div><div class="card"><div class="kpi">${nps}</div><div class="kpi-sub">NPS</div></div>`;supTypeChart=new Chart(byId('supTypeChart'),{type:'doughnut',data:{labels:['Order','Payment','Returns','Tech','Other'],datasets:[{data:[38,18,22,12,10],backgroundColor:['#60a5fa','#22c55e','#f97316','#a78bfa','#f59e0b']}]},options:{plugins:{legend:{position:'bottom'}}}});supCsatChart=new Chart(byId('supCsatChart'),{type:'line',data:{labels:['W1','W2','W3','W4'],datasets:[{label:'CSAT %',data:[86,88,84,89],borderColor:'#22c55e',tension:.3}]},options:{responsive:true}});const body=byId('supTable').querySelector('tbody');const rows=Array.from({length:40},(_,i)=>({id:'TKT'+(8000+i), ch:['Email','Chat','Phone'][i%3], type:['Order','Payment','Returns','Tech'][i%4], pri:['Low','Med','High'][pickWeighted([50,35,15])], frt:(10+Math.random()*20).toFixed(1)+'m', res:(12+Math.random()*36).toFixed(1)+'h', csat:(80+Math.random()*15).toFixed(0)+'%'}));body.innerHTML=rows.map(r=>`<tr><td>${r.id}</td><td>${r.ch}</td><td>${r.type}</td><td>${r.pri}</td><td>${r.frt}</td><td>${r.res}</td><td>${r.csat}</td></tr>`).join('')}
+  computeKPIs();
 
-/* -------------------------- AI SEARCH MODELS -------------------------- */
-function renderAI(){const idxQps=(1200+Math.random()*400).toFixed(0), hit=(72+Math.random()*8).toFixed(1), latency=(110+Math.random()*40).toFixed(0), cost='$'+(420+Math.random()*160).toFixed(0)+'/d';byId('aiKPIs').innerHTML=`<div class="card"><div class="kpi">${fmtN(idxQps)}/m</div><div class="kpi-sub">Queries Indexed</div></div><div class="card"><div class="kpi">${hit}%</div><div class="kpi-sub">Hit Rate (top-10)</div></div><div class="card"><div class="kpi">${latency}ms</div><div class="kpi-sub">Median Latency</div></div><div class="card"><div class="kpi">${cost}</div><div class="kpi-sub">Inferred Cost</div></div>`;aiRecallChart=new Chart(byId('aiRecallChart'),{type:'bar',data:{labels:['v1.1','v1.2','v2.0','v2.1'],datasets:[{label:'Recall@10 %',data:[76.2,78.9,82.5,84.1],backgroundColor:'#60a5fa'}]},options:{plugins:{legend:{display:false}}}});aiLatencyChart=new Chart(byId('aiLatencyChart'),{type:'line',data:{labels:['v1.1','v1.2','v2.0','v2.1'],datasets:[{label:'p50',data:[95,92,88,85],borderColor:'#22c55e',tension:.3},{label:'p95',data:[220,205,180,170],borderColor:'#f97316',tension:.3}]},options:{responsive:true}});const body=byId('aiTable').querySelector('tbody');const rows=[['DualEnc','v2.1',84.1,0.52,'170ms','Best overall'],['DualEnc','v2.0',82.5,0.50,'180ms','Stable'],['BiEnc','v1.2',78.9,0.46,'205ms','Legacy'],['BiEnc','v1.1',76.2,0.44,'220ms','Legacy']];body.innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}%</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join('')}
+  // ---- Inventory Table ----
+  function renderInventory(){
+    const body = $('#invTable tbody'); body.innerHTML='';
+    const q = $('#invSearch').value.toLowerCase();
+    const filter = $('#invFilter').value;
+    const rows = getLS('aurelo_state', state).inventory.filter(r=>{
+      const match = (r.sku.toLowerCase().includes(q) || r.name.toLowerCase().includes(q));
+      const tag = r.qty===0? 'oos' : (r.qty<r.rop? 'low':'ok');
+      return match && (filter==='all' || filter===tag);
+    });
+    rows.forEach(r=>{
+      const tr=document.createElement('tr');
+      const status = r.qty===0? '<span class="badge danger">OOS</span>' : (r.qty<r.rop? '<span class="badge warn">Low</span>' : '<span class="badge ok">OK</span>');
+      tr.innerHTML = `
+        <td>${r.sku}</td>
+        <td class="editable" data-k="name">${r.name}</td>
+        <td class="editable" data-k="cat">${r.cat}</td>
+        <td class="editable" data-k="qty">${r.qty}</td>
+        <td class="editable" data-k="rop">${r.rop}</td>
+        <td class="editable" data-k="lead">${r.lead}</td>
+        <td class="editable" data-k="cost">${r.cost}</td>
+        <td class="editable" data-k="price">${r.price}</td>
+        <td>${r.doh}</td>
+        <td>${status}</td>
+        <td><button class="btn small ghost del" data-sku="${r.sku}">Delete</button></td>`;
+      body.appendChild(tr);
+    });
+  }
+  renderInventory();
 
-/* -------------------------- CHATBOTS -------------------------- */
-function renderBots(){const containment=(62+Math.random()*12).toFixed(1), aht=(210+Math.random()*60).toFixed(0), csat=(86+Math.random()*6).toFixed(0), intents=(18+Math.random()*7).toFixed(0);byId('botKPIs').innerHTML=`<div class="card"><div class="kpi">${containment}%</div><div class="kpi-sub">Containment</div></div><div class="card"><div class="kpi">${aht}s</div><div class="kpi-sub">Avg Handle Time</div></div><div class="card"><div class="kpi">${csat}%</div><div class="kpi-sub">CSAT</div></div><div class="card"><div class="kpi">${intents}</div><div class="kpi-sub">Intent Coverage</div></div>`;botContainChart=new Chart(byId('botContainChart'),{type:'line',data:{labels:['W1','W2','W3','W4'],datasets:[{label:'Containment %',data:[58,60,63,Number(containment)],borderColor:'#60a5fa',tension:.35}]},options:{responsive:true}});botAhtChart=new Chart(byId('botAhtChart'),{type:'bar',data:{labels:['W1','W2','W3','W4'],datasets:[{label:'AHT (s)',data:[240,230,218,Number(aht)],backgroundColor:'#7c3aed'}]},options:{plugins:{legend:{display:false}}}});const body=byId('botTable').querySelector('tbody');const rows=Array.from({length:30},(_,i)=>({id:'C'+(10000+i), ch:['Web','iOS','Android'][i%3], intent:['Order Status','Return','Refund','Product Info','Store Hours'][i%5], res:['Yes','No'][pickWeighted([72,28])], hand:['No','Yes'][pickWeighted([78,22])], csat:(80+Math.random()*18).toFixed(0)+'%'}));body.innerHTML=rows.map(r=>`<tr><td>${r.id}</td><td>${r.ch}</td><td>${r.intent}</td><td>${r.res}</td><td>${r.hand}</td><td>${r.csat}</td></tr>`).join('')}
+  // Inline edit
+  $('#invTable').addEventListener('dblclick', e=>{
+    const cell = e.target.closest('.editable'); if(!cell) return; const k = cell.dataset.k; const old = cell.textContent.trim();
+    const inp = document.createElement('input'); inp.value=old; inp.style.width='100%'; inp.style.all='unset'; inp.style.padding='6px 8px'; inp.style.border='1px solid var(--border)'; inp.style.borderRadius='8px'; inp.style.background='var(--glass)';
+    cell.textContent=''; cell.appendChild(inp); inp.focus();
+    inp.addEventListener('keydown', ev=>{ if(ev.key==='Enter') inp.blur(); });
+    inp.addEventListener('blur', ()=>{
+      const sku = cell.parentElement.firstElementChild.textContent; const inv = getLS('aurelo_state', state).inventory;
+      const row = inv.find(x=>x.sku===sku); const v = (k==='name'||k==='cat')? inp.value : Number(inp.value);
+      row[k] = v; saveLS('aurelo_state', {...getLS('aurelo_state', state), inventory:inv});
+      cell.textContent = inp.value; computeKPIs();
+    })
+  })
+  // Delete
+  $('#invTable').addEventListener('click', e=>{ const btn=e.target.closest('.del'); if(!btn) return; const sku=btn.dataset.sku; const S=getLS('aurelo_state', state); S.inventory=S.inventory.filter(x=>x.sku!==sku); saveLS('aurelo_state', S); renderInventory(); computeKPIs(); toast('Deleted '+sku) })
 
-/* -------------------------- DATA PIPELINES -------------------------- */
-function renderPipes(){const freshness=(92+Math.random()*6).toFixed(1), dq=(97+Math.random()*2).toFixed(1), late=(2+Math.random()*3).toFixed(0), streams=(280+Math.random()*120).toFixed(0);byId('pipeKPIs').innerHTML=`<div class="card"><div class="kpi">${freshness}%</div><div class="kpi-sub">Data Freshness</div></div><div class="card"><div class="kpi">${dq}%</div><div class="kpi-sub">DQ Pass Rate</div></div><div class="card"><div class="kpi">${late}</div><div class="kpi-sub">Late Jobs (24h)</div></div><div class="card"><div class="kpi">${streams}/s</div><div class="kpi-sub">Stream Events</div></div>`;const batch=[['orders_daily','0 2 * * *','02:03','OK','10m'],['inventory_hourly','0 * * * *','12:00','OK','5m'],['accounts_daily','0 3 * * *','03:05','OK','12m'],['marketing_daily','0 1 * * *','01:02','Late','-']], body=byId('pipeBatch').querySelector('tbody');body.innerHTML=batch.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="badge">${r[3]}</span></td><td>${r[4]}</td></tr>`).join('');pipeStreamChart=new Chart(byId('pipeStreamChart'),{type:'line',data:{labels:['t-60','t-45','t-30','t-15','now'],datasets:[{label:'Events/sec',data:[240,260,300,320,Number(streams)],borderColor:'#60a5fa',tension:.3}]},options:{responsive:true}});const dqRules=[['orders','no null order_id',99.8,'5m ago'],['products','price > 0',99.2,'15m ago'],['inventory','on_hand >= 0',98.9,'1m ago'],['accounts','email format',99.6,'30m ago']];byId('pipeDQ').querySelector('tbody').innerHTML=dqRules.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}%</td><td>${r[3]}</td></tr>`).join('')}
+  $('#invSearch').addEventListener('input', renderInventory);
+  $('#invFilter').addEventListener('change', renderInventory);
+  $('#invRecalc').addEventListener('click', ()=>{ const S=getLS('aurelo_state', state); S.inventory.forEach(x=> x.doh = Math.max(1, Math.round(x.qty/Math.max(1, rand(2,8)))) ); saveLS('aurelo_state', S); renderInventory(); computeKPIs(); toast('Recomputed DOH') });
 
-/* -------------------------- USERS -------------------------- */
-function renderUsers(){byId('usersTable').querySelector('tbody').innerHTML=USERS.map(u=>`<tr><td>${u.n}</td><td>${u.role}</td><td>${u.loc}</td><td>${u.active?'Yes':'No'}</td></tr>`).join('')}
+  // Export CSV of inventory
+  $('#exportCSV').addEventListener('click', ()=>{
+    const rows = [['SKU','Name','Category','OnHand','ReorderPt','Lead','UnitCost','UnitPrice','DOH']].concat(getLS('aurelo_state', state).inventory.map(r=>[r.sku,r.name,r.cat,r.qty,r.rop,r.lead,r.cost,r.price,r.doh]));
+    const blob = new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='aurelo_inventory.csv'; a.click();
+  });
 
-/* -------------------------- INSIGHTS & SIM -------------------------- */
-byId('simPromo').addEventListener('input', e=> byId('simPromoVal').textContent = e.target.value+'%');
-byId('simChurn').addEventListener('input', e=> byId('simChurnVal').textContent = e.target.value+'%');
-byId('runSim').addEventListener('click', ()=>{const base=AGG.mrr;const promo=Number(byId('simPromo').value)/100;const churn=Number(byId('simChurn').value)/100;const cac=Number(byId('simCAC').value);const proj=Math.round(base*(1+promo)*(1-churn));const payback=(AGG.ltv&&cac)?Math.max(1,Math.round(AGG.ltv/cac)):'–';byId('simResult').textContent=`Projected MRR: ${USD.format(proj)} (Promo +${promo*100}%, Churn −${churn*100}%) · Est. LTV: ${USD.format(AGG.ltv)} · CAC: ${USD.format(cac)} · Payback (orders): ${payback}`});
-function renderInsights(){const list=byId('insightsList');const card=AGG.cardShare,apple=AGG.appleShare,conv=AGG.conversion,aov=AGG.aov;list.innerHTML=`<li>Card share <strong>${card}%</strong>, Apple Pay <strong>${apple}%</strong> — optimize tap-to-pay lanes.</li><li>Conversion <strong>${conv}%</strong> with AOV <strong>${USD.format(aov)}</strong> — bundle pricing could lift 5–10%.</li><li>Online ~<strong>${Math.round(AGG.online/AGG.orders*100)}%</strong> of orders — prioritize mobile PDP speed.</li><li>Returns <strong>${AGG.refundRate}%</strong> — audit Apparel sizing and fragile packaging.</li>`}
+  // Modal Add Item
+  $('#addItem').addEventListener('click', ()=> $('#modal').classList.add('open'));
+  $('#closeModal').addEventListener('click', ()=> $('#modal').classList.remove('open'));
+  $('#mSave').addEventListener('click', ()=>{
+    const item={ sku:$('#mSku').value||`SKU-${Date.now()}`, name:$('#mName').value||'New Item', cat:$('#mCat').value||'General', qty:+$('#mQty').value||0, rop:+$('#mROP').value||10, lead:+$('#mLead').value||7, cost:+$('#mCost').value||1, price:+$('#mPrice').value||2, doh:rand(5,30)};
+    const S=getLS('aurelo_state', state); S.inventory.unshift(item); saveLS('aurelo_state', S); renderInventory(); computeKPIs(); $('#modal').classList.remove('open'); toast('Item added')
+  })
 
-/* -------------------------- ALERTS & SETTINGS -------------------------- */
-byId('saveAlerts').addEventListener('click', ()=>{const msg=`Saved thresholds: returns>${byId('thReturn').value}%, card>${byId('thCard').value}%, AOV>${byId('thAOV').value}`;const el=document.createElement('div');el.textContent=new Date().toLocaleTimeString()+' • '+msg;byId('alertLog').prepend(el)});
-byId('saveSettings').addEventListener('click', ()=>{localStorage.setItem('ab_pref_email', byId('prefEmail').checked?'1':'0');localStorage.setItem('ab_pref_light', byId('prefTheme').checked?'1':'0');if(byId('prefTheme').checked) document.body.classList.add('light'); else document.body.classList.remove('light');alert('Preferences saved')});
-byId('exportSnapshot').addEventListener('click', ()=>{const snap={ts:new Date().toISOString(),agg:AGG,stores:STORES};const blob=new Blob([JSON.stringify(snap,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='ab_snapshot.json';a.click();URL.revokeObjectURL(url)});
+  // ---- Packet Builder ----
+  function renderPacket(cols, n=100){
+    const thead=$('#pktTable thead'), tbody=$('#pktTable tbody'); thead.innerHTML=''; tbody.innerHTML='';
+    const th = document.createElement('tr'); cols.forEach(c=>{ const h=document.createElement('th'); h.textContent=c; th.appendChild(h) }); thead.appendChild(th);
+    for(let i=0;i<n;i++){
+      const row={ date:new Date(Date.now()-rand(0,30)*864e5).toISOString().slice(0,10), sku: sample(state.inventory).sku, name: sample(state.inventory).name, units: rand(1,40), revenue: rand(20,600), cogs: rand(10,400), margin: rand(20,60), doh: rand(5,40), supplier: sample(state.suppliers).name, lead: rand(3,15) };
+      const tr=document.createElement('tr'); cols.forEach(c=>{ const td=document.createElement('td'); td.textContent=row[c]??''; tr.appendChild(td) }); tbody.appendChild(tr);
+    }
+  }
+  $('#pktPreview').addEventListener('click', ()=>{ const cols = $$('.pkt-col:checked').map(x=>x.value); renderPacket(cols, 100); toast('Preview generated') })
+  $('#pktExport').addEventListener('click', ()=>{
+    const cols = $$('.pkt-col:checked').map(x=>x.value); const out=[]; for(let i=0;i<200;i++){ const r={ date:new Date(Date.now()-rand(0,30)*864e5).toISOString().slice(0,10), sku: sample(state.inventory).sku, name: sample(state.inventory).name, units: rand(1,40), revenue: rand(20,600), cogs: rand(10,400), margin: rand(20,60), doh: rand(5,40), supplier: sample(state.suppliers).name, lead: rand(3,15) }; out.push(Object.fromEntries(cols.map(c=>[c, r[c]]))) }
+    const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='aurelo_packet.json'; a.click();
+  })
 
-/* -------------------------- Live tick -------------------------- */
-setInterval(()=>{const nb=makeOrder(100000+Math.floor(Math.random()*900000));ORDERS.unshift(nb);if(ORDERS.length>1200) ORDERS.pop();Object.assign(AGG,aggregate());renderKPIs();if(hourlyChart){const nowH=new Date().getHours();const label=`${String(nowH).padStart(2,'0')}:00`;const idx=hourlyChart.data.labels.indexOf(label);if(idx>=0){hourlyChart.data.datasets[0].data[idx]+=nb.total;hourlyChart.update('none')}}},20000);
+  // ---- Logistics ----
+  function renderShipments(){
+    const body=$('#shipTable tbody'); body.innerHTML='';
+    getLS('aurelo_state', state).shipments.forEach(s=>{
+      const badge = s.status==='Delivered'? 'ok' : s.status==='Delayed'? 'warn' : 'info';
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${s.id}</td><td>${s.type}</td><td>${s.carrier}</td><td>${new Date(Date.now()+s.etaDays*864e5).toISOString().slice(0,10)}</td><td>${s.from} → ${s.to}</td><td>${s.items}</td><td><span class="badge ${badge}">${s.status}</span></td>`;
+      body.appendChild(tr);
+    })
+  }
+  renderShipments();
 
-/* -------------------------- Boot -------------------------- */
-function boot(){
-  renderKPIs(); renderOrders(); renderProducts(); renderInventory(); renderMarketing(); renderPnL(); renderLogistics(); renderAccounts(); renderSupport(); renderAI(); renderBots(); renderPipes();
-  buildHourly(); buildWeekly(); buildCategory(); buildPayment(); buildTopItems(); buildRegionStacked(); buildMonthly();
-  renderInsights(); byId('yr').textContent=new Date().getFullYear();
-}
-boot();
+  // ---- Suppliers ----
+  function renderSuppliers(){
+    const grid=$('#supGrid'); grid.innerHTML='';
+    getLS('aurelo_state', state).suppliers.forEach(s=>{
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML=`<div class="content">
+          <div class="row" style="justify-content:space-between"><div>
+            <div class="title">${s.name}</div>
+            <div class="muted">Lead: ${s.lead} days • MOQ: ${s.moq}</div>
+          </div>
+          <span class="badge ok">Rating ${s.rating}</span></div>
+          <div class="divider"></div>
+          <div class="row" style="justify-content:space-between">
+            <span class="muted">Contact</span>
+            <a class="pill" href="mailto:${s.contact}">${s.contact}</a>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    })
+  }
+  renderSuppliers();
+
+  // ---- Finance ----
+  makeLine('finRev', sLabels, [ {label:'Revenue', data: state.sales.map(x=>x.revenue), borderColor: accent(), fill:false}, {label:'COGS', data: state.sales.map(x=>x.cogs), borderColor:'#ff9aab', fill:false} ]);
+  makeBar('finMix', ['Bakery','Beverages','Snacks','Produce','Dairy','Household'], [ {label:'Mix %', data: [18,22,16,14,12,18], backgroundColor: accent()} ]);
+  makeBar('finProfit', sLabels, [ {label:'Profit', data: state.sales.map(x=> Math.max(0, x.revenue-x.cogs)), backgroundColor:'#25D0A6'} ]);
+
+  // Aging table
+  (function(){
+    const partners=['Supplier 1','Supplier 2','Supplier 3','Wholesale X','Account A','Account B'];
+    const body=$('#agingTable tbody'); body.innerHTML='';
+    partners.forEach(p=>{
+      const type = p.startsWith('Supplier')||p.startsWith('Wholesale')? 'AP' : 'AR';
+      const b=[rand(400,1800),rand(300,1300),rand(0,900),rand(0,700)]; const total=b.reduce((a,c)=>a+c,0);
+      const tr=document.createElement('tr'); tr.innerHTML=`<td>${p}</td><td>${type}</td><td>${fmt(b[0],currency())}</td><td>${fmt(b[1],currency())}</td><td>${fmt(b[2],currency())}</td><td>${fmt(b[3],currency())}</td><td>${fmt(total,currency())}</td>`; body.appendChild(tr);
+    })
+  })();
+
+  // ---- Marketing ----
+  makeBar('mkRoas', ['Search','Social','Email','Affiliates','In‑store'], [ {label:'ROAS', data:[3.2,2.4,5.1,2.1,6.0], backgroundColor: accent()} ]);
+  // Simple funnel as bar (sessions→purchase)
+  makeBar('mkFunnel', ['Sessions','Views','Adds','Checkouts','Purchases'], [ {label:'Count', data:[12000,7200,1800,900,520], backgroundColor:'#6bd7ff'} ]);
+
+  // ---- Alerts & Tasks ----
+  function renderAlerts(){
+    const box=$('#alertList'); box.innerHTML='';
+    getLS('aurelo_state', state).alerts.forEach(a=>{
+      const wrap=document.createElement('div'); wrap.style.margin='8px 0';
+      const cls = a.severity==='High'?'danger': a.severity==='Medium'?'warn':'ok';
+      wrap.innerHTML=`<div class="row" style="justify-content:space-between"><div>
+        <span class="badge ${cls}">${a.severity}</span>
+        <b style="margin-left:8px">${a.type}</b> — <span class="muted">${a.text}</span>
+      </div>
+      <button class="btn small ghost ack">Acknowledge</button></div>`;
+      wrap.querySelector('.ack').addEventListener('click', ()=>{ wrap.remove(); toast('Alert acknowledged') });
+      box.appendChild(wrap);
+    })
+  }
+  function renderTasks(){
+    const box=$('#taskList'); box.innerHTML='';
+    const S=getLS('aurelo_state', state);
+    S.tasks.forEach((t,i)=>{
+      const row=document.createElement('div'); row.className='row'; row.style.justifyContent='space-between'; row.style.margin='6px 0';
+      row.innerHTML=`<label style="display:flex;align-items:center;gap:8px"><input type="checkbox" ${t.done?'checked':''}/> ${t.text}</label>
+      <button class="btn small ghost rm">Remove</button>`;
+      row.querySelector('input').addEventListener('change', ev=>{ S.tasks[i].done=ev.target.checked; saveLS('aurelo_state', S) });
+      row.querySelector('.rm').addEventListener('click', ()=>{ S.tasks.splice(i,1); saveLS('aurelo_state', S); renderTasks(); });
+      box.appendChild(row);
+    });
+    const add=document.createElement('div'); add.className='row'; add.style.marginTop='10px'; add.innerHTML=`<input id="taskNew" placeholder="New task" style="all:unset;background:var(--glass);border:1px solid var(--border);padding:8px 10px;border-radius:10px;flex:1"><button class="btn small">Add</button>`;
+    add.querySelector('button').addEventListener('click', ()=>{ const txt=$('#taskNew').value.trim(); if(!txt) return; S.tasks.push({text:txt,done:false}); saveLS('aurelo_state', S); renderTasks(); })
+    box.appendChild(add);
+  }
+  renderAlerts(); renderTasks();
+
+  // ---- Preferences / Data ----
+  function loadPrefs(){ const p=getLS('aurelo_state', state).prefs; $('#prefCurrency').value=p.currency; $('#accentPicker').value=p.accent }
+  loadPrefs();
+  $('#savePrefs').addEventListener('click', ()=>{ const S=getLS('aurelo_state', state); S.prefs.currency=$('#prefCurrency').value; S.prefs.accent=$('#accentPicker').value; saveLS('aurelo_state', S); toast('Preferences saved. Reloading charts…'); setTimeout(()=>location.reload(), 600) })
+  $('#resetPrefs').addEventListener('click', ()=>{ localStorage.removeItem('aurelo_state'); toast('Reset complete'); setTimeout(()=>location.reload(), 500) })
+
+  // Download JSON state
+  $('#downloadState').addEventListener('click', ()=>{ const blob=new Blob([JSON.stringify(getLS('aurelo_state', state),null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='aurelo_state.json'; a.click(); })
+
+  // Import CSV (very light parser)
+  $('#importCsvBtn').addEventListener('click', ()=>{
+    const f=$('#csvFile').files[0]; if(!f) return toast('Choose a CSV first');
+    const reader=new FileReader(); reader.onload=e=>{
+      const lines=e.target.result.split(/\r?\n/).filter(Boolean); const head=lines.shift().split(',').map(x=>x.trim());
+      const required=['SKU','Name','Category','OnHand','ReorderPt','Lead','UnitCost','UnitPrice','DOH'];
+      if(required.some((h,i)=> (head[i]||'').trim()!==h)) { toast('CSV headers mismatch'); return }
+      const inv = lines.map(line=>{ const v=line.split(','); return { sku:v[0], name:v[1], cat:v[2], qty:+v[3], rop:+v[4], lead:+v[5], cost:+v[6], price:+v[7], doh:+v[8] } });
+      const S=getLS('aurelo_state', state); S.inventory = inv; saveLS('aurelo_state', S); renderInventory(); computeKPIs(); toast('Imported '+inv.length+' rows')
+    }; reader.readAsText(f);
+  })
+
+  // Global search
+  $('#globalSearch').addEventListener('keydown', e=>{ if(e.key==='Enter'){ const q=e.target.value.toLowerCase(); if(!q) return; const hit = state.inventory.find(x=> x.sku.toLowerCase()===q || x.name.toLowerCase().includes(q) ); if(hit){ setSection('inventory'); $('#invSearch').value = hit.sku; renderInventory(); toast('Found '+hit.sku) } else { toast('No direct hit — try broader terms') } } })
+
+  // Date Range (mock)
+  $('#rngBtn').addEventListener('click', ()=>{ const lab=$('#dateRangeLabel'); lab.textContent = lab.textContent==='Last 30 days'? 'Last 90 days':'Last 30 days'; toast('Range changed (demo)') })
+
+})();
 </script>
 </body>
 </html>
