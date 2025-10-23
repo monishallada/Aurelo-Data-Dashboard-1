@@ -3,22 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aurelo Data Engine — Enterprise UI Mock</title>
+  <title>Aurelo Data Engine — Enterprise UI Mock (Deep Technical)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
-    :root{
-      --bg:#0b0d12; --panel:#0f1219; --panel-2:#0e1117; --ink:#e6e8ea; --muted:#9aa3ad; --line:#1b2029; --accent:#c0c6cf; --green:#5fb37c; --amber:#caa855; --red:#c2686b;
-    }
+    :root{ --bg:#0b0d12; --panel:#0f1219; --panel-2:#0e1117; --ink:#e6e8ea; --muted:#9aa3ad; --line:#1b2029; --accent:#c0c6cf; --green:#5fb37c; --amber:#caa855; --red:#c2686b; }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif}
-    .app{display:grid;grid-template-columns:300px 1fr;grid-template-rows:64px 1fr;height:100vh}
-    .topbar{grid-column:1/3;display:flex;align-items:center;gap:16px;padding:12px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(17,21,34,.9),rgba(17,21,34,.6));position:sticky;top:0;z-index:50}
+    .app{display:grid;grid-template-columns:320px 1fr;grid-template-rows:64px 1fr;height:100vh}
+    .topbar{grid-column:1/3;display:flex;align-items:center;gap:16px;padding:12px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(17,21,34,.95),rgba(17,21,34,.7));position:sticky;top:0;z-index:50}
     .brand{font-weight:700;letter-spacing:.3px}
-    .env{margin-left:auto;display:flex;gap:18px;align-items:center;color:var(--muted);font-size:12px}
+    .env{margin-left:auto;display:flex;gap:14px;align-items:center;color:var(--muted);font-size:12px}
     .env .pill{border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:#c9ced6}
 
     .sidebar{grid-row:2/3;background:linear-gradient(180deg,var(--panel),var(--panel-2));border-right:1px solid var(--line);padding:14px 12px;overflow:auto}
@@ -28,12 +26,12 @@
 
     .content{grid-row:2/3;overflow:auto;padding:18px}
     .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
-    .card{background:linear-gradient(180deg,rgba(22,26,36,.9),rgba(17,21,31,.9));border:1px solid var(--line);border-radius:10px;padding:14px}
+    .card{background:linear-gradient(180deg,rgba(22,26,36,.95),rgba(17,21,31,.95));border:1px solid var(--line);border-radius:10px;padding:14px}
     .card h3{margin:0 0 12px;font-size:13px;color:#cad1d9;font-weight:600}
     .sub{color:var(--muted);font-size:12px}
 
     .table{width:100%;border-collapse:collapse}
-    .table th,.table td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;font-size:12.5px;color:#c9ced6}
+    .table th,.table td{border-bottom:1px solid var(--line);padding:8px;text-align:left;font-size:12px;color:#c9ced6;vertical-align:top}
     .table th{color:#98a3af;font-weight:600}
 
     .kpi{display:flex;align-items:center;justify-content:space-between}
@@ -56,7 +54,7 @@
     .btn{background:#111622;border:1px solid #1a2331;color:#cbd2da;border-radius:8px;padding:8px 12px;font-size:12.5px;cursor:pointer}
     .btn.primary{background:#141b29;border-color:#263146;font-weight:600}
 
-    .matrix{display:grid;grid-template-columns:220px repeat(5,1fr);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+    .matrix{display:grid;grid-template-columns:220px repeat(6,1fr);border:1px solid var(--line);border-radius:8px;overflow:hidden}
     .matrix div{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:8px 10px;font-size:12px}
     .matrix .head{background:#0f141d;color:#9aa3ad;font-weight:600}
     .matrix .y{background:#0b0f16;color:#a9b1bb}
@@ -64,7 +62,7 @@
     .dag{background:#0e121a;border:1px solid var(--line);border-radius:8px;padding:12px;color:#b7c0cb;font-family:'JetBrains Mono',monospace;font-size:12px}
     .footer{margin-top:18px;color:#748194;font-size:12px;display:flex;justify-content:space-between;opacity:.9}
 
-    @media (max-width: 1200px){.app{grid-template-columns:0 1fr}}
+    @media (max-width: 1280px){.app{grid-template-columns:0 1fr}}
   </style>
 </head>
 <body>
@@ -76,6 +74,7 @@
       <span class="pill">Cluster: k8s-us-east-1 (12 nodes / 48 GPUs)</span>
       <span class="pill">SSO: Azure AD</span>
       <span class="pill">Audit: ON</span>
+      <span class="pill">SLO: p95 ≤ 60 ms</span>
     </div>
   </div>
 
@@ -84,6 +83,7 @@
     <nav class="nav" id="primaryNav">
       <a href="#" data-view="overview" class="active">Overview</a>
       <a href="#" data-view="datasets">Datasets</a>
+      <a href="#" data-view="profiles">Profiles & Quality</a>
       <a href="#" data-view="labeling">Labeling</a>
       <a href="#" data-view="training">Training</a>
       <a href="#" data-view="registry">Registry</a>
@@ -91,6 +91,7 @@
       <a href="#" data-view="observability">Observability</a>
       <a href="#" data-view="security">Security & Governance</a>
       <a href="#" data-view="admin">Admin</a>
+      <a href="#" data-view="api">API & SDK</a>
     </nav>
   </aside>
 
@@ -122,22 +123,26 @@
 
         <div class="card" style="grid-column:span 8">
           <div class="tabs">
-            <div class="tab active" data-tab="ovr-dag">Job DAG</div>
+            <div class="tab active" data-tab="ovr-dag">Execution DAG</div>
             <div class="tab" data-tab="ovr-logs">Control Plane Logs</div>
             <div class="tab" data-tab="ovr-incidents">Incidents</div>
           </div>
-          <div id="ovr-dag" class="dag">/* Execution DAG */
-  [Ingest v3.4] ──▶ [Prelabel] ──▶ [Human QA] ──▶ [Train #249]
-                                   │                      │
-                                   └────────► [Active Learning] ───▶ [Retrain]
+          <div id="ovr-dag" class="dag">/* DAG */
+[Ingest v3.4] ─▶ [Prelabel] ─▶ [Human QA] ─▶ [Train #249]
+                                │                      │
+                                └────────► [Active Learning] ───▶ [Retrain]
 
-  [Train #249] ──▶ [Eval Suite] ──▶ [Register v1.7] ──▶ [Deploy Canary 20%] ──▶ [Full Rollout]
+[Train #249] ─▶ [Eval Suite] ─▶ [Register v1.7] ─▶ [Deploy Canary 20%] ─▶ [Full Rollout]
+  └─ metrics: acc=0.923, f1=0.887, driftΔ=-0.006
           </div>
           <pre id="ovr-logs" style="display:none">[12:14:34.221] api: ingest.batch_commit ok items=24112 dur=2.1s
 [12:14:35.912] prelabel.llm: mean_conf=0.91 p10=0.77 p90=0.97
 [12:15:02.144] train.dispatch: run=249 template=llm_finetune gpus=4 status=queued
 [12:16:40.002] train.metrics: run=249 loss=1.27→1.09 gpu_util=0.89
-[12:19:05.815] eval: run=249 accuracy=0.923 f1=0.887 drift_delta=-0.006</pre>
+[12:19:05.815] eval: run=249 accuracy=0.923 f1=0.887 drift_delta=-0.006
+[12:19:06.102] registry: model=aurelo-llm version=v1.7 run=249 link=ok
+[12:19:07.431] deploy: canary rollout 20% p95=42ms req_s=12k
+</pre>
           <div id="ovr-incidents" class="card" style="display:none; background:#0f141d">No active incidents. Last: 2025-10-18 03:14Z — transient S3 throttling, auto‑retry resolved.</div>
         </div>
 
@@ -152,33 +157,73 @@
           <div class="sub" style="margin-top:10px">All actions are audited. RBAC enforced via Azure AD groups.</div>
         </div>
       </div>
-      <div class="footer"><div>Confidential © 2025 Microknots</div><div>Build: Enterprise UI Mock v2</div></div>
+      <div class="footer"><div>Confidential © 2025 Microknots</div><div>Build: Enterprise UI Mock v3</div></div>
     </section>
 
-    <!-- DATASETS -->
+    <!-- DATASETS CATALOG -->
     <section id="view-datasets" style="display:none">
       <div class="grid">
-        <div class="card" style="grid-column:span 7">
+        <div class="card" style="grid-column:span 8">
           <h3>Datasets</h3>
           <table class="table">
-            <thead><tr><th>Name</th><th>Modality</th><th>Items</th><th>Version</th><th>Quality</th><th>Status</th></tr></thead>
+            <thead><tr><th>Name</th><th>Modality</th><th>Items</th><th>Size</th><th>Version</th><th>Quality</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td>retail_text_2025Q3</td><td>Text</td><td>1,240,112</td><td>v3.4</td><td>0.91 conf</td><td><span class="status warn">Drift</span></td></tr>
-              <tr><td>vision_products</td><td>Images</td><td>382,440</td><td>v1.9</td><td>0.95 conf</td><td><span class="status ok">Healthy</span></td></tr>
-              <tr><td>asr_calls_mix</td><td>Audio</td><td>6,420 hrs</td><td>v2.1</td><td>—</td><td><span class="status ok">Healthy</span></td></tr>
+              <tr><td>retail_text_2025Q3</td><td>Text</td><td>1,240,112</td><td>72.4 GB</td><td>v3.4</td><td>0.91 conf</td><td><span class="status warn">Drift</span></td></tr>
+              <tr><td>vision_products</td><td>Images</td><td>382,440</td><td>1.92 TB</td><td>v1.9</td><td>0.95 conf</td><td><span class="status ok">Healthy</span></td></tr>
+              <tr><td>asr_calls_mix</td><td>Audio</td><td>6,420 hrs</td><td>3.4 TB</td><td>v2.1</td><td>—</td><td><span class="status ok">Healthy</span></td></tr>
+              <tr><td>invoices_ocr_corp</td><td>Docs</td><td>880,334</td><td>286 GB</td><td>v0.9</td><td>0.89 conf</td><td><span class="status warn">Review</span></td></tr>
+              <tr><td>sensor_iot_stream</td><td>TimeSeries</td><td>1.2B rows</td><td>5.8 TB</td><td>v5.0</td><td>—</td><td><span class="status ok">Healthy</span></td></tr>
             </tbody>
           </table>
         </div>
-        <div class="card" style="grid-column:span 5">
-          <h3>Schema Preview (retail_text_2025Q3 v3.4)</h3>
+        <div class="card" style="grid-column:span 4">
+          <h3>Schema & Manifest (retail_text_2025Q3 v3.4)</h3>
           <pre>{
-  "id": "string",
-  "text": "string",
-  "label": "enum['intent','complaint','other']",
-  "meta": {"region": "string", "channel": "enum['email','chat','voice']"},
-  "split": "enum['train','val','test']"
+  "schema": {
+    "id": "string",
+    "text": "string",
+    "label": "enum['intent','complaint','other']",
+    "meta.region": "string",
+    "meta.channel": "enum['email','chat','voice']",
+    "split": "enum['train','val','test']"
+  },
+  "manifest_uri": "s3://aurelo/datasets/retail_text/v3.4/manifest.jsonl",
+  "content_hash": "sha256:9af2b5d1…",
+  "signed_by": "kms:arn:aws:kms:us-east-1:acct:key/…",
+  "immutability": true
 }</pre>
-          <div class="sub">Manifest: content-hash-9af2b, immutable; signed by org KMS.</div>
+          <div class="sub">3-way handshake: presigned upload → hash verify → commit with audit id.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DATA PROFILES & QUALITY -->
+    <section id="view-profiles" style="display:none">
+      <div class="grid">
+        <div class="card" style="grid-column:span 6">
+          <h3>Text Profile — retail_text_2025Q3 (v3.4)</h3>
+          <table class="table">
+            <thead><tr><th>Metric</th><th>Value</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Lang distribution</td><td>en: 97.3%, es: 2.4%, fr: 0.3%</td><td>auto-detected</td></tr>
+              <tr><td>Avg tokens / doc</td><td>128.4</td><td>p90: 212, p99: 420</td></tr>
+              <tr><td>PII hits (per 10k)</td><td>18.7</td><td>masked</td></tr>
+              <tr><td>Duplicates</td><td>0.21%</td><td>LSH minhash</td></tr>
+              <tr><td>Toxicity (mean)</td><td>0.031</td><td>threshold 0.08</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="grid-column:span 6">
+          <h3>Quality & Drift</h3>
+          <table class="table">
+            <thead><tr><th>Check</th><th>Status</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Class imbalance</td><td><span class="status ok">OK</span></td><td>[0.41, 0.37, 0.22]</td></tr>
+              <tr><td>Embedding drift</td><td><span class="status warn">Δ −0.006</span></td><td>KL between v3.3 and v3.4</td></tr>
+              <tr><td>Outliers</td><td><span class="status ok">Low</span></td><td>isolation forest score p99=0.91</td></tr>
+              <tr><td>Label noise</td><td><span class="status warn">2.7%</span></td><td>disagreement in QA</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -205,8 +250,10 @@
   auto_escalate_below_threshold: true
   redact_pii: true
   reviewers_required: 2
+  disagreement_strategy: majority
+  audit_trail: enabled
 </pre>
-          <div class="sub">Integration: Label Studio via service account; webhooks → /label-webhook.</div>
+          <div class="sub">Label Studio via service account; webhooks → /label-webhook. SLA tracked.</div>
         </div>
       </div>
     </section>
@@ -214,35 +261,36 @@
     <!-- TRAINING -->
     <section id="view-training" style="display:none">
       <div class="grid">
-        <div class="card" style="grid-column:span 8">
+        <div class="card" style="grid-column:span 7">
           <h3>Training Monitor</h3>
-          <canvas id="lossChart" height="160"></canvas>
-          <div class="sub">Run #249 — template=llm_finetune, optimizer=AdamW, lr=2e-5, warmup=200 steps, bf16=true, grad_accum=2</div>
+          <canvas id="lossChart" height="180"></canvas>
+          <div class="sub">Run #249 — template=llm_finetune, opt=AdamW, lr=2e-5, warmup=200, bf16=true, grad_accum=2, max_len=4096, deepspeed=ZeRO-2</div>
         </div>
-        <div class="card" style="grid-column:span 4">
-          <h3>Active Jobs</h3>
-          <table class="table">
-            <thead><tr><th>Run</th><th>Template</th><th>GPU</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr><td>#249</td><td>LLM Fine-Tune</td><td>4×A100</td><td><span class="status ok">Running</span></td></tr>
-              <tr><td>#250</td><td>Image Class</td><td>2×A100</td><td><span class="status warn">Queued</span></td></tr>
-              <tr><td>#251</td><td>NER Base</td><td>1×A100</td><td><span class="status ok">Running</span></td></tr>
-            </tbody>
-          </table>
+        <div class="card" style="grid-column:span 5">
+          <h3>GPU Topology</h3>
+          <pre>cluster:
+  nodes: 12
+  gpus: 48 x A100 80GB
+  fabric: NVLink + 200GbE
+run_249:
+  workers: 4
+  per_worker: 1 GPU
+  batch_size_effective: 128
+  throughput: 1.92k samples/s
+</pre>
         </div>
         <div class="card" style="grid-column:span 12">
-          <h3>Launch Training</h3>
-          <div class="toolbar">
-            <select class="btn" id="templateSelect">
-              <option>LLM Fine-Tune — aurelo-llm-base</option>
-              <option>Text Classification — roberta-base</option>
-              <option>Image Classification — vit-b/16</option>
-              <option>NER — roberta-base</option>
-            </select>
-            <button class="btn primary" onclick="toast('Training job submitted')">Start</button>
-            <button class="btn" onclick="toast('Hyperparameter space editor')">HParams</button>
-            <button class="btn" onclick="toast('GPU scheduler')">Scheduler</button>
-          </div>
+          <h3>Hyperparameter Space (Grid)</h3>
+          <table class="table">
+            <thead><tr><th>Param</th><th>Values</th><th>Selected</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>lr</td><td>[3e-5, 2e-5, 1e-5]</td><td>2e-5</td><td>cosine decay</td></tr>
+              <tr><td>warmup_steps</td><td>[100, 200, 400]</td><td>200</td><td>linear</td></tr>
+              <tr><td>weight_decay</td><td>[0.0, 0.01]</td><td>0.01</td><td>adamw</td></tr>
+              <tr><td>grad_accum</td><td>[1, 2, 4]</td><td>2</td><td>OOM guard</td></tr>
+              <tr><td>scheduler</td><td>[cosine, linear]</td><td>cosine</td><td>—</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -253,11 +301,11 @@
         <div class="card" style="grid-column:span 7">
           <h3>Model Registry</h3>
           <table class="table">
-            <thead><tr><th>Name</th><th>Version</th><th>Accuracy</th><th>F1</th><th>Registered</th></tr></thead>
+            <thead><tr><th>Name</th><th>Version</th><th>Accuracy</th><th>F1</th><th>Registered</th><th>Hash</th></tr></thead>
             <tbody>
-              <tr><td>aurelo-llm</td><td>v1.7</td><td>—</td><td>—</td><td>2h ago</td></tr>
-              <tr><td>retail-text-clf</td><td>v3.2</td><td>0.923</td><td>0.887</td><td>1d ago</td></tr>
-              <tr><td>vision-prod-clf</td><td>v1.9</td><td>0.884</td><td>0.861</td><td>3d ago</td></tr>
+              <tr><td>aurelo-llm</td><td>v1.7</td><td>—</td><td>—</td><td>2h ago</td><td>sha256:7c91e…</td></tr>
+              <tr><td>retail-text-clf</td><td>v3.2</td><td>0.923</td><td>0.887</td><td>1d ago</td><td>sha256:4ab21…</td></tr>
+              <tr><td>vision-prod-clf</td><td>v1.9</td><td>0.884</td><td>0.861</td><td>3d ago</td><td>sha256:11d55…</td></tr>
             </tbody>
           </table>
         </div>
@@ -283,10 +331,10 @@ hashes:
         <div class="card" style="grid-column:span 6">
           <h3>Endpoints</h3>
           <table class="table">
-            <thead><tr><th>Endpoint</th><th>Model</th><th>p95</th><th>Req/s</th><th>Status</th></tr></thead>
+            <thead><tr><th>Endpoint</th><th>Model</th><th>p50</th><th>p95</th><th>Req/s</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td>/api/llm</td><td>aurelo-llm v1.7</td><td>42 ms</td><td>12k</td><td><span class="status ok">Healthy</span></td></tr>
-              <tr><td>/api/vision</td><td>vision-prod-clf v1.9</td><td>58 ms</td><td>4k</td><td><span class="status ok">Healthy</span></td></tr>
+              <tr><td>/api/llm</td><td>aurelo-llm v1.7</td><td>18 ms</td><td>42 ms</td><td>12k</td><td><span class="status ok">Healthy</span></td></tr>
+              <tr><td>/api/vision</td><td>vision-prod-clf v1.9</td><td>27 ms</td><td>58 ms</td><td>4k</td><td><span class="status ok">Healthy</span></td></tr>
             </tbody>
           </table>
         </div>
@@ -301,6 +349,8 @@ hashes:
     min: 2
     max: 16
     target_p95_ms: 60
+  tracing: otlp
+  logging: json
 </pre>
         </div>
       </div>
@@ -315,7 +365,7 @@ hashes:
           <canvas id="latencyChart" height="100"></canvas>
         </div>
         <div class="card" style="grid-column:span 8">
-          <h3>Audit Log (last 5)</h3>
+          <h3>Audit Log (last 7)</h3>
           <table class="table">
             <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Entity</th><th>Metadata</th></tr></thead>
             <tbody>
@@ -324,6 +374,8 @@ hashes:
               <tr><td>12:15:02</td><td>orchestrator</td><td>dispatch</td><td>run#249</td><td>{gpus:4,template:llm_finetune}</td></tr>
               <tr><td>12:14:35</td><td>svc-prelabel</td><td>batch_scored</td><td>dataset v3.4</td><td>{mean_conf:0.91}</td></tr>
               <tr><td>12:14:34</td><td>svc-ingest</td><td>batch_commit</td><td>dataset v3.4</td><td>{items:24112}</td></tr>
+              <tr><td>12:11:04</td><td>ops-admin</td><td>rbac_update</td><td>group:data‑science</td><td>{role:add=trainer}</td></tr>
+              <tr><td>12:06:48</td><td>svc-deploy</td><td>rollout</td><td>model v1.7</td><td>{canary:0.2}</td></tr>
             </tbody>
           </table>
         </div>
@@ -333,7 +385,7 @@ hashes:
     <!-- SECURITY & GOVERNANCE -->
     <section id="view-security" style="display:none">
       <div class="grid">
-        <div class="card" style="grid-column:span 7">
+        <div class="card" style="grid-column:span 8">
           <h3>RBAC Matrix</h3>
           <div class="matrix">
             <div class="head">Role/Permission</div>
@@ -342,13 +394,14 @@ hashes:
             <div class="head">Training</div>
             <div class="head">Registry</div>
             <div class="head">Deploy</div>
-            <div class="y">Owner</div><div>R/W/D</div><div>R/W</div><div>R/W/D</div><div>R/W/D</div><div>R/W/D</div>
-            <div class="y">Admin</div><div>R/W</div><div>R/W</div><div>R/W</div><div>R/W</div><div>R/W</div>
-            <div class="y">Annotator</div><div>R</div><div>R/W</div><div>—</div><div>R</div><div>—</div>
-            <div class="y">Viewer</div><div>R</div><div>R</div><div>R</div><div>R</div><div>R</div>
+            <div class="head">Observability</div>
+            <div class="y">Owner</div><div>R/W/D</div><div>R/W</div><div>R/W/D</div><div>R/W/D</div><div>R/W/D</div><div>R/W/D</div>
+            <div class="y">Admin</div><div>R/W</div><div>R/W</div><div>R/W</div><div>R/W</div><div>R/W</div><div>R/W</div>
+            <div class="y">Annotator</div><div>R</div><div>R/W</div><div>—</div><div>R</div><div>—</div><div>R</div>
+            <div class="y">Viewer</div><div>R</div><div>R</div><div>R</div><div>R</div><div>R</div><div>R</div>
           </div>
         </div>
-        <div class="card" style="grid-column:span 5">
+        <div class="card" style="grid-column:span 4">
           <h3>Data Policy</h3>
           <pre>security:
   encryption_at_rest: AES-256
@@ -357,6 +410,7 @@ hashes:
   pii_redaction: enabled
   dataset_immutability: true
   audit_retention_days: 365
+  compliance: [SOC2, ISO27001]
 </pre>
         </div>
       </div>
@@ -365,18 +419,18 @@ hashes:
     <!-- ADMIN -->
     <section id="view-admin" style="display:none">
       <div class="grid">
-        <div class="card" style="grid-column:span 6">
+        <div class="card" style="grid-column:span 7">
           <h3>Cluster Nodes</h3>
           <table class="table">
-            <thead><tr><th>Node</th><th>Role</th><th>GPU</th><th>Pods</th><th>Status</th></tr></thead>
+            <thead><tr><th>Node</th><th>Role</th><th>GPU</th><th>Pods</th><th>Kernel</th><th>Driver</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td>ip-10-0-1-12</td><td>worker</td><td>4×A100</td><td>17</td><td><span class="status ok">Ready</span></td></tr>
-              <tr><td>ip-10-0-1-13</td><td>worker</td><td>4×A100</td><td>15</td><td><span class="status ok">Ready</span></td></tr>
-              <tr><td>ip-10-0-1-5</td><td>control</td><td>—</td><td>9</td><td><span class="status ok">Ready</span></td></tr>
+              <tr><td>ip-10-0-1-12</td><td>worker</td><td>4×A100</td><td>17</td><td>6.8.0</td><td>535.113</td><td><span class="status ok">Ready</span></td></tr>
+              <tr><td>ip-10-0-1-13</td><td>worker</td><td>4×A100</td><td>15</td><td>6.8.0</td><td>535.113</td><td><span class="status ok">Ready</span></td></tr>
+              <tr><td>ip-10-0-1-5</td><td>control</td><td>—</td><td>9</td><td>6.8.0</td><td>—</td><td><span class="status ok">Ready</span></td></tr>
             </tbody>
           </table>
         </div>
-        <div class="card" style="grid-column:span 6">
+        <div class="card" style="grid-column:span 5">
           <h3>Runbook — Incident: S3 Throttling</h3>
           <pre>symptom: ingest latency spikes
 mitigation:
@@ -385,7 +439,54 @@ mitigation:
   - switch: secondary region (us-east-2)
 postmortem:
   - root cause: upstream provider throttling window
-  - action: provision throughput credits, add circuit breaker</pre>
+  - action: provision throughput credits, add circuit breaker
+</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- API & SDK -->
+    <section id="view-api" style="display:none">
+      <div class="grid">
+        <div class="card" style="grid-column:span 6">
+          <h3>REST — Create Dataset</h3>
+          <pre>POST /datasets
+Authorization: Bearer &lt;token&gt;
+{
+  "name": "retail_text_2025Q3",
+  "modality": "text",
+  "description": "Retail intents Q3",
+  "tags": ["retail","text","2025Q3"]
+}</pre>
+          <h3>REST — Start Training</h3>
+          <pre>POST /train
+{
+  "dataset_version_id": 134,
+  "template": "llm_finetune",
+  "params": {"lr":2e-5,"warmup":200,"bf16":true,"grad_accum":2},
+  "resources": {"gpus":4}
+}</pre>
+        </div>
+        <div class="card" style="grid-column:span 6">
+          <h3>Python SDK</h3>
+          <pre>from aurelo import Aurelo
+cli = Aurelo(base_url="https://api.aurelo.local", token="...")
+
+# Create dataset and upload manifest
+ds = cli.datasets.create(name="retail_text_2025Q3", modality="text")
+cli.datasets.upload_manifest(ds.id, "manifest.jsonl")
+
+# Launch labeling with policy
+cli.labeling.start(dataset_version_id=ds.current_version_id,
+                   policy={"llm_assist":True,"confidence_threshold":0.9})
+
+# Train and register
+run = cli.train.start(dataset_version_id=ds.current_version_id,
+                      template="llm_finetune",
+                      params={"lr":2e-5,"bf16":True})
+model_v = cli.registry.register(run.id, name="aurelo-llm")
+cli.deploy.canary(model_v.id, traffic=0.2)
+</pre>
         </div>
       </div>
     </section>
@@ -398,7 +499,7 @@ postmortem:
 <script>
   // View router
   const nav = document.getElementById('primaryNav');
-  const views = ['overview','datasets','labeling','training','registry','deploy','observability','security','admin'];
+  const views = ['overview','datasets','profiles','labeling','training','registry','deploy','observability','security','admin','api'];
   nav.addEventListener('click',(e)=>{
     const a = e.target.closest('a');
     if(!a) return; e.preventDefault();
@@ -413,7 +514,7 @@ postmortem:
       const group = t.parentElement; group.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); t.classList.add('active');
       const id = t.dataset.tab;
       ['ovr-dag','ovr-logs','ovr-incidents'].forEach(x=>{
-        document.getElementById(x).style.display = (x===id)? (x==='ovr-logs'?'block':'block') : 'none';
+        document.getElementById(x).style.display = (x===id)? 'block' : 'none';
       });
     })
   })
