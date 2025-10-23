@@ -3,168 +3,183 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aurelo Data Engine — UI Mock</title>
+  <title>Aurelo Data Engine — Enterprise UI Mock</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     :root{
-      --bg:#0c0f16; --panel:#111522; --panel-2:#0f1420; --muted:#98a2b3; --line:#1c2233; --brand:#4cc9f0; --brand-2:#a259ff; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+      --bg:#0b0d12; --panel:#0f1219; --panel-2:#0e1117; --ink:#e6e8ea; --muted:#9aa3ad; --line:#1b2029; --accent:#c0c6cf; --green:#5fb37c; --amber:#caa855; --red:#c2686b;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,rgba(76,201,240,.08),transparent),radial-gradient(800px 400px at 10% 110%,rgba(162,89,255,.06),transparent),var(--bg);color:#e5e7eb;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',sans-serif;}
-    .app{display:grid;grid-template-columns:260px 1fr;grid-template-rows:64px 1fr;height:100vh}
-    .topbar{grid-column:1/3;display:flex;align-items:center;gap:16px;padding:12px 16px;border-bottom:1px solid var(--line);backdrop-filter:saturate(120%) blur(8px);background:linear-gradient(180deg,rgba(17,21,34,.7),rgba(17,21,34,.35));position:sticky;top:0;z-index:20}
-    .logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.3px}
-    .logo-badge{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:0 6px 24px rgba(76,201,240,.25),inset 0 0 12px rgba(255,255,255,.12)}
-    .search{flex:1;display:flex;gap:8px}
-    .search input{flex:1;background:var(--panel);border:1px solid var(--line);color:#e5e7eb;border-radius:12px;padding:10px 14px;outline:none}
-    .search button{background:linear-gradient(135deg,var(--brand),var(--brand-2));border:0;color:#0b0f16;font-weight:700;border-radius:10px;padding:10px 14px;cursor:pointer}
-    .user{display:flex;align-items:center;gap:12px}
-    .user .dot{width:10px;height:10px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(34,197,94,.18)}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif}
+    .app{display:grid;grid-template-columns:300px 1fr;grid-template-rows:64px 1fr;height:100vh}
+    .topbar{grid-column:1/3;display:flex;align-items:center;gap:16px;padding:12px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(17,21,34,.9),rgba(17,21,34,.6));position:sticky;top:0;z-index:50}
+    .brand{font-weight:700;letter-spacing:.3px}
+    .env{margin-left:auto;display:flex;gap:18px;align-items:center;color:var(--muted);font-size:12px}
+    .env .pill{border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:#c9ced6}
 
-    .sidebar{grid-row:2/3;background:linear-gradient(180deg,var(--panel),var(--panel-2));border-right:1px solid var(--line);padding:12px;overflow:auto}
-    .nav-section{margin-top:12px}
-    .nav-title{font-size:12px;color:#8b9bb3;margin:18px 10px 8px}
-    .nav a{display:flex;gap:10px;align-items:center;padding:10px 12px;margin:6px;border-radius:10px;color:#c9d4e4;text-decoration:none;border:1px solid transparent}
-    .nav a.active,.nav a:hover{background:linear-gradient(180deg,#141a2b,#111725);border-color:#1d2740}
-    .nav svg{width:18px;height:18px;opacity:.9}
+    .sidebar{grid-row:2/3;background:linear-gradient(180deg,var(--panel),var(--panel-2));border-right:1px solid var(--line);padding:14px 12px;overflow:auto}
+    .section-title{font-size:12px;color:#8c94a1;margin:18px 8px 8px}
+    .nav a{display:flex;gap:10px;align-items:center;padding:10px 12px;margin:4px;border-radius:8px;color:#c9ced6;text-decoration:none;border:1px solid transparent;font-size:14px}
+    .nav a.active,.nav a:hover{background:#0f141d;border-color:#212938}
 
-    .content{grid-row:2/3;overflow:auto;padding:16px}
+    .content{grid-row:2/3;overflow:auto;padding:18px}
     .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
-    .card{background:linear-gradient(180deg,rgba(20,26,43,.7),rgba(17,23,37,.7));border:1px solid var(--line);border-radius:16px;padding:14px}
-    .card h3{margin:0 0 10px;font-size:14px;color:#cbd5e1;font-weight:600}
-    .kpi{display:flex;align-items:center;justify-content:space-between}
-    .kpi .val{font-size:22px;font-weight:700}
-    .kpi .trend{font-size:12px;border-radius:999px;padding:4px 8px}
-    .trend.up{background:rgba(34,197,94,.12);color:#86efac}
-    .trend.down{background:rgba(239,68,68,.12);color:#fecaca}
+    .card{background:linear-gradient(180deg,rgba(22,26,36,.9),rgba(17,21,31,.9));border:1px solid var(--line);border-radius:10px;padding:14px}
+    .card h3{margin:0 0 12px;font-size:13px;color:#cad1d9;font-weight:600}
+    .sub{color:var(--muted);font-size:12px}
 
     .table{width:100%;border-collapse:collapse}
-    .table th,.table td{border-bottom:1px solid var(--line);padding:10px;text-align:left;font-size:13px;color:#c9d4e4}
-    .table th{color:#8fa0bb;font-weight:600}
-    .status{padding:4px 8px;border-radius:999px;font-size:12px}
-    .status.ok{background:rgba(34,197,94,.12);color:#86efac}
-    .status.warn{background:rgba(245,158,11,.12);color:#fcd34d}
-    .status.bad{background:rgba(239,68,68,.12);color:#fecaca}
+    .table th,.table td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;font-size:12.5px;color:#c9ced6}
+    .table th{color:#98a3af;font-weight:600}
 
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
-    .btn{background:#12192a;border:1px solid #1a2440;color:#cbd5e1;border-radius:10px;padding:8px 12px;font-size:13px;cursor:pointer}
-    .btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));border:0;color:#0c0f16;font-weight:700}
+    .kpi{display:flex;align-items:center;justify-content:space-between}
+    .kpi .val{font-size:22px;font-weight:700}
+    .kpi .delta{font-size:12px;color:var(--muted)}
+
+    .status{padding:3px 8px;border-radius:999px;font-size:11px;border:1px solid var(--line);background:#0f141d;color:#c9ced6}
+    .status.ok{color:#a8d8b9}
+    .status.warn{color:#e2cd8e}
+    .status.bad{color:#e1a3a6}
+
+    pre,code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;line-height:1.5}
+    pre{background:#0e131c;border:1px solid var(--line);border-radius:8px;padding:12px;white-space:pre-wrap;color:#cfd6df}
 
     .tabs{display:flex;gap:8px;margin-bottom:10px}
-    .tab{padding:8px 12px;border-radius:10px;border:1px solid var(--line);cursor:pointer;font-size:13px;color:#c9d4e4;background:#0f1524}
-    .tab.active{background:linear-gradient(180deg,#141a2b,#111725);border-color:#253252}
+    .tab{padding:8px 12px;border-radius:8px;border:1px solid var(--line);cursor:pointer;font-size:12.5px;color:#c9ced6;background:#0f141d}
+    .tab.active{background:#0c1017;border-color:#2a3446}
 
-    .flow{height:280px;border:1px dashed #28314a;border-radius:12px;background:repeating-linear-gradient(45deg,rgba(76,201,240,.08) 0 2px, transparent 2px 18px),linear-gradient(180deg,#0d1422,#0a0f19);display:grid;place-items:center;color:#9fb6d4}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{background:#111622;border:1px solid #1a2331;color:#cbd2da;border-radius:8px;padding:8px 12px;font-size:12.5px;cursor:pointer}
+    .btn.primary{background:#141b29;border-color:#263146;font-weight:600}
 
-    .footer{margin-top:18px;color:#7c8aa5;font-size:12px;display:flex;justify-content:space-between;opacity:.8}
+    .matrix{display:grid;grid-template-columns:220px repeat(5,1fr);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+    .matrix div{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:8px 10px;font-size:12px}
+    .matrix .head{background:#0f141d;color:#9aa3ad;font-weight:600}
+    .matrix .y{background:#0b0f16;color:#a9b1bb}
 
-    @media (max-width: 1080px){.app{grid-template-columns:0 1fr}}
+    .dag{background:#0e121a;border:1px solid var(--line);border-radius:8px;padding:12px;color:#b7c0cb;font-family:'JetBrains Mono',monospace;font-size:12px}
+    .footer{margin-top:18px;color:#748194;font-size:12px;display:flex;justify-content:space-between;opacity:.9}
+
+    @media (max-width: 1200px){.app{grid-template-columns:0 1fr}}
   </style>
 </head>
 <body>
 <div class="app">
-  <!-- Topbar -->
   <div class="topbar">
-    <div class="logo"><div class="logo-badge"></div><div>Aurelo Data Engine</div></div>
-    <div class="search">
-      <input id="globalSearch" placeholder="Search datasets, models, jobs…" />
-      <button onclick="alert('Global search coming soon')">Search</button>
-    </div>
-    <div class="user">
-      <div class="dot"></div>
-      <span style="font-size:13px;color:#9fb6d4">GPU Cluster: <strong>OK</strong></span>
+    <div class="brand">Aurelo Data Engine</div>
+    <div class="env">
+      <span class="pill">ENV: Staging</span>
+      <span class="pill">Cluster: k8s-us-east-1 (12 nodes / 48 GPUs)</span>
+      <span class="pill">SSO: Azure AD</span>
+      <span class="pill">Audit: ON</span>
     </div>
   </div>
 
-  <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="nav-section">
-      <div class="nav-title">Primary</div>
-      <nav class="nav" id="primaryNav">
-        <a href="#" data-view="home" class="active">🏠 Home</a>
-        <a href="#" data-view="datasets">🗂️ Datasets</a>
-        <a href="#" data-view="labeling">🏷️ Labeling</a>
-        <a href="#" data-view="training">⚙️ Training</a>
-        <a href="#" data-view="models">🧠 Models</a>
-        <a href="#" data-view="deploy">🚀 Deploy</a>
-        <a href="#" data-view="insights">📈 Insights</a>
-        <a href="#" data-view="admin">🔐 Admin</a>
-      </nav>
-    </div>
+    <div class="section-title">Core</div>
+    <nav class="nav" id="primaryNav">
+      <a href="#" data-view="overview" class="active">Overview</a>
+      <a href="#" data-view="datasets">Datasets</a>
+      <a href="#" data-view="labeling">Labeling</a>
+      <a href="#" data-view="training">Training</a>
+      <a href="#" data-view="registry">Registry</a>
+      <a href="#" data-view="deploy">Deploy</a>
+      <a href="#" data-view="observability">Observability</a>
+      <a href="#" data-view="security">Security & Governance</a>
+      <a href="#" data-view="admin">Admin</a>
+    </nav>
   </aside>
 
-  <!-- Content -->
   <main class="content">
 
-    <!-- HOME / MISSION CONTROL -->
-    <section id="view-home">
+    <!-- OVERVIEW / CONTROL PLANE -->
+    <section id="view-overview">
       <div class="grid">
-        <div class="card" style="grid-column:span 4">
-          <h3>Labeling Throughput</h3>
-          <div class="kpi"><div class="val">12.4k / day</div><div class="trend up">+8.3%</div></div>
-          <canvas id="chartLabeling" height="100"></canvas>
+        <div class="card" style="grid-column:span 3">
+          <h3>Throughput (Ingest)</h3>
+          <div class="kpi"><div class="val">5.2 TB/hr</div><div class="delta">validation err &lt; 0.02%</div></div>
+          <canvas id="ingestChart" height="90"></canvas>
         </div>
-        <div class="card" style="grid-column:span 4">
-          <h3>Active Training Jobs</h3>
-          <div class="kpi"><div class="val">7</div><div class="trend up">+2</div></div>
-          <canvas id="chartJobs" height="100"></canvas>
+        <div class="card" style="grid-column:span 3">
+          <h3>Labeling SLA</h3>
+          <div class="kpi"><div class="val">P95 2.1 h</div><div class="delta">consensus ≥ 0.90</div></div>
+          <canvas id="slaChart" height="90"></canvas>
         </div>
-        <div class="card" style="grid-column:span 4">
+        <div class="card" style="grid-column:span 3">
           <h3>GPU Utilization</h3>
-          <div class="kpi"><div class="val">82%</div><div class="trend down">-3%</div></div>
-          <canvas id="chartGPU" height="100"></canvas>
+          <div class="kpi"><div class="val">82%</div><div class="delta">87% peak / 48 GPUs</div></div>
+          <canvas id="gpuChart" height="90"></canvas>
+        </div>
+        <div class="card" style="grid-column:span 3">
+          <h3>Model Quality Δ</h3>
+          <div class="kpi"><div class="val">+0.012 F1</div><div class="delta">last 7 days</div></div>
+          <canvas id="qualityChart" height="90"></canvas>
         </div>
 
         <div class="card" style="grid-column:span 8">
           <div class="tabs">
-            <div class="tab active" data-tab="flow">Data Flow</div>
-            <div class="tab" data-tab="logs">Live Logs</div>
-            <div class="tab" data-tab="alerts">Alerts</div>
+            <div class="tab active" data-tab="ovr-dag">Job DAG</div>
+            <div class="tab" data-tab="ovr-logs">Control Plane Logs</div>
+            <div class="tab" data-tab="ovr-incidents">Incidents</div>
           </div>
-          <div id="flow" class="flow">Dataset v3.4 → Pre‑label → Human QA → Train Job #249 → Model v1.7 → Endpoint</div>
-          <div id="logs" class="card" style="display:none;white-space:pre;height:280px;overflow:auto;background:#0e1320;border:1px solid var(--line)">[12:14:34] Ingestion: 24,112 items committed\n[12:14:35] Prelabel confidence mean=0.91\n[12:15:02] Trainer: LLM Fine‑Tune Run #249 started\n[12:16:40] GPU0 util=89%  loss=1.27 → 1.09\n[12:19:05] Eval: Accuracy=0.923  F1=0.887</div>
-          <div id="alerts" class="card" style="display:none;height:280px;overflow:auto;background:#0e1320;border:1px solid var(--line)">
-            <div class="status warn">Dataset drift detected on retail_text_2025Q3 (Δ −0.006)</div>
-            <div style="height:8px"></div>
-            <div class="status ok">Canary deploy for Model v1.7 stable (p95 42ms)</div>
+          <div id="ovr-dag" class="dag">/* Execution DAG */
+  [Ingest v3.4] ──▶ [Prelabel] ──▶ [Human QA] ──▶ [Train #249]
+                                   │                      │
+                                   └────────► [Active Learning] ───▶ [Retrain]
+
+  [Train #249] ──▶ [Eval Suite] ──▶ [Register v1.7] ──▶ [Deploy Canary 20%] ──▶ [Full Rollout]
           </div>
+          <pre id="ovr-logs" style="display:none">[12:14:34.221] api: ingest.batch_commit ok items=24112 dur=2.1s
+[12:14:35.912] prelabel.llm: mean_conf=0.91 p10=0.77 p90=0.97
+[12:15:02.144] train.dispatch: run=249 template=llm_finetune gpus=4 status=queued
+[12:16:40.002] train.metrics: run=249 loss=1.27→1.09 gpu_util=0.89
+[12:19:05.815] eval: run=249 accuracy=0.923 f1=0.887 drift_delta=-0.006</pre>
+          <div id="ovr-incidents" class="card" style="display:none; background:#0f141d">No active incidents. Last: 2025-10-18 03:14Z — transient S3 throttling, auto‑retry resolved.</div>
         </div>
 
         <div class="card" style="grid-column:span 4">
-          <h3>Quick Actions</h3>
+          <h3>Quick Ops</h3>
           <div class="toolbar">
-            <button class="btn primary" onclick="toast('New Dataset wizard coming soon')">+ New Dataset</button>
-            <button class="btn" onclick="toast('Launch Labeling Project')">Start Labeling</button>
-            <button class="btn" onclick="toast('Open Training Template Library')">Train Model</button>
-            <button class="btn" onclick="toast('Open Deployment Panel')">Deploy</button>
+            <button class="btn primary" onclick="toast('New dataset wizard')">New Dataset</button>
+            <button class="btn" onclick="toast('Launch Labeling project')">Start Labeling</button>
+            <button class="btn" onclick="toast('Training template library')">Train</button>
+            <button class="btn" onclick="toast('Open Deploy panel')">Deploy</button>
           </div>
+          <div class="sub" style="margin-top:10px">All actions are audited. RBAC enforced via Azure AD groups.</div>
         </div>
       </div>
-
-      <div class="footer"><div>Confidential © 2025 Microknots</div><div>Build: UI Mock v1</div></div>
+      <div class="footer"><div>Confidential © 2025 Microknots</div><div>Build: Enterprise UI Mock v2</div></div>
     </section>
 
     <!-- DATASETS -->
     <section id="view-datasets" style="display:none">
-      <div class="card">
-        <h3>Datasets</h3>
-        <div class="toolbar" style="margin-bottom:8px">
-          <button class="btn primary" onclick="toast('Create Dataset')">+ Create Dataset</button>
-          <button class="btn" onclick="toast('Connect S3 / Azure Blob')">Connect Storage</button>
-          <button class="btn" onclick="toast('Import Manifest JSONL')">Import Manifest</button>
+      <div class="grid">
+        <div class="card" style="grid-column:span 7">
+          <h3>Datasets</h3>
+          <table class="table">
+            <thead><tr><th>Name</th><th>Modality</th><th>Items</th><th>Version</th><th>Quality</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>retail_text_2025Q3</td><td>Text</td><td>1,240,112</td><td>v3.4</td><td>0.91 conf</td><td><span class="status warn">Drift</span></td></tr>
+              <tr><td>vision_products</td><td>Images</td><td>382,440</td><td>v1.9</td><td>0.95 conf</td><td><span class="status ok">Healthy</span></td></tr>
+              <tr><td>asr_calls_mix</td><td>Audio</td><td>6,420 hrs</td><td>v2.1</td><td>—</td><td><span class="status ok">Healthy</span></td></tr>
+            </tbody>
+          </table>
         </div>
-        <table class="table">
-          <thead><tr><th>Name</th><th>Modality</th><th>Items</th><th>Version</th><th>Quality</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td>retail_text_2025Q3</td><td>Text</td><td>1,240,112</td><td>v3.4</td><td>0.91 conf</td><td><span class="status warn">Drift</span></td></tr>
-            <tr><td>vision_products</td><td>Images</td><td>382,440</td><td>v1.9</td><td>0.95 conf</td><td><span class="status ok">Healthy</span></td></tr>
-            <tr><td>asr_calls_mix</td><td>Audio</td><td>6,420 hrs</td><td>v2.1</td><td>—</td><td><span class="status ok">Healthy</span></td></tr>
-          </tbody>
-        </table>
+        <div class="card" style="grid-column:span 5">
+          <h3>Schema Preview (retail_text_2025Q3 v3.4)</h3>
+          <pre>{
+  "id": "string",
+  "text": "string",
+  "label": "enum['intent','complaint','other']",
+  "meta": {"region": "string", "channel": "enum['email','chat','voice']"},
+  "split": "enum['train','val','test']"
+}</pre>
+          <div class="sub">Manifest: content-hash-9af2b, immutable; signed by org KMS.</div>
+        </div>
       </div>
     </section>
 
@@ -174,21 +189,24 @@
         <div class="card" style="grid-column:span 8">
           <h3>Labeling Queue</h3>
           <table class="table">
-            <thead><tr><th>Task</th><th>Dataset</th><th>Type</th><th>Assignees</th><th>Progress</th><th>ETA</th></tr></thead>
+            <thead><tr><th>Task</th><th>Dataset</th><th>Type</th><th>Annotators</th><th>Progress</th><th>Consensus</th><th>ETA</th></tr></thead>
             <tbody>
-              <tr><td>LS‑1249</td><td>retail_text_2025Q3</td><td>Text Class</td><td>4</td><td>74%</td><td>1h 12m</td></tr>
-              <tr><td>LS‑1304</td><td>vision_products</td><td>Obj Detect</td><td>6</td><td>31%</td><td>5h 40m</td></tr>
-              <tr><td>LS‑1333</td><td>asr_calls_mix</td><td>Transcribe</td><td>8</td><td>12%</td><td>22h</td></tr>
+              <tr><td>LS-1249</td><td>retail_text_2025Q3</td><td>Text Class</td><td>4</td><td>74%</td><td>0.92</td><td>1h 12m</td></tr>
+              <tr><td>LS-1304</td><td>vision_products</td><td>Obj Detect</td><td>6</td><td>31%</td><td>0.88</td><td>5h 40m</td></tr>
+              <tr><td>LS-1333</td><td>asr_calls_mix</td><td>Transcribe</td><td>8</td><td>12%</td><td>—</td><td>22h</td></tr>
             </tbody>
           </table>
         </div>
         <div class="card" style="grid-column:span 4">
-          <h3>AI‑Assist</h3>
-          <div class="toolbar">
-            <button class="btn" onclick="toggleAssist(this)">LLM Assist: <strong>ON</strong></button>
-            <button class="btn" onclick="toast('Open Label Studio')">Open Label Studio</button>
-          </div>
-          <p style="color:var(--muted);font-size:13px;margin-top:10px">Pre‑labels generated by LLM / Vision model. Confidence threshold set to <strong>0.90</strong>. Items below threshold auto‑escalate to human review.</p>
+          <h3>Pre-Label Policy</h3>
+          <pre>policy:
+  llm_assist: enabled
+  confidence_threshold: 0.90
+  auto_escalate_below_threshold: true
+  redact_pii: true
+  reviewers_required: 2
+</pre>
+          <div class="sub">Integration: Label Studio via service account; webhooks → /label-webhook.</div>
         </div>
       </div>
     </section>
@@ -198,54 +216,62 @@
       <div class="grid">
         <div class="card" style="grid-column:span 8">
           <h3>Training Monitor</h3>
-          <canvas id="chartLoss"></canvas>
+          <canvas id="lossChart" height="160"></canvas>
+          <div class="sub">Run #249 — template=llm_finetune, optimizer=AdamW, lr=2e-5, warmup=200 steps, bf16=true, grad_accum=2</div>
         </div>
         <div class="card" style="grid-column:span 4">
           <h3>Active Jobs</h3>
           <table class="table">
             <thead><tr><th>Run</th><th>Template</th><th>GPU</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td>#249</td><td>LLM Fine‑Tune</td><td>4×A100</td><td><span class="status ok">Running</span></td></tr>
-              <tr><td>#250</td><td>Image Class</td><td>2×A100</td><td><span class="status warn">Queue</span></td></tr>
+              <tr><td>#249</td><td>LLM Fine-Tune</td><td>4×A100</td><td><span class="status ok">Running</span></td></tr>
+              <tr><td>#250</td><td>Image Class</td><td>2×A100</td><td><span class="status warn">Queued</span></td></tr>
               <tr><td>#251</td><td>NER Base</td><td>1×A100</td><td><span class="status ok">Running</span></td></tr>
             </tbody>
           </table>
         </div>
         <div class="card" style="grid-column:span 12">
-          <h3>Launch New Training</h3>
+          <h3>Launch Training</h3>
           <div class="toolbar">
             <select class="btn" id="templateSelect">
-              <option>Text Classification — roberta‑base</option>
-              <option>LLM Fine‑Tune — aurelo‑llm‑base</option>
-              <option>Image Classification — vit‑b/16</option>
-              <option>NER — roberta‑base</option>
+              <option>LLM Fine-Tune — aurelo-llm-base</option>
+              <option>Text Classification — roberta-base</option>
+              <option>Image Classification — vit-b/16</option>
+              <option>NER — roberta-base</option>
             </select>
-            <button class="btn primary" onclick="toast('Training job submitted')">Start Training</button>
+            <button class="btn primary" onclick="toast('Training job submitted')">Start</button>
+            <button class="btn" onclick="toast('Hyperparameter space editor')">HParams</button>
+            <button class="btn" onclick="toast('GPU scheduler')">Scheduler</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- MODELS -->
-    <section id="view-models" style="display:none">
+    <!-- REGISTRY -->
+    <section id="view-registry" style="display:none">
       <div class="grid">
         <div class="card" style="grid-column:span 7">
           <h3>Model Registry</h3>
           <table class="table">
             <thead><tr><th>Name</th><th>Version</th><th>Accuracy</th><th>F1</th><th>Registered</th></tr></thead>
             <tbody>
-              <tr><td>aurelo‑llm</td><td>v1.7</td><td>—</td><td>—</td><td>2h ago</td></tr>
-              <tr><td>retail‑text‑clf</td><td>v3.2</td><td>0.923</td><td>0.887</td><td>1d ago</td></tr>
-              <tr><td>vision‑prod‑clf</td><td>v1.9</td><td>0.884</td><td>0.861</td><td>3d ago</td></tr>
+              <tr><td>aurelo-llm</td><td>v1.7</td><td>—</td><td>—</td><td>2h ago</td></tr>
+              <tr><td>retail-text-clf</td><td>v3.2</td><td>0.923</td><td>0.887</td><td>1d ago</td></tr>
+              <tr><td>vision-prod-clf</td><td>v1.9</td><td>0.884</td><td>0.861</td><td>3d ago</td></tr>
             </tbody>
           </table>
         </div>
         <div class="card" style="grid-column:span 5">
-          <h3>Version Lineage</h3>
-          <div class="flow">Dataset → Run → Model v1.7 → Endpoint</div>
+          <h3>Lineage</h3>
+          <div class="dag">Dataset v3.4 ─▶ Run #249 ─▶ Model v1.7 ─▶ Endpoint
+hashes:
+  dataset: 9af2b…
+  run:     44d12…
+  model:   7c91e…</div>
           <div class="toolbar" style="margin-top:10px">
             <button class="btn primary" onclick="toast('Deploy v1.7')">Deploy v1.7</button>
             <button class="btn" onclick="toast('Compare v1.6 vs v1.7')">Compare</button>
+            <button class="btn" onclick="toast('Export model card')">Export Card</button>
           </div>
         </div>
       </div>
@@ -259,116 +285,149 @@
           <table class="table">
             <thead><tr><th>Endpoint</th><th>Model</th><th>p95</th><th>Req/s</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td>/api/llm</td><td>aurelo‑llm v1.7</td><td>42ms</td><td>12k</td><td><span class="status ok">Healthy</span></td></tr>
-              <tr><td>/api/vision</td><td>vision‑prod‑clf v1.9</td><td>58ms</td><td>4k</td><td><span class="status ok">Healthy</span></td></tr>
+              <tr><td>/api/llm</td><td>aurelo-llm v1.7</td><td>42 ms</td><td>12k</td><td><span class="status ok">Healthy</span></td></tr>
+              <tr><td>/api/vision</td><td>vision-prod-clf v1.9</td><td>58 ms</td><td>4k</td><td><span class="status ok">Healthy</span></td></tr>
             </tbody>
           </table>
         </div>
         <div class="card" style="grid-column:span 6">
-          <h3>Traffic Control</h3>
-          <div class="toolbar">
-            <button class="btn" onclick="toast('Blue/Green initiated')">Blue/Green</button>
-            <button class="btn" onclick="toast('Canary 20% traffic')">Canary 20%</button>
-            <button class="btn" onclick="toast('Rollback triggered')">Rollback</button>
-          </div>
-          <canvas id="chartLatency" height="120"></canvas>
+          <h3>Routing & Config (YAML)</h3>
+          <pre>deployment:
+  strategy: canary
+  traffic:
+    v1.7: 0.20
+    v1.6: 0.80
+  autoscale:
+    min: 2
+    max: 16
+    target_p95_ms: 60
+</pre>
         </div>
       </div>
     </section>
 
-    <!-- INSIGHTS -->
-    <section id="view-insights" style="display:none">
+    <!-- OBSERVABILITY -->
+    <section id="view-observability" style="display:none">
       <div class="grid">
         <div class="card" style="grid-column:span 4">
-          <h3>Compute Cost (est)</h3>
-          <div class="kpi"><div class="val">$12.8k / mo</div><div class="trend up">+4%</div></div>
-          <canvas id="chartCost" height="100"></canvas>
+          <h3>SLO (p95 latency)</h3>
+          <div class="kpi"><div class="val">≤ 60 ms</div><div class="delta">current: 42 ms</div></div>
+          <canvas id="latencyChart" height="100"></canvas>
         </div>
         <div class="card" style="grid-column:span 8">
-          <h3>Quality Trend</h3>
-          <canvas id="chartQuality" height="120"></canvas>
+          <h3>Audit Log (last 5)</h3>
+          <table class="table">
+            <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Entity</th><th>Metadata</th></tr></thead>
+            <tbody>
+              <tr><td>12:19:05</td><td>svc-train</td><td>eval_complete</td><td>run#249</td><td>{accuracy:0.923,f1:0.887}</td></tr>
+              <tr><td>12:16:40</td><td>svc-train</td><td>metrics_update</td><td>run#249</td><td>{loss:1.27→1.09}</td></tr>
+              <tr><td>12:15:02</td><td>orchestrator</td><td>dispatch</td><td>run#249</td><td>{gpus:4,template:llm_finetune}</td></tr>
+              <tr><td>12:14:35</td><td>svc-prelabel</td><td>batch_scored</td><td>dataset v3.4</td><td>{mean_conf:0.91}</td></tr>
+              <tr><td>12:14:34</td><td>svc-ingest</td><td>batch_commit</td><td>dataset v3.4</td><td>{items:24112}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECURITY & GOVERNANCE -->
+    <section id="view-security" style="display:none">
+      <div class="grid">
+        <div class="card" style="grid-column:span 7">
+          <h3>RBAC Matrix</h3>
+          <div class="matrix">
+            <div class="head">Role/Permission</div>
+            <div class="head">Datasets</div>
+            <div class="head">Labeling</div>
+            <div class="head">Training</div>
+            <div class="head">Registry</div>
+            <div class="head">Deploy</div>
+            <div class="y">Owner</div><div>R/W/D</div><div>R/W</div><div>R/W/D</div><div>R/W/D</div><div>R/W/D</div>
+            <div class="y">Admin</div><div>R/W</div><div>R/W</div><div>R/W</div><div>R/W</div><div>R/W</div>
+            <div class="y">Annotator</div><div>R</div><div>R/W</div><div>—</div><div>R</div><div>—</div>
+            <div class="y">Viewer</div><div>R</div><div>R</div><div>R</div><div>R</div><div>R</div>
+          </div>
+        </div>
+        <div class="card" style="grid-column:span 5">
+          <h3>Data Policy</h3>
+          <pre>security:
+  encryption_at_rest: AES-256
+  encryption_in_transit: TLS 1.3
+  sso_provider: Azure AD
+  pii_redaction: enabled
+  dataset_immutability: true
+  audit_retention_days: 365
+</pre>
         </div>
       </div>
     </section>
 
     <!-- ADMIN -->
     <section id="view-admin" style="display:none">
-      <div class="card">
-        <h3>Organization & Access</h3>
-        <table class="table">
-          <thead><tr><th>User</th><th>Role</th><th>2FA</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td>monish@microknots.ai</td><td>Owner</td><td>Enabled</td><td><span class="status ok">Active</span></td></tr>
-            <tr><td>lab‑ops@microknots.ai</td><td>Annotator</td><td>Required</td><td><span class="status ok">Active</span></td></tr>
-            <tr><td>client‑viewer@enterprise.com</td><td>Viewer</td><td>Optional</td><td><span class="status warn">Invite Sent</span></td></tr>
-          </tbody>
-        </table>
+      <div class="grid">
+        <div class="card" style="grid-column:span 6">
+          <h3>Cluster Nodes</h3>
+          <table class="table">
+            <thead><tr><th>Node</th><th>Role</th><th>GPU</th><th>Pods</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>ip-10-0-1-12</td><td>worker</td><td>4×A100</td><td>17</td><td><span class="status ok">Ready</span></td></tr>
+              <tr><td>ip-10-0-1-13</td><td>worker</td><td>4×A100</td><td>15</td><td><span class="status ok">Ready</span></td></tr>
+              <tr><td>ip-10-0-1-5</td><td>control</td><td>—</td><td>9</td><td><span class="status ok">Ready</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="grid-column:span 6">
+          <h3>Runbook — Incident: S3 Throttling</h3>
+          <pre>symptom: ingest latency spikes
+mitigation:
+  - backoff: exponential (max 120s)
+  - retry: idempotent batch commit
+  - switch: secondary region (us-east-2)
+postmortem:
+  - root cause: upstream provider throttling window
+  - action: provision throughput credits, add circuit breaker</pre>
+        </div>
       </div>
     </section>
 
   </main>
 </div>
 
-<!-- Toast -->
-<div id="toast" style="position:fixed;right:18px;bottom:18px;background:#0f172a;border:1px solid #1e293b;color:#cbe0ff;border-radius:10px;padding:10px 14px;opacity:0;transform:translateY(12px);transition:all .3s ease;pointer-events:none;z-index:1000">Action completed</div>
+<div id="toast" style="position:fixed;right:18px;bottom:18px;background:#0f141d;border:1px solid #1e2432;color:#cbd2da;border-radius:8px;padding:10px 14px;opacity:0;transform:translateY(12px);transition:all .3s ease;pointer-events:none;z-index:1000">Action completed</div>
 
 <script>
-  // Simple view switcher
+  // View router
   const nav = document.getElementById('primaryNav');
-  const views = ['home','datasets','labeling','training','models','deploy','insights','admin'];
-  nav.addEventListener('click', (e)=>{
+  const views = ['overview','datasets','labeling','training','registry','deploy','observability','security','admin'];
+  nav.addEventListener('click',(e)=>{
     const a = e.target.closest('a');
-    if(!a) return;
-    e.preventDefault();
-    const v = a.dataset.view;
+    if(!a) return; e.preventDefault();
     document.querySelectorAll('.nav a').forEach(el=>el.classList.remove('active'));
     a.classList.add('active');
-    views.forEach(id=>{
-      document.getElementById('view-'+id).style.display = (id===v)?'block':'none';
-    });
+    views.forEach(id=>{document.getElementById('view-'+id).style.display = (a.dataset.view===id)?'block':'none'});
   });
 
-  // Tabs in Home card
+  // Tabs in overview
   document.querySelectorAll('.tab').forEach(t=>{
     t.addEventListener('click',()=>{
-      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-      t.classList.add('active');
-      ['flow','logs','alerts'].forEach(id=>{
-        document.getElementById(id).style.display = (t.dataset.tab===id)?'grid':'none';
-        if(id==='logs' || id==='alerts'){document.getElementById(id).style.display = (t.dataset.tab===id)?'block':'none';}
-      })
+      const group = t.parentElement; group.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); t.classList.add('active');
+      const id = t.dataset.tab;
+      ['ovr-dag','ovr-logs','ovr-incidents'].forEach(x=>{
+        document.getElementById(x).style.display = (x===id)? (x==='ovr-logs'?'block':'block') : 'none';
+      });
     })
   })
 
-  function toast(msg){
-    const el = document.getElementById('toast');
-    el.textContent = msg; el.style.opacity=1; el.style.transform='translateY(0)';
-    clearTimeout(window.__toast);
-    window.__toast = setTimeout(()=>{el.style.opacity=0; el.style.transform='translateY(12px)';}, 1800);
-  }
-  function toggleAssist(btn){
-    const on = btn.textContent.includes('ON');
-    btn.innerHTML = 'LLM Assist: <strong>'+(on?'OFF':'ON')+'</strong>';
-    toast('LLM Assist '+(on?'disabled':'enabled'));
-  }
+  function toast(msg){ const el = document.getElementById('toast'); el.textContent=msg; el.style.opacity=1; el.style.transform='translateY(0)'; clearTimeout(window.__t); window.__t=setTimeout(()=>{el.style.opacity=0; el.style.transform='translateY(12px)';}, 1800); }
 
-  // Charts (sample demo data)
-  const palette = {
-    brand: getCss('--brand'), brand2: getCss('--brand-2'), ok: getCss('--ok'), warn: getCss('--warn'), bad: getCss('--bad')
-  }
-  function getCss(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
-  const opts = {
-    responsive:true, maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{enabled:true}},
-    scales:{x:{grid:{color:'#1a2235'}},y:{grid:{color:'#1a2235'},ticks:{color:'#9fb6d4'}}}
-  }
-  new Chart(document.getElementById('chartLabeling'),{type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[{data:[8.2,9.1,10.8,11.6,12.4,12.0,12.4],borderColor:palette.brand,fill:false,tension:.35}]},options:opts});
-  new Chart(document.getElementById('chartJobs'),{type:'bar',data:{labels:['T1','T2','T3','T4','T5','T6','T7'],datasets:[{data:[3,4,5,7,6,7,7],backgroundColor:palette.brand2}]},options:opts});
-  new Chart(document.getElementById('chartGPU'),{type:'line',data:{labels:['00','04','08','12','16','20','24'],datasets:[{data:[77,84,86,83,82,79,82],borderColor:palette.ok,tension:.35}]},options:opts});
-  new Chart(document.getElementById('chartLoss'),{type:'line',data:{labels:['1','2','3','4','5','6','7','8'],datasets:[{data:[2.1,1.7,1.45,1.31,1.22,1.16,1.10,1.06],borderColor:palette.brand,tension:.35}]},options:opts});
-  new Chart(document.getElementById('chartLatency'),{type:'line',data:{labels:['t-60','t-50','t-40','t-30','t-20','t-10','now'],datasets:[{data:[71,64,58,55,52,49,42],borderColor:palette.ok,tension:.35}]},options:opts});
-  new Chart(document.getElementById('chartCost'),{type:'bar',data:{labels:['Apr','May','Jun','Jul','Aug','Sep'],datasets:[{data:[10.8,11.2,11.9,12.1,12.4,12.8],backgroundColor:palette.warn}]},options:opts});
-  new Chart(document.getElementById('chartQuality'),{type:'line',data:{labels:['Apr','May','Jun','Jul','Aug','Sep'],datasets:[{data:[0.88,0.89,0.90,0.91,0.915,0.923],borderColor:palette.brand2,tension:.35}]},options:opts});
+  const neutral = '#c0c6cf', gridc = '#1b2029';
+  const baseOpts = {responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridc},ticks:{color:'#9aa3ad'}},y:{grid:{color:gridc},ticks:{color:'#9aa3ad'}}}};
+  new Chart(document.getElementById('ingestChart'),{type:'line',data:{labels:['00','04','08','12','16','20'],datasets:[{data:[3.8,4.2,4.7,5.0,5.2,5.1],borderColor:neutral,tension:.3}]},options:baseOpts});
+  new Chart(document.getElementById('slaChart'),{type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[{data:[2.6,2.4,2.3,2.2,2.1,2.2,2.1],borderColor:neutral,tension:.3}]},options:baseOpts});
+  new Chart(document.getElementById('gpuChart'),{type:'line',data:{labels:['00','04','08','12','16','20'],datasets:[{data:[71,78,85,87,82,76],borderColor:neutral,tension:.3}]},options:baseOpts});
+  new Chart(document.getElementById('qualityChart'),{type:'line',data:{labels:['w-6','w-5','w-4','w-3','w-2','w-1','now'],datasets:[{data:[0.901,0.906,0.909,0.914,0.918,0.921,0.923],borderColor:neutral,tension:.3}]},options:baseOpts});
+  new Chart(document.getElementById('lossChart'),{type:'line',data:{labels:['1','2','3','4','5','6','7','8'],datasets:[{data:[2.1,1.7,1.45,1.31,1.22,1.16,1.10,1.06],borderColor:neutral,tension:.3}]},options:baseOpts});
+  new Chart(document.getElementById('latencyChart'),{type:'line',data:{labels:['t-60','t-50','t-40','t-30','t-20','t-10','now'],datasets:[{data:[71,64,58,55,52,49,42],borderColor:neutral,tension:.3}]},options:baseOpts});
 </script>
 </body>
 </html>
