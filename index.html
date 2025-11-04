@@ -1,296 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aurelo Data Engine — Enterprise UI Mock (Dense Technical Dashboard)</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    :root{ --bg:#0b0d12; --panel:#0f1219; --panel-2:#0e1117; --ink:#e6e8ea; --muted:#9aa3ad; --line:#1b2029; --accent:#c0c6cf; --green:#5fb37c; --amber:#caa855; --red:#c2686b; }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif}
-    .app{display:grid;grid-template-columns:320px 1fr;grid-template-rows:64px 1fr;height:100vh}
-    .topbar{grid-column:1/3;display:flex;align-items:center;gap:16px;padding:12px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(17,21,34,.95),rgba(17,21,34,.7));position:sticky;top:0;z-index:50}
-    .brand{font-weight:700;letter-spacing:.3px}
-    .env{margin-left:auto;display:flex;gap:14px;align-items:center;color:var(--muted);font-size:12px}
-    .env .pill{border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:#c9ced6}
-
-    .sidebar{grid-row:2/3;background:linear-gradient(180deg,var(--panel),var(--panel-2));border-right:1px solid var(--line);padding:14px 12px;overflow:auto}
-    .section-title{font-size:12px;color:#8c94a1;margin:18px 8px 8px}
-    .nav a{display:flex;gap:10px;align-items:center;padding:10px 12px;margin:4px;border-radius:8px;color:#c9ced6;text-decoration:none;border:1px solid transparent;font-size:14px}
-    .nav a.active,.nav a:hover{background:#0f141d;border-color:#212938}
-
-    .content{grid-row:2/3;overflow:auto;padding:18px}
-    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
-    .card{background:linear-gradient(180deg,rgba(22,26,36,.95),rgba(17,21,31,.95));border:1px solid var(--line);border-radius:10px;padding:14px}
-    .card h3{margin:0 0 12px;font-size:13px;color:#cad1d9;font-weight:600}
-    .sub{color:var(--muted);font-size:12px}
-
-    .table{width:100%;border-collapse:collapse}
-    .table th,.table td{border-bottom:1px solid var(--line);padding:8px;text-align:left;font-size:12px;color:#c9ced6;vertical-align:top}
-    .table th{color:#98a3af;font-weight:600}
-
-    .status{padding:3px 8px;border-radius:999px;font-size:11px;border:1px solid var(--line);background:#0f141d;color:#c9ced6;white-space:nowrap}
-    .status.ok{color:#a8d8b9}
-    .status.warn{color:#e2cd8e}
-    .status.bad{color:#e1a3a6}
-
-    pre,code,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;line-height:1.5}
-    pre{background:#0e131c;border:1px solid var(--line);border-radius:8px;padding:12px;white-space:pre-wrap;color:#cfd6df}
-
-    .tabs{display:flex;gap:8px;margin-bottom:10px}
-    .tab{padding:8px 12px;border-radius:8px;border:1px solid var(--line);cursor:pointer;font-size:12.5px;color:#c9ced6;background:#0f141d}
-    .tab.active{background:#0c1017;border-color:#2a3446}
-
-    .matrix{display:grid;grid-template-columns:220px repeat(6,1fr);border:1px solid var(--line);border-radius:8px;overflow:hidden}
-    .matrix div{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:8px 10px;font-size:12px}
-    .matrix .head{background:#0f141d;color:#9aa3ad;font-weight:600}
-    .matrix .y{background:#0b0f16;color:#a9b1bb}
-
-    .dag{background:#0e121a;border:1px solid var(--line);border-radius:8px;padding:12px;color:#b7c0cb;font-family:'JetBrains Mono',monospace;font-size:12px}
-    .footer{margin-top:18px;color:#748194;font-size:12px;display:flex;justify-content:space-between;opacity:.9}
-
-    @media (max-width: 1280px){.app{grid-template-columns:0 1fr}}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aurelo Lora — In‑Browser Data Annotator (Single File)</title>
+<style>
+  :root{
+    --bg:#0b0f17;--panel:#111726;--muted:#6b7a90;--text:#e8eef7;--accent:#7c5cff;--accent2:#21d4fd;--good:#18c964;--bad:#ff4d67;--warn:#ffb020;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 20% -20%, rgba(124,92,255,.15), transparent),linear-gradient(180deg,#0b0f17,#0a0e15 60%);color:var(--text);font:14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial}
+  header{position:sticky;top:0;background:rgba(11,15,23,.7);backdrop-filter:blur(10px);border-bottom:1px solid #1b2238;z-index:50}
+  .container{max-width:1100px;margin:0 auto;padding:24px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:36px;height:36px;border-radius:12px;background:conic-gradient(from 210deg,var(--accent),var(--accent2));box-shadow:0 0 0 4px rgba(124,92,255,.15)}
+  h1{font-size:20px;margin:0}
+  .sub{color:var(--muted)}
+  main{padding:24px}
+  .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));border:1px solid #1a2136;border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+  .card h2{margin:0 0 8px;font-size:16px}
+  .muted{color:var(--muted)}
+  .drop{border:1.5px dashed #2a3557;border-radius:14px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;background:rgba(124,92,255,.06)}
+  .drop:hover{background:rgba(124,92,255,.1)}
+  input[type=file]{display:none}
+  .btn{appearance:none;border:1px solid #2a3557;color:#e8eef7;background:#141c2e;padding:10px 14px;border-radius:12px;cursor:pointer;transition:.15s ease;}
+  .btn:hover{transform:translateY(-1px);border-color:#3a4a77}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),#5aa9ff);border:none}
+  .btn.ghost{background:transparent;border:1px dashed #2a3557}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .kv{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  textarea, select, input[type=number]{width:100%;background:#0f1524;border:1px solid #263255;border-radius:12px;color:#dfe7fb;padding:10px}
+  textarea{min-height:110px}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:6px 9px;border-radius:999px;border:1px solid #2a3557;background:#121a2c;color:#bcd0f5}
+  .pill.good{border-color:rgba(24,201,100,.4);background:rgba(24,201,100,.08);color:#b6f5cf}
+  .pill.warn{border-color:rgba(255,176,32,.4);background:rgba(255,176,32,.08);color:#ffe0a6}
+  .pill.bad{border-color:rgba(255,77,103,.35);background:rgba(255,77,103,.07);color:#ffc4cf}
+  .progress{height:10px;border-radius:999px;background:#121a2c;border:1px solid #263255;overflow:hidden}
+  .bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .15s}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th,td{border-bottom:1px solid #20294a;padding:8px 10px;text-align:left}
+  th{color:#bcd0f5;position:sticky;top:0;background:#0f1524}
+  .footer{opacity:.8;margin-top:26px}
+  .badge{font-size:11px;padding:4px 6px;border-radius:8px;background:#0f1524;border:1px solid #2b375e;color:#9fb6e5}
+</style>
 </head>
 <body>
-<div class="app">
-  <div class="topbar">
-    <div class="brand">Aurelo Data Engine</div>
-    <div class="env">
-      <span class="pill">ENV: Staging</span>
-      <span class="pill">Cluster: k8s-us-east-1 (12 nodes / 48 GPUs)</span>
-      <span class="pill">SSO: Azure AD</span>
-      <span class="pill">Audit: ON</span>
-      <span class="pill">SLO: p95 ≤ 60 ms</span>
-    </div>
-  </div>
-
-  <aside class="sidebar">
-    <div class="section-title">Core</div>
-    <nav class="nav" id="primaryNav">
-      <a href="#" data-view="overview" class="active">Overview</a>
-      <a href="#" data-view="datasets">Datasets</a>
-      <a href="#" data-view="profiles">Profiles & Quality</a>
-      <a href="#" data-view="labeling">Labeling</a>
-      <a href="#" data-view="training">Training</a>
-      <a href="#" data-view="registry">Registry</a>
-      <a href="#" data-view="deploy">Deploy</a>
-      <a href="#" data-view="observability">Observability</a>
-      <a href="#" data-view="security">Security & Governance</a>
-      <a href="#" data-view="admin">Admin</a>
-      <a href="#" data-view="api">API & SDK</a>
-    </nav>
-  </aside>
-
-  <main class="content">
-
-    <!-- OVERVIEW / CONTROL PLANE (NO CHARTS, DENSE DATA) -->
-    <section id="view-overview">
-      <div class="grid">
-        <!-- System Snapshot -->
-        <div class="card" style="grid-column:span 5">
-          <h3>System Snapshot</h3>
-          <table class="table">
-            <thead><tr><th>Field</th><th>Value</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>Cluster</td><td>k8s-us-east-1</td><td>12 nodes / 48×A100 80GB</td></tr>
-              <tr><td>Control Plane</td><td>FastAPI Orchestrator</td><td>Latency 7 ms; Q depth 12</td></tr>
-              <tr><td>Message Bus</td><td>RabbitMQ 3.13</td><td>Celery queues: prelabel(4), train(8), eval(2)</td></tr>
-              <tr><td>Object Store</td><td>MinIO</td><td>Used 11.2 TB / 120 TB</td></tr>
-              <tr><td>Tracking</td><td>MLflow 2.x</td><td>Experiments 342; Runs 18,410</td></tr>
-              <tr><td>Auth</td><td>Azure AD (OIDC)</td><td>RBAC: 6 roles / 14 groups</td></tr>
-              <tr><td>Audit</td><td>Enabled</td><td>Retention 365 days (immutable)</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Ingestion Metrics (detailed) -->
-        <div class="card" style="grid-column:span 7">
-          <h3>Ingestion Metrics — Last 24h</h3>
-          <table class="table">
-            <thead><tr><th>Source</th><th>Items</th><th>Bytes</th><th>Valid%</th><th>Dedup%</th><th>Errors</th><th>Latency</th></tr></thead>
-            <tbody>
-              <tr><td>Azure Blob (raw_text)</td><td>14,122,844</td><td>402.1 GB</td><td>99.94</td><td>99.98</td><td>214</td><td>p95 210 ms</td></tr>
-              <tr><td>S3 (images_v1)</td><td>382,440</td><td>1.92 TB</td><td>99.99</td><td>99.97</td><td>51</td><td>p95 380 ms</td></tr>
-              <tr><td>Snowflake (invoices)</td><td>880,334</td><td>286 GB</td><td>99.91</td><td>99.96</td><td>402</td><td>p95 620 ms</td></tr>
-              <tr><td>Kafka (sensor_iot)</td><td>1.2B rows</td><td>5.8 TB</td><td>99.89</td><td>99.95</td><td>1,124</td><td>p95 140 ms</td></tr>
-            </tbody>
-          </table>
-          <div class="sub">Schema enforcement: Avro/JSON; hash verify; idempotent commit with audit id.</div>
-        </div>
-
-        <!-- DAG & Logs side-by-side -->
-        <div class="card" style="grid-column:span 6">
-          <h3>Execution DAG</h3>
-          <div class="dag">[Ingest v3.4] ─▶ [Prelabel] ─▶ [Human QA] ─▶ [Train #249]
-                               │                      │
-                               └────────► [Active Learning] ───▶ [Retrain]
-
-[Train #249] ─▶ [Eval Suite] ─▶ [Register v1.7] ─▶ [Deploy Canary 20%] ─▶ [Full Rollout]
-  └─ metrics: acc=0.923, f1=0.887, driftΔ=-0.006
-          </div>
-        </div>
-        <div class="card" style="grid-column:span 6">
-          <h3>Control Plane Logs (last 60s)</h3>
-          <pre>[12:14:34.221] api: ingest.batch_commit ok items=24112 dur=2.1s
-[12:14:35.912] prelabel.llm: mean_conf=0.91 p10=0.77 p90=0.97
-[12:15:02.144] train.dispatch: run=249 template=llm_finetune gpus=4 status=queued
-[12:16:40.002] train.metrics: run=249 loss=1.27→1.09 gpu_util=0.89
-[12:18:11.774] scheduler: backfill queue=train slots=2 policy=fair
-[12:19:05.815] eval: run=249 accuracy=0.923 f1=0.887 drift_delta=-0.006
-[12:19:06.102] registry: model=aurelo-llm version=v1.7 run=249 link=ok
-[12:19:07.431] deploy: canary rollout 20% p95=42ms req_s=12k</pre>
-        </div>
-
-        <!-- K8s Deployment + Spark Job Spec -->
-        <div class="card" style="grid-column:span 6">
-          <h3>Kubernetes Deployment (training-worker)</h3>
-          <pre>apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: training-worker
-spec:
-  replicas: 4
-  selector: {matchLabels: {app: training-worker}}
-  template:
-    metadata: {labels: {app: training-worker}}
-    spec:
-      nodeSelector: {accelerator: nvidia}
-      containers:
-        - name: worker
-          image: registry.local/aurelo/worker:0.3.1
-          resources:
-            limits: {nvidia.com/gpu: 1}
-          env:
-            - {name: BROKER_URL, value: amqp://rabbitmq}
-            - {name: MLFLOW_TRACKING_URI, value: http://mlflow:5000}
-          volumeMounts:
-            - {name: cache, mountPath: /cache}
-      volumes:
-        - {name: cache, emptyDir: {}}
-</pre>
-        </div>
-        <div class="card" style="grid-column:span 6">
-          <h3>Spark Job (ETL: invoices_ocr_corp)</h3>
-          <pre>{
-  "job": "invoices_etl_v0_9",
-  "input": "snowflake://FINANCE/INVOICES",
-  "transform": ["ocr_parse","normalize_fields","currency_fx"],
-  "output": "s3://aurelo/datasets/invoices_ocr_corp/v0.9/manifest.jsonl",
-  "dedup": {"method": "minhash", "threshold": 0.85},
-  "schema": "schemas/invoice_v09.avsc",
-  "fail_on_error": false
-}</pre>
-        </div>
-
-        <!-- API Spec & Examples -->
-        <div class="card" style="grid-column:span 6">
-          <h3>REST API (OpenAPI excerpt)</h3>
-          <pre>POST /datasets
-POST /datasets/{id}/versions
-POST /label-tasks
-POST /prelabel
-POST /train
-POST /evaluate
-POST /models/{id}/register
-POST /deploy
-GET  /jobs/{id}
-</pre>
-        </div>
-        <div class="card" style="grid-column:span 6">
-          <h3>Python SDK (quickstart)</h3>
-          <pre>from aurelo import Aurelo
-cli = Aurelo(base_url="https://api.aurelo.local", token="...")
-
-# Create and upload manifest
-ds = cli.datasets.create(name="retail_text_2025Q3", modality="text")
-cli.datasets.upload_manifest(ds.id, "manifest.jsonl")
-
-# Labeling policy and training
-cli.labeling.start(ds.current_version_id, {"llm_assist":True,"confidence_threshold":0.9})
-run = cli.train.start(ds.current_version_id, template="llm_finetune", params={"lr":2e-5,"bf16":True})
-model_v = cli.registry.register(run.id, name="aurelo-llm")
-cli.deploy.canary(model_v.id, traffic=0.2)
-</pre>
-        </div>
-
-        <!-- SLA & SLO Tables -->
-        <div class="card" style="grid-column:span 4">
-          <h3>SLA / SLO</h3>
-          <table class="table">
-            <thead><tr><th>Metric</th><th>Target</th><th>Current</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr><td>Inference p95</td><td>≤ 60 ms</td><td>42 ms</td><td><span class="status ok">OK</span></td></tr>
-              <tr><td>Train job queue</td><td>≤ 5 min</td><td>2.4 min</td><td><span class="status ok">OK</span></td></tr>
-              <tr><td>Labeling P95</td><td>≤ 3 h</td><td>2.1 h</td><td><span class="status ok">OK</span></td></tr>
-              <tr><td>Availability (30d)</td><td>≥ 99.9%</td><td>99.997%</td><td><span class="status ok">OK</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Storage Layout & Hashes -->
-        <div class="card" style="grid-column:span 8">
-          <h3>Storage Object Layout (MinIO)</h3>
-          <pre>s3://aurelo/
-  datasets/
-    retail_text_2025Q3/
-      v3.4/manifest.jsonl (sha256:9af2b5d1…)
-      v3.4/objects/0001.json
-      v3.4/objects/0002.json
-    vision_products/
-      v1.9/manifest.jsonl (sha256:11d55c9…)
-      v1.9/images/...
-  models/
-    aurelo-llm/
-      v1.7/artifacts/ (sha256:7c91eab…)
-      v1.7/card.md
-  runs/
-    000/249/metrics.json
-</pre>
-        </div>
-
-        <!-- Quick Ops + Notes -->
-        <div class="card" style="grid-column:span 12">
-          <h3>Quick Ops</h3>
-          <div class="sub">All actions audited; RBAC via Azure AD groups; changes require dual control on production.</div>
-          <div class="sub">Feature flags: active_learning=true, pii_redaction=true, autoscale_strict=true</div>
-        </div>
+  <header>
+    <div class="container brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>Aurelo Lora — In‑Browser Data Annotator</h1>
+        <div class="sub">Massively parallel, SLM‑style labeling — entirely client‑side, single HTML file.</div>
       </div>
-      <div class="footer"><div>Confidential © 2025 Microknots</div><div>Build: Enterprise UI Mock v4</div></div>
-    </section>
+    </div>
+  </header>
+  <main class="container">
+    <div class="grid">
+      <!-- Left: Data + Controls -->
+      <section class="card">
+        <h2>1) Load your dataset</h2>
+        <label class="drop" id="dropzone">
+          <strong>Drop .csv / .json / .jsonl here</strong>
+          <span class="muted">or click to browse</span>
+          <input id="file" type="file" accept=".csv,.json,.jsonl" />
+        </label>
+        <div class="row" style="margin-top:10px">
+          <button id="sampleBtn" class="btn ghost">Load sample retail.csv</button>
+          <span id="fileInfo" class="pill">No file loaded</span>
+        </div>
+        <hr style="border:none;border-top:1px solid #1a2136;margin:16px 0">
+        <h2>2) Configure labeling</h2>
+        <div class="kv">
+          <label>
+            <div class="muted">Parallel SLMs (workers)</div>
+            <input type="number" id="workers" min="1" value="6" />
+          </label>
+          <label>
+            <div class="muted">Output format</div>
+            <select id="format">
+              <option value="jsonl" selected>JSONL (recommended)</option>
+              <option value="csv">CSV</option>
+            </select>
+          </label>
+          <label>
+            <div class="muted">Include original columns</div>
+            <select id="includeOrig">
+              <option value="yes" selected>Yes</option>
+              <option value="no">No (annotations only)</option>
+            </select>
+          </label>
+        </div>
+        <div style="margin-top:10px">
+          <div class="muted">Optional taxonomy (category: comma,separated,keywords). One per line.</div>
+          <textarea id="taxonomy" placeholder="fraud: chargeback,dispute,stolen
+support: ticket,refund,agent
+loyalty: reward,member,points"></textarea>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button id="process" class="btn primary">Run Aurelo Lora Labeling</button>
+          <span class="pill warn">All processing runs locally in your browser</span>
+        </div>
+        <div class="progress" style="margin:14px 0 6px"><div class="bar" id="bar"></div></div>
+        <div class="row" style="gap:8px">
+          <span id="status" class="muted">Idle.</span>
+          <span id="stats" class="badge" style="display:none"></span>
+        </div>
+      </section>
 
-    <!-- Other views preserved (from prior version) -->
-    <section id="view-datasets" style="display:none"><div class="card"><h3>Datasets</h3><div class="sub">(See prior tabs for full details — unchanged)</div></div></section>
-    <section id="view-profiles" style="display:none"><div class="card"><h3>Profiles & Quality</h3><div class="sub">(Unchanged)</div></div></section>
-    <section id="view-labeling" style="display:none"><div class="card"><h3>Labeling</h3><div class="sub">(Unchanged)</div></div></section>
-    <section id="view-training" style="display:none"><div class="card"><h3>Training</h3><div class="sub">(Unchanged)</div></div></section>
-    <section id="view-registry" style="display:none"><div class="card"><h3>Registry</h3><div class="sub">(Unchanged)</div></div></section>
-    <section id="view-deploy" style="display:none"><div class="card"><h3>Deploy</h3><div class="sub">(Unchanged)</div></div></section>
-    <section id="view-observability" style="display:none"><div class="card"><h3>Observability</h3><div class="sub">(Unchanged)</div></div></section>
-    <section id="view-security" style="display:none"><div class="card"><h3>Security & Governance</h3><div class="sub">(Unchanged)</div></div></section>
-    <section id="view-admin" style="display:none"><div class="card"><h3>Admin</h3><div class="sub">(Unchanged)</div></div></section>
-    <section id="view-api" style="display:none"><div class="card"><h3>API & SDK</h3><div class="sub">(Unchanged)</div></div></section>
-
+      <!-- Right: Preview + Export -->
+      <section class="card">
+        <h2>3) Preview & Export</h2>
+        <div class="row" style="margin-bottom:8px">
+          <button id="download" class="btn" disabled>Download labeled data</button>
+          <button id="clear" class="btn ghost">Clear</button>
+        </div>
+        <div id="previewWrap" style="max-height:420px;overflow:auto;border:1px solid #1a2136;border-radius:12px">
+          <table id="preview"><thead></thead><tbody></tbody></table>
+        </div>
+        <div class="footer muted">
+          <p>Annotations include entity extraction (email, phone, dates, currency, URLs), PII flags, token counts, naive sentiment, and optional keyword‑based categories. 
+          This is a front‑end demonstration of the <strong>Aurelo Lora</strong> SLM parallelization model; swap in your own model logic server‑side for production.</p>
+        </div>
+      </section>
+    </div>
   </main>
-</div>
 
-<!-- Minimal JS: routing + toast -->
-<div id="toast" style="position:fixed;right:18px;bottom:18px;background:#0f141d;border:1px solid #1e2432;color:#cbd2da;border-radius:8px;padding:10px 14px;opacity:0;transform:translateY(12px);transition:all .3s ease;pointer-events:none;z-index:1000">Action completed</div>
 <script>
-  const nav = document.getElementById('primaryNav');
-  const views = ['overview','datasets','profiles','labeling','training','registry','deploy','observability','security','admin','api'];
-  nav.addEventListener('click',(e)=>{
-    const a = e.target.closest('a');
-    if(!a) return; e.preventDefault();
-    document.querySelectorAll('.nav a').forEach(el=>el.classList.remove('active'));
-    a.classList.add('active');
-    views.forEach(id=>{document.getElementById('view-'+id).style.display = (a.dataset.view===id)?'block':'none'});
+// =============== Utility ===============
+const $ = (s)=>document.querySelector(s);
+const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
+
+function parseCSV(text){
+  // Simple CSV parser supporting quoted fields
+  const rows=[]; let i=0, cur='', row=[], q=false;
+  for(const ch of text){
+    if(ch==='"') { q=!q; cur+=ch; continue; }
+    if(!q && ch===','){ row.push(cur.replace(/^"|"$/g,'')); cur=''; continue; }
+    if(!q && (ch==='\n' || ch==='\r')){ if(cur!==''||row.length){ row.push(cur.replace(/^"|"$/g,'')); rows.push(row); row=[]; cur=''; } continue; }
+    cur+=ch;
+  }
+  if(cur.length||row.length) rows.push([...row, cur.replace(/^"|"$/g,'')]);
+  if(rows.length===0) return {headers:[], records:[]};
+  const headers = rows[0].map((h,i)=>h||('col_'+(i+1)));
+  const records = rows.slice(1).filter(r=>r.length && r.some(x=>x&&x.trim()!==''))
+    .map(r=>Object.fromEntries(headers.map((h,i)=>[h, r[i]??''])));
+  return {headers, records};
+}
+
+function toCSV(rows){
+  if(!rows.length) return '';
+  const headers=[...new Set(rows.flatMap(r=>Object.keys(r)))];
+  const esc=(v)=>(''+(v??'')).replace(/"/g,'""');
+  const lines=[headers.map(h=>'"'+esc(h)+'"').join(',')];
+  for(const r of rows){
+    lines.push(headers.map(h=>'"'+esc(typeof r[h]==='object'?JSON.stringify(r[h]):r[h])+'"').join(','));
+  }
+  return lines.join('\n');
+}
+
+// JSONL helpers
+const toJSONL = rows => rows.map(o=>JSON.stringify(o)).join('\n');
+
+function inferColumns(records){
+  const keys = new Set(); records.slice(0,50).forEach(r=>Object.keys(r).forEach(k=>keys.add(k)));
+  return [...keys];
+}
+
+// ======= Simple SLM-like annotator (regex + heuristics) =======
+function buildTaxonomy(mapText){
+  const map={};
+  mapText.split(/\n+/).forEach(line=>{
+    const [cat, rest] = line.split(':');
+    if(!cat||!rest) return; map[cat.trim()] = rest.split(',').map(s=>s.trim()).filter(Boolean);
   });
-  function toast(msg){ const el = document.getElementById('toast'); el.textContent=msg; el.style.opacity=1; el.style.transform='translateY(0)'; clearTimeout(window.__t); window.__t=setTimeout(()=>{el.style.opacity=0; el.style.transform='translateY(12px)';}, 1800); }
+  return map;
+}
+
+function annotateRecord(record, taxonomy){
+  const entityPatterns = {
+    email: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi,
+    phone: /\b(?:\+?\d[\s.-]?)?(?:\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}\b/g,
+    date: /\b(?:\d{4}-\d{2}-\d{2}|\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{2,4})\b/gi,
+    money: /(?:[$€£]|USD|EUR|GBP)\s?\d{1,3}(?:[,\s]\d{3})*(?:\.\d+)?/gi,
+    url: /https?:\/\/[\w.-]+(?:\/[\w\-.~:/?#[\]@!$&'()*+,;=%]*)?/gi
+  };
+  const fields = Object.keys(record);
+  const perField = {};
+  const allText = fields.map(k=> String(record[k] ?? '')).join(' ');
+  const entities = [];
+  const pushEnt = (type, value, field)=>{ entities.push({type, value, field}); };
+  for(const f of fields){
+    const v = String(record[f] ?? '');
+    const found = {};
+    for(const [type, rx] of Object.entries(entityPatterns)){
+      const matches = v.match(rx); if(matches){ found[type]=matches; matches.forEach(m=>pushEnt(type,m,f)); }
+    }
+    perField[f] = found;
+  }
+  // Naive sentiment
+  const pos=['good','great','love','excellent','fast','happy','profit','gain','growth'];
+  const neg=['bad','slow','hate','terrible','angry','bug','loss','down','delay'];
+  const lower = allText.toLowerCase();
+  const score = pos.reduce((a,w)=>a+(lower.includes(w)?1:0),0) - neg.reduce((a,w)=>a+(lower.includes(w)?1:0),0);
+
+  // Categories via taxonomy
+  const categories = [];
+  for(const [cat, kws] of Object.entries(taxonomy)){
+    if(kws.some(k=> lower.includes(k.toLowerCase()))) categories.push(cat);
+  }
+  const pii = entities.some(e=> e.type==='email' || e.type==='phone');
+  const tokens = allText.split(/\s+/).filter(Boolean).length;
+
+  return { entities, perField, sentiment: score, categories, pii, tokens };
+}
+
+// ======= Worker (SLM) code as Blob =======
+const workerCode = `
+self.onmessage = (ev)=>{
+  const {chunk, taxonomy} = ev.data;
+  const entityPatterns = {
+    email: /\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}\\b/gi,
+    phone: /\\b(?:\\+?\\d[\\s.-]?)?(?:\\(\\d{3}\\)|\\d{3})[\\s.-]?\\d{3}[\\s.-]?\\d{4}\\b/g,
+    date: /\\b(?:\\d{4}-\\d{2}-\\d{2}|\\d{1,2}[\\/.-]\\d{1,2}[\\/.-]\\d{2,4}|\\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\\s+\\d{1,2},?\\s+\\d{2,4})\\b/gi,
+    money: /(?:[$€£]|USD|EUR|GBP)\\s?\\d{1,3}(?:[,\\s]\\d{3})*(?:\\.\\d+)?/gi,
+    url: /https?:\\/\\/[\\w.-]+(?:\\/[\\w\\-.~:/?#[\\]@!$&'()*+,;=%]*)?/gi
+  };
+  function annotateRecord(record){
+    const fields = Object.keys(record);
+    const entities=[]; const perField={};
+    const pushEnt=(type,value,field)=>entities.push({type,value,field});
+    let all='';
+    for(const f of fields){
+      const v = String(record[f] ?? ''); all += ' '+v;
+      const found={};
+      for(const [type,rxs] of Object.entries(entityPatterns)){
+        const matches = v.match(rxs); if(matches){ found[type]=matches; matches.forEach(m=>pushEnt(type,m,f)); }
+      }
+      perField[f]=found;
+    }
+    const low = all.toLowerCase();
+    const pos=['good','great','love','excellent','fast','happy','profit','gain','growth'];
+    const neg=['bad','slow','hate','terrible','angry','bug','loss','down','delay'];
+    const score = pos.reduce((a,w)=>a+(low.includes(w)?1:0),0) - neg.reduce((a,w)=>a+(low.includes(w)?1:0),0);
+    const categories=[];
+    for(const [cat,kws] of Object.entries(taxonomy)){
+      if(kws.some(k=> low.includes(k.toLowerCase()))) categories.push(cat);
+    }
+    const pii = entities.some(e=> e.type==='email' || e.type==='phone');
+    const tokens = all.split(/\s+/).filter(Boolean).length;
+    return {entities, perField, sentiment:score, categories, pii, tokens};
+  }
+  const out = chunk.map(row=>({ __aurelo_lora: annotateRecord(row), ...row }));
+  postMessage(out);
+};`;
+const workerURL = URL.createObjectURL(new Blob([workerCode], {type:'text/javascript'}));
+
+// =============== State ===============
+let dataset = {headers:[], records:[]};
+let labeled = [];
+
+// =============== IO Handlers ===============
+const drop = $('#dropzone');
+const fileInput = $('#file');
+
+function setStatus(msg){ $('#status').textContent = msg; }
+function setProgress(p){ $('#bar').style.width = Math.max(0,Math.min(100,p))+'%'; }
+
+['dragenter','dragover'].forEach(evt=>drop.addEventListener(evt,e=>{ e.preventDefault(); drop.style.background='rgba(124,92,255,.12)'; }));
+['dragleave','drop'].forEach(evt=>drop.addEventListener(evt,e=>{ e.preventDefault(); drop.style.background='rgba(124,92,255,.06)'; }));
+
+drop.addEventListener('click', ()=> fileInput.click());
+drop.addEventListener('drop', e=> { if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', e=> { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+async function handleFile(file){
+  $('#fileInfo').textContent = file.name + ' • ' + Math.round(file.size/1024) + ' KB';
+  const text = await file.text();
+  if(file.name.endsWith('.csv')){
+    dataset = parseCSV(text);
+  } else if(file.name.endsWith('.jsonl')){
+    const lines = text.split(/\n+/).filter(Boolean).map(JSON.parse);
+    const headers = inferColumns(lines);
+    dataset = { headers, records: lines };
+  } else if(file.name.endsWith('.json')){
+    const arr = JSON.parse(text);
+    const records = Array.isArray(arr) ? arr : [arr];
+    dataset = { headers: inferColumns(records), records };
+  } else {
+    alert('Unsupported file. Use .csv, .json, or .jsonl'); return;
+  }
+  preview(dataset.records.slice(0,30));
+  setStatus('Loaded '+dataset.records.length+' rows. Ready to process.');
+}
+
+$('#sampleBtn').addEventListener('click', ()=>{
+  const csv = `order_id,customer,email,phone,amount,notes,date\n`+
+              `1001,Ada Lovelace,ada@microknots.ai,919-555-1200,$149.99,Love the fast delivery!,2025-10-01\n`+
+              `1002,Sam Doe,doe@example.com,919-555-2255,$89.00,Refund ticket opened,http://help.example.com\n`+
+              `1003,Chris P.,,919.777.8822,$1,299.00,Chargeback dispute pending,Oct 12, 2025\n`+
+              `1004,Lee,lee@store.com,,EUR 49,Delayed shipment – angry customer,2025/09/13`;
+  dataset = parseCSV(csv); $('#fileInfo').textContent = 'sample_retail.csv • 4 rows';
+  preview(dataset.records.slice(0,30));
+  setStatus('Loaded sample (4 rows).');
+});
+
+// =============== Processing ===============
+$('#process').addEventListener('click', async ()=>{
+  if(!dataset.records.length){ alert('Load a dataset first.'); return; }
+  const nWorkers = Math.max(1, parseInt($('#workers').value||'4',10));
+  const taxonomy = buildTaxonomy($('#taxonomy').value||'');
+  const includeOrig = $('#includeOrig').value==='yes';
+
+  setStatus('Spinning up '+nWorkers+' SLMs…'); setProgress(3);
+  await sleep(150);
+
+  const size = dataset.records.length; const chunkSize = Math.ceil(size / nWorkers);
+  const chunks = []; for(let i=0;i<size;i+=chunkSize) chunks.push(dataset.records.slice(i,i+chunkSize));
+
+  labeled = []; let done=0; const workers=[];
+  const started = performance.now();
+  $('#stats').style.display='none';
+
+  await Promise.all(chunks.map((chunk, idx)=> new Promise((resolve)=>{
+    const w = new Worker(workerURL); workers.push(w);
+    w.onmessage = (ev)=>{ labeled = labeled.concat(ev.data); done+=chunk.length; setProgress(Math.round(100*done/size)); resolve(); };
+    w.postMessage({chunk, taxonomy});
+  })));
+
+  const elapsed = ((performance.now()-started)/1000).toFixed(2);
+  setStatus('Labeling complete in '+elapsed+'s.');
+  $('#stats').textContent = `rows: ${size} • workers: ${nWorkers} • rps: ${(size/elapsed).toFixed(1)}`;
+  $('#stats').style.display='inline-block';
+
+  // Strip originals if needed
+  if(!includeOrig){ labeled = labeled.map(r=>({__aurelo_lora: r.__aurelo_lora})); }
+
+  preview(labeled.slice(0,30));
+  $('#download').disabled=false;
+});
+
+$('#download').addEventListener('click', ()=>{
+  const fmt = $('#format').value;
+  const data = fmt==='csv' ? toCSV(labeled) : toJSONL(labeled);
+  const blob = new Blob([data], {type: fmt==='csv'?'text/csv':'application/x-ndjson'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'aurelo_lora_labeled.'+(fmt==='csv'?'csv':'jsonl');
+  document.body.appendChild(a); a.click(); a.remove();
+});
+
+$('#clear').addEventListener('click', ()=>{
+  dataset={headers:[],records:[]}; labeled=[]; $('#preview thead').innerHTML=''; $('#preview tbody').innerHTML='';
+  $('#download').disabled=true; setProgress(0); setStatus('Cleared.'); $('#fileInfo').textContent='No file loaded';
+});
+
+// =============== Preview Table ===============
+function preview(rows){
+  const table=$('#preview'); const thead=table.querySelector('thead'); const tbody=table.querySelector('tbody');
+  thead.innerHTML=''; tbody.innerHTML='';
+  if(!rows.length){ tbody.innerHTML = '<tr><td class="muted">No rows</td></tr>'; return; }
+  const cols = [...new Set(rows.flatMap(r=>Object.keys(r)))];
+  const tr = document.createElement('tr'); cols.forEach(c=>{ const th=document.createElement('th'); th.textContent=c; tr.appendChild(th); }); thead.appendChild(tr);
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    cols.forEach(c=>{
+      const td=document.createElement('td');
+      const v=r[c];
+      td.textContent = typeof v==='object'? JSON.stringify(v) : (v??'');
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
 </script>
 </body>
 </html>
